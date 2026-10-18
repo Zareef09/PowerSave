@@ -242,7 +242,7 @@ export function LandingPage() {
             </select>
           </label>
           <Link
-            href="/app"
+            href="/start"
             className="inline-flex min-h-12 w-full items-center justify-center rounded-btn bg-lime px-6 text-base font-medium text-ink no-underline sm:w-auto"
           >
             Find my cheapest time
@@ -587,7 +587,7 @@ export function LandingPage() {
             <span className="text-muted">Know when to </span>press start.
           </h2>
           <Link
-            href="/app"
+            href="/start"
             className="inline-flex min-h-12 items-center rounded-btn bg-lime px-6 text-base font-medium text-ink no-underline"
           >
             Find my cheapest time

@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import { ComingSoon } from "@/components/ComingSoon";
+import { SettingsPage } from "@/components/settings/SettingsPage";
 
 export const metadata: Metadata = {
   title: "Settings",
-  description: "Coming soon — plan and preferences stay on this device for now.",
+  description: "Plan, chores, quiet hours, theme and report a problem. Saved on this device.",
 };
 
-export default function SettingsPage() {
-  return <ComingSoon title="Settings" />;
+export default function SettingsRoutePage() {
+  return <SettingsPage />;
 }

@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import { ComingSoon } from "@/components/ComingSoon";
+import { HowItWorksPage } from "@/components/info/HowItWorksPage";
 
 export const metadata: Metadata = {
   title: "How it works",
-  description: "Coming soon — how PowerSave prices chores from your Ontario rate plan.",
+  description: "How PowerSave prices chores from your Ontario rate plan — method, example and sources.",
 };
 
-export default function HowItWorksPage() {
-  return <ComingSoon title="How it works" />;
+export default function HowItWorksRoutePage() {
+  return <HowItWorksPage />;
 }

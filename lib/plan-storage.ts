@@ -1,4 +1,4 @@
-/** Re-export guest plan helpers (Landing + Session 5). */
+/** Re-export guest helpers (Landing + app). */
 export {
   readStoredPlan,
   writeStoredPlan,
@@ -6,4 +6,13 @@ export {
   writeStoredChores,
   readStoredQuietHours,
   writeStoredQuietHours,
+  readStoredUnits,
+  writeStoredUnits,
+  readSetupDone,
+  writeSetupDone,
+  readFirstVisitDismissed,
+  writeFirstVisitDismissed,
+  clearGuestData,
+  startFlowDefaultChores,
+  type PriceUnits,
 } from "@/lib/guest-storage";

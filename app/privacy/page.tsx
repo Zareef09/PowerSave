@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
-import { ComingSoon } from "@/components/ComingSoon";
+import { PrivacyPage } from "@/components/info/PrivacyPage";
 
 export const metadata: Metadata = {
   title: "Privacy",
-  description: "Coming soon — PowerSave privacy information.",
+  description:
+    "What PowerSave stores today: guest data in your browser, no accounts, no analytics, no cookies.",
 };
 
-export default function PrivacyPage() {
-  return <ComingSoon title="Privacy" />;
+export default function PrivacyRoutePage() {
+  return <PrivacyPage />;
 }

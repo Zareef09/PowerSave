@@ -21,7 +21,7 @@ Non-negotiable PRD rules apply to every session. Do not edit `PowerSave-Design`.
 
 ## Session 6 — Setup, settings, info pages
 
-**Status:** not started  
+**Status:** done  
 
 **Routes:** `/start` (three steps, bill helper, skip), `/app/settings` (plan, editable chores, quiet hours, units, theme, report form; account section visible but sign-in not wired), `/how-it-works`, `/plan`, `/privacy`, remaining shared states. Remove every remaining Coming soon stub.
 

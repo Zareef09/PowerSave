@@ -8,9 +8,12 @@ import { DONE_BY_OPTIONS, deadlineDateFromMin } from "@/lib/deadlines";
 import { formatCost, formatTime } from "@/lib/format";
 import { planDisplayName, ratesAsOfLabel, ratesMonoTag } from "@/lib/format-rates";
 import {
+  readFirstVisitDismissed,
+  readSetupDone,
   readStoredChores,
   readStoredPlan,
   readStoredQuietHours,
+  writeFirstVisitDismissed,
   writeStoredChores,
   writeStoredPlan,
 } from "@/lib/guest-storage";
@@ -43,6 +46,7 @@ export function TodayPage() {
   const [now, setNow] = useState<Date | null>(null);
   const [ui, setUi] = useState<UiState>("loading");
   const [tick, setTick] = useState(0);
+  const [showFirstVisit, setShowFirstVisit] = useState(false);
 
   useEffect(() => {
     const storedPlan = readStoredPlan();
@@ -52,6 +56,7 @@ export function TodayPage() {
     setChores(c);
     setNow(new Date());
     setUi(c.filter((x) => x.enabled).length === 0 ? "empty" : "ready");
+    setShowFirstVisit(!readSetupDone() && !readFirstVisitDismissed());
 
     const onOnline = () => setTick((t) => t + 1);
     const onOffline = () => setUi("offline");
@@ -127,6 +132,43 @@ export function TodayPage() {
             ) : null}
           </h1>
         </div>
+
+        {showFirstVisit ? (
+          <div
+            role="status"
+            className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2.5 rounded-xl border border-hairline bg-surface px-4 py-3.5"
+          >
+            <span className="text-[15px]">New here? Pick your plan in about 30 seconds.</span>
+            <span className="flex flex-wrap gap-2">
+              <Link
+                href="/start"
+                className="inline-flex min-h-11 items-center rounded-btn bg-ink px-[18px] text-base font-medium text-page no-underline"
+              >
+                Set up
+              </Link>
+              <button
+                type="button"
+                className="inline-flex min-h-11 items-center rounded-btn border border-ink px-[18px] text-base font-medium text-ink"
+                onClick={() => {
+                  writeFirstVisitDismissed(true);
+                  setShowFirstVisit(false);
+                }}
+              >
+                Not now
+              </button>
+            </span>
+          </div>
+        ) : (
+          <div
+            role="status"
+            className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 rounded-xl border border-hairline bg-surface px-4 py-3.5"
+          >
+            <span className="font-mono-label text-muted-strong">[ GUEST · THIS DEVICE ]</span>
+            <Link href="/app/signin" className="text-sm text-accent no-underline">
+              Save across devices →
+            </Link>
+          </div>
+        )}
 
         {ui === "offline" ? (
           <div role="status" className="rounded-xl border border-ink px-4 py-3 text-sm">

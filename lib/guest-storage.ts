@@ -8,6 +8,11 @@ import type { PlanId } from "@/lib/rates/types";
 const PLAN_KEY = "powersave-plan";
 const CHORES_KEY = "powersave-chores";
 const QUIET_KEY = "powersave-quiet-hours";
+const UNITS_KEY = "powersave-units";
+const SETUP_KEY = "powersave-setup-done";
+const FIRST_VISIT_KEY = "powersave-first-visit-dismissed";
+
+export type PriceUnits = "cents" | "dollars";
 
 export function readStoredPlan(): PlanId | null {
   try {
@@ -42,6 +47,61 @@ export function writeStoredQuietHours(on: boolean): void {
   try {
     if (typeof window === "undefined") return;
     window.localStorage.setItem(QUIET_KEY, on ? "1" : "0");
+  } catch {
+    /* ignore */
+  }
+}
+
+export function readStoredUnits(): PriceUnits {
+  try {
+    if (typeof window === "undefined") return "cents";
+    const v = window.localStorage.getItem(UNITS_KEY);
+    return v === "dollars" ? "dollars" : "cents";
+  } catch {
+    return "cents";
+  }
+}
+
+export function writeStoredUnits(units: PriceUnits): void {
+  try {
+    if (typeof window === "undefined") return;
+    window.localStorage.setItem(UNITS_KEY, units);
+  } catch {
+    /* ignore */
+  }
+}
+
+export function readSetupDone(): boolean {
+  try {
+    if (typeof window === "undefined") return false;
+    return window.localStorage.getItem(SETUP_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+export function writeSetupDone(done: boolean): void {
+  try {
+    if (typeof window === "undefined") return;
+    window.localStorage.setItem(SETUP_KEY, done ? "1" : "0");
+  } catch {
+    /* ignore */
+  }
+}
+
+export function readFirstVisitDismissed(): boolean {
+  try {
+    if (typeof window === "undefined") return false;
+    return window.localStorage.getItem(FIRST_VISIT_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+export function writeFirstVisitDismissed(done: boolean): void {
+  try {
+    if (typeof window === "undefined") return;
+    window.localStorage.setItem(FIRST_VISIT_KEY, done ? "1" : "0");
   } catch {
     /* ignore */
   }
@@ -84,5 +144,42 @@ export function writeStoredChores(chores: ChoreConfig[]): void {
   }
 }
 
-/** @deprecated use readStoredPlan from guest-storage */
-export { readStoredPlan as readStoredPlanLegacy };
+/** Wipe guest settings on this device (Settings → Delete my data). */
+export function clearGuestData(): void {
+  try {
+    if (typeof window === "undefined") return;
+    window.localStorage.removeItem(PLAN_KEY);
+    window.localStorage.removeItem(CHORES_KEY);
+    window.localStorage.removeItem(QUIET_KEY);
+    window.localStorage.removeItem(UNITS_KEY);
+    window.localStorage.removeItem(SETUP_KEY);
+    window.localStorage.removeItem(FIRST_VISIT_KEY);
+    // Theme key is owned by ThemeProvider — clear too.
+    window.localStorage.removeItem("powersave-theme");
+  } catch {
+    /* ignore */
+  }
+}
+
+/** Start-flow defaults: Laundry + Dishwasher on, EV off. */
+export function startFlowDefaultChores(): ChoreConfig[] {
+  return [
+    { id: "laundry", label: "Laundry", kwh: 3, durationMin: 90, deadlineMin: null, enabled: true },
+    {
+      id: "dishwasher",
+      label: "Dishwasher",
+      kwh: 1.2,
+      durationMin: 120,
+      deadlineMin: null,
+      enabled: true,
+    },
+    {
+      id: "ev",
+      label: "EV charging",
+      kwh: 28.8,
+      durationMin: 240,
+      deadlineMin: null,
+      enabled: false,
+    },
+  ];
+}
