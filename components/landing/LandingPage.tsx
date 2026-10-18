@@ -84,6 +84,7 @@ export function LandingPage() {
   const [plan, setPlan] = useState<PlanId>("TOU");
   const [tick, setTick] = useState(1);
   const [prog, setProg] = useState(1);
+  const [reduceMotion, setReduceMotion] = useState(false);
   const [teaserLive, setTeaserLive] = useState(false);
   const [teaserCents, setTeaserCents] = useState(SAMPLE_TEASER.centsKwh);
   const [teaserMw, setTeaserMw] = useState(SAMPLE_TEASER.mwH);
@@ -93,6 +94,16 @@ export function LandingPage() {
   useEffect(() => {
     const stored = readStoredPlan();
     if (stored) setPlan(stored);
+  }, []);
+
+  useEffect(() => {
+    let reduce = false;
+    try {
+      reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    } catch {
+      /* ignore */
+    }
+    setReduceMotion(reduce);
   }, []);
 
   useEffect(() => {
@@ -135,13 +146,7 @@ export function LandingPage() {
   }, []);
 
   useEffect(() => {
-    let reduce = false;
-    try {
-      reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    } catch {
-      /* ignore */
-    }
-    if (reduce) {
+    if (reduceMotion) {
       setTick(1);
       return;
     }
@@ -154,9 +159,13 @@ export function LandingPage() {
     };
     raf = requestAnimationFrame(step);
     return () => cancelAnimationFrame(raf);
-  }, []);
+  }, [reduceMotion]);
 
   useEffect(() => {
+    if (reduceMotion) {
+      setProg(1);
+      return;
+    }
     const onScroll = () => {
       const el = document.getElementById("psmoment");
       if (!el) return;
@@ -169,7 +178,7 @@ export function LandingPage() {
     window.addEventListener("scroll", onScroll, true);
     onScroll();
     return () => window.removeEventListener("scroll", onScroll, true);
-  }, []);
+  }, [reduceMotion]);
 
   const onPlanChange = (next: PlanId) => {
     setPlan(next);
@@ -204,13 +213,14 @@ export function LandingPage() {
     <div className="min-h-screen bg-page text-ink">
       <SiteNav />
 
+      <main id="main-content">
       {/* hero */}
-      <div className="mx-auto box-border max-w-content px-6 pt-12 md:px-10 md:pt-24">
+      <div className="mx-auto box-border max-w-content px-4 pt-12 sm:px-6 md:px-10 md:pt-24">
         <div className="font-mono-label flex flex-wrap justify-between gap-x-6 gap-y-2 text-muted">
           <span>/00 [ TOU · WINTER · 17:30 ]</span>
           <span>[ RATES OEB · NOV 1 2026 ]</span>
         </div>
-        <h1 className="mb-5 mt-8 max-w-[1000px] text-balance text-[48px] font-light leading-none tracking-[-0.03em] md:mt-14 md:text-[88px]">
+        <h1 className="mb-5 mt-8 max-w-[1000px] text-balance break-words text-[40px] font-light leading-none tracking-[-0.03em] sm:text-[48px] md:mt-14 md:text-[88px]">
           <span className="text-muted">Run it when </span>it’s cheap.
         </h1>
         <p className="m-0 max-w-[640px] text-lg leading-snug text-muted md:text-xl">
@@ -218,12 +228,12 @@ export function LandingPage() {
           the dishwasher or the EV.
         </p>
         <div className="mt-8 flex flex-wrap items-center gap-3">
-          <label className="flex min-h-12 items-center gap-2.5 rounded-btn border border-hairline bg-surface py-0 pl-4 pr-1.5 text-base">
-            <span className="text-muted">Your plan:</span>
+          <label className="flex min-h-12 w-full max-w-full items-center gap-2.5 rounded-btn border border-hairline bg-surface py-0 pl-4 pr-1.5 text-base sm:w-auto">
+            <span className="shrink-0 text-muted">Your plan:</span>
             <select
               value={plan}
               onChange={(e) => onPlanChange(e.target.value as PlanId)}
-              className="min-h-11 cursor-pointer border-0 bg-transparent font-medium text-ink"
+              className="min-h-11 min-w-0 flex-1 cursor-pointer border-0 bg-transparent font-medium text-ink"
               aria-label="Your electricity rate plan"
             >
               <option value="TOU">TOU</option>
@@ -233,14 +243,14 @@ export function LandingPage() {
           </label>
           <Link
             href="/start"
-            className="inline-flex min-h-12 items-center rounded-btn bg-lime px-6 text-base font-medium text-ink no-underline"
+            className="inline-flex min-h-12 w-full items-center justify-center rounded-btn bg-lime px-6 text-base font-medium text-ink no-underline sm:w-auto"
           >
             Find my cheapest time
           </Link>
         </div>
 
         <div
-          className="mt-10 flex flex-col gap-4 rounded-panel border border-hairline p-4 md:mt-[72px] md:gap-6 md:p-10"
+          className="mt-10 flex flex-col gap-4 overflow-hidden rounded-panel border border-hairline p-3 sm:p-4 md:mt-[72px] md:gap-6 md:p-10"
           style={{
             backgroundColor: "var(--pn)",
             backgroundImage: "radial-gradient(var(--dot) 1px, transparent 1.3px)",
@@ -253,7 +263,7 @@ export function LandingPage() {
             </span>
             <SampleDataTag />
           </div>
-          <div className="rounded-card border border-hairline bg-surface p-3 md:p-6">
+          <div className="min-w-0 overflow-hidden rounded-card border border-hairline bg-surface p-2 sm:p-3 md:p-6">
             <Ribbon
               plan={plan}
               variant="hero"
@@ -262,20 +272,24 @@ export function LandingPage() {
               winStart={heroWin}
               winLen={90}
               winLabel={heroWinLabel}
-              animate
+              animate={!reduceMotion}
             />
           </div>
           <div className="grid grid-cols-1 items-start gap-4 md:grid-cols-3">
             {cards.map((c, i) => (
               <div
                 key={c.chore}
-                className={`flex min-w-0 flex-col gap-3.5 rounded-card border border-hairline bg-surface p-5 ${
+                className={`flex min-w-0 flex-col gap-3.5 rounded-card border border-hairline bg-surface p-4 sm:p-5 ${
                   i === 1 ? "md:mt-7" : i === 2 ? "md:mt-2" : ""
                 }`}
-                style={{
-                  animation: "psrise .5s ease-out both",
-                  animationDelay: `${1.0 + i * 0.15}s`,
-                }}
+                style={
+                  reduceMotion
+                    ? undefined
+                    : {
+                        animation: "psrise .5s ease-out both",
+                        animationDelay: `${1.0 + i * 0.15}s`,
+                      }
+                }
               >
                 <div className="flex items-start justify-between gap-2">
                   <div>
@@ -344,15 +358,15 @@ export function LandingPage() {
       </div>
 
       {/* scroll moment */}
-      <div id="psmoment" className="mx-auto box-border max-w-content px-6 pt-24 md:px-10 md:pt-40">
+      <div id="psmoment" className="mx-auto box-border max-w-content px-4 pt-24 sm:px-6 md:px-10 md:pt-40">
         <div className="font-mono-label text-muted">/01 [ ONE LOAD · TWO START TIMES ]</div>
         <div className="mt-8 flex flex-col items-start gap-8 md:flex-row md:gap-16">
           <div className="order-2 min-w-0 flex-1 md:order-1">
             {lines.map(([a, b], i) => (
-              <div key={b} className="flex min-h-[220px] items-center md:min-h-[440px]">
+              <div key={b} className="flex min-h-[180px] items-center sm:min-h-[220px] md:min-h-[440px]">
                 <div
-                  className="text-[48px] font-light leading-none tracking-[-0.03em] transition-opacity duration-250 md:text-[88px]"
-                  style={{ opacity: prog >= i * 0.3 - 0.01 ? 1 : 0.25 }}
+                  className="text-[40px] font-light leading-none tracking-[-0.03em] transition-opacity duration-250 sm:text-[48px] md:text-[88px]"
+                  style={{ opacity: reduceMotion || prog >= i * 0.3 - 0.01 ? 1 : 0.25 }}
                 >
                   <span className="text-muted">{a}</span>
                   {b}
@@ -361,7 +375,7 @@ export function LandingPage() {
             ))}
           </div>
           <div className="sticky top-2 order-1 w-full min-w-0 self-start md:top-[120px] md:order-2 md:flex-1">
-            <div className="flex flex-col gap-5 rounded-panel border border-hairline bg-surface p-5 md:p-8">
+            <div className="flex flex-col gap-5 overflow-hidden rounded-panel border border-hairline bg-surface p-4 sm:p-5 md:p-8">
               <div className="flex flex-wrap justify-between gap-2">
                 <span className="font-mono-label text-muted-strong">
                   [ LAUNDRY · 3 kWh · 90 MIN ]
@@ -369,7 +383,7 @@ export function LandingPage() {
                 <SampleDataTag />
               </div>
               <div className="flex flex-wrap items-baseline gap-x-5 gap-y-2">
-                <span className="text-[72px] font-light leading-none tracking-[-0.04em] tabular md:text-[112px]">
+                <span className="text-[56px] font-light leading-none tracking-[-0.04em] tabular sm:text-[72px] md:text-[112px]">
                   {formatCost(mCostC)}
                 </span>
                 <span className="font-mono-label text-muted-strong">
@@ -398,7 +412,7 @@ export function LandingPage() {
       </div>
 
       {/* how it works */}
-      <div className="mx-auto box-border max-w-content px-6 pt-24 md:px-10 md:pt-40">
+      <div className="mx-auto box-border max-w-content px-4 pt-24 sm:px-6 md:px-10 md:pt-40">
         <div className="font-mono-label text-muted">/02 [ HOW IT WORKS ]</div>
         <h2 className="mt-3 text-[32px] font-light leading-[1.05] tracking-[-0.03em] md:text-[40px]">
           Three steps. <span className="text-muted">No account.</span>
@@ -429,7 +443,7 @@ export function LandingPage() {
                 <div className="text-[28px] font-light leading-[1.05] tracking-[-0.03em]">
                   {st.t}
                 </div>
-                <p className="mt-2.5 text-base leading-normal text-muted">{st.p}</p>
+                <p className="mt-2.5 text-base leading-normal text-muted-strong">{st.p}</p>
               </div>
             </div>
           ))}
@@ -437,7 +451,7 @@ export function LandingPage() {
       </div>
 
       {/* plans */}
-      <div className="mx-auto box-border max-w-content px-6 pt-24 md:px-10 md:pt-40">
+      <div className="mx-auto box-border max-w-content px-4 pt-24 sm:px-6 md:px-10 md:pt-40">
         <div className="rounded-panel border border-hairline bg-panel p-4 md:p-10">
           <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
             <div>
@@ -472,7 +486,7 @@ export function LandingPage() {
       </div>
 
       {/* grid teaser */}
-      <div className="mx-auto box-border max-w-content px-6 pt-24 md:px-10 md:pt-40">
+      <div className="mx-auto box-border max-w-content px-4 pt-24 sm:px-6 md:px-10 md:pt-40">
         <div className="font-mono-label text-muted">/04 [ THE GRID ]</div>
         <div className="mt-6 grid grid-cols-1 items-center gap-8 md:grid-cols-2 md:gap-16">
           <div>
@@ -510,7 +524,7 @@ export function LandingPage() {
                 Wholesale market price. Not what you pay.
               </div>
               <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1.5">
-                <span className="text-[56px] font-light leading-none tracking-[-0.04em] tabular">
+                <span className="break-words text-[44px] font-light leading-none tracking-[-0.04em] tabular sm:text-[56px]">
                   {teaserCents.toFixed(1)}¢
                 </span>
                 <span className="font-mono-label text-muted-strong">
@@ -547,7 +561,7 @@ export function LandingPage() {
       </div>
 
       {/* method */}
-      <div className="mx-auto box-border max-w-content px-6 pt-24 md:px-10 md:pt-40">
+      <div className="mx-auto box-border max-w-content px-4 pt-24 sm:px-6 md:px-10 md:pt-40">
         <div className="font-mono-label text-muted">/05 [ THE METHOD ]</div>
         <div className="mt-6 flex flex-col gap-8 rounded-panel border border-hairline bg-surface p-6 md:p-14">
           <div className="text-balance text-[26px] font-light leading-[1.1] tracking-[-0.03em] md:text-[40px]">
@@ -568,8 +582,8 @@ export function LandingPage() {
 
       {/* final cta */}
       <div className="mt-24 border-t border-hairline md:mt-40">
-        <div className="mx-auto flex max-w-content flex-col items-start gap-10 box-border px-6 py-24 md:px-10 md:py-40">
-          <h2 className="m-0 text-balance text-[48px] font-light leading-none tracking-[-0.03em] md:text-[88px]">
+        <div className="mx-auto flex max-w-content flex-col items-start gap-10 box-border px-4 py-24 sm:px-6 md:px-10 md:py-40">
+          <h2 className="m-0 text-balance break-words text-[40px] font-light leading-none tracking-[-0.03em] sm:text-[48px] md:text-[88px]">
             <span className="text-muted">Know when to </span>press start.
           </h2>
           <Link
@@ -580,6 +594,7 @@ export function LandingPage() {
           </Link>
         </div>
       </div>
+      </main>
 
       <SiteFooter />
     </div>

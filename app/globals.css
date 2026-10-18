@@ -56,6 +56,44 @@ body {
   overflow-x: hidden;
 }
 
+/* Visible keyboard focus — never rely on colour alone for focus */
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--bl);
+  outline-offset: 2px;
+}
+
+a:focus-visible,
+button:focus-visible,
+select:focus-visible,
+input:focus-visible,
+[role="button"]:focus-visible {
+  outline: 2px solid var(--bl);
+  outline-offset: 2px;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  padding: 0.75rem 1rem;
+  background: var(--ink);
+  color: var(--bg);
+  font-weight: 500;
+  border-radius: 6px;
+}
+
+.skip-link:focus {
+  left: 1rem;
+  top: 1rem;
+  outline: 2px solid var(--bl);
+  outline-offset: 2px;
+}
+
 @keyframes pspulse {
   0% {
     box-shadow: 0 0 0 0 rgba(37, 72, 246, 0.55);

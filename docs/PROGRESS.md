@@ -1,179 +1,135 @@
 # PowerSave — Progress
 
-**Current session completed:** Deploy-prep (not Session 4)  
-**Previous:** Session 3 (Data API and Grid)  
-**Next:** You push to GitHub + Vercel Hobby preview yourself; then Session 4 when you ask
+**Current session completed:** Session 4 (Polish)  
+**Previous:** Deploy-prep → Session 3 → Session 2 → Session 1  
+**Next:** You commit + push to `main` so Vercel Hobby redeploys (agent does **not** push)
+
+---
+
+## Session 4 — Done (Polish)
+
+### Tests (must all pass)
+
+| Command | Result |
+|---------|--------|
+| `npm test` | **27 passed** |
+| `npm run test:py` | **13 passed** |
+| `npm run build` | **Success** |
+
+### Responsive fixes (390 / 1440, light + dark)
+
+| Fix | Where |
+|-----|--------|
+| Nav: tighter gaps, smaller “Open app” padding on narrow, live tag only `lg+`, tap targets ≥44px | `SiteNav.tsx` |
+| Theme toggle: `min-w-11`, `aria-pressed` | `ThemeToggle.tsx` |
+| Landing hero: `px-4` at narrow, h1 40→48→88, full-width plan select + CTA on mobile | `LandingPage.tsx` |
+| Demo panel / ribbons: `overflow-hidden`, tighter padding at 390 | `LandingPage.tsx` |
+| Scroll-moment figures: 56/72/112 scale; line titles 40/48/88 | `LandingPage.tsx` |
+| Teaser price: 44→56px so it doesn’t clip | `LandingPage.tsx` |
+| Final CTA headline: break-words + mobile scale | `LandingPage.tsx` |
+| Grid: banner / h1 / price (56→72→96) / card padding scale | `GridPage.tsx` |
+| Chart card: overflow + padding; scrub already keyboard | `PriceLineChart.tsx` |
+| App chrome mobile header: tighter padding | `AppChrome.tsx` |
+| Coming soon / 404: mobile type + padding; ink CTA (not lime) | `ComingSoon.tsx`, `not-found.tsx` |
+
+### Accessibility fixes
+
+| Fix | Where |
+|-----|--------|
+| Global `:focus-visible` ring (accent blue) | `globals.css` |
+| Skip link → `#main-content` | `layout.tsx` + Landing / Grid / stubs / 404 |
+| Plan `<select>` labelled; theme `aria-pressed` + label | Landing, `ThemeToggle` |
+| Chart: `aria-live` tip, range `aria-valuetext`, toggle `aria-pressed` | `PriceLineChart`, `GridPage` |
+| Ribbon `role="img"` + spoken period summary (existing) | `Ribbon.tsx` |
+| `prefers-reduced-motion`: no save ticker, no scroll-moment prog animation, no Ribbon reveal, CSS kills keyframes | `LandingPage.tsx`, `globals.css` |
+
+### Public hygiene
+
+- Page titles/descriptions: root template + `/`, `/app/grid`, every stub
+- Favicon: `public/favicon.svg`
+- 404: `app/not-found.tsx` with site nav + footer
+- `public/robots.txt` — `Allow: /`
+- No analytics, cookies, tracking, or new dependencies
+
+### Non-negotiable rules audit
+
+| # | Rule | Result | File:line |
+|---|------|--------|-----------|
+| 1 | Advice from rate plan only | **PASS** | `lib/pricing.ts:95` (`adviceForChore`); Landing wires plan → cards at `LandingPage.tsx:189` — never wholesale |
+| 2 | Wholesale label wherever wholesale price shows | **PASS** | `GridPage.tsx:111`, `:173`; `PriceLineChart.tsx:85`, `:102`; `LandingPage.tsx:524` |
+| 3 | Savings = electricity-cost estimates | **PASS** | `LandingPage.tsx:333` (“Estimates cover electricity cost only…”) |
+| 4 | “Any time. Same price all day.” for TOU weekends/holidays + Tiered | **PASS** (weekends + Tiered); **deviation** holidays | String `lib/pricing.ts:78`; branch `:112–117`. Weekends use `day === "weekend"`. **No Ontario statutory-holiday calendar in v1** — holidays are not auto-detected |
+| 5 | No login wall | **PASS** | Guest Landing + Grid; `/app/signin` is Coming soon stub `app/app/signin/page.tsx:10` |
+| 6 | No fake proof / real-org logos | **PASS** | Proof strip is text-only (`LandingPage` PROOF); footer disclaims affiliation `SiteFooter.tsx:27–28`; no logo assets |
+| 7 | Sample data tag on sample numbers only | **PASS** | Sample: Landing demo/cards/moment `LandingPage.tsx:264`, `:299`, `:383`; teaser sample `:521`; Grid error/ghost `GridPage.tsx:170`, `:251`. Live teaser/Grid price: tag omitted when `ok` |
+| 8 | Colour never the only signal | **PASS** | Ribbon hatch + labels `Ribbon.tsx:43`, `:184–198`; chart legend text `PriceLineChart.tsx:205+` |
+| 9 | Lime only on saving + primary CTA (window = lime+ink outline OK) | **PASS** | Saving pills `LandingPage.tsx:306`, `:404`; primary CTAs `:246`, `:591`; window outline `Ribbon.tsx:236–238`. Coming soon CTA switched to ink (was lime) |
+| 10 | Muted strong on panels | **PASS** | Panel labels use `text-muted-strong` / `--m2` (e.g. demo stamp, plans panel, Grid mono labels) |
+| — | IESO copyright verbatim, no logos | **PASS** | `lib/ieso.ts:2–3`; render `IesoCopyright.tsx:6`; Grid `GridPage.tsx:276`; live Landing teaser `LandingPage.tsx:557` |
+
+### Design checklist — Landing (`Landing.dc.html`)
+
+| Element | Status |
+|---------|--------|
+| Site nav (logo, links desk, Open app) | **Done** — plus ThemeToggle (needed; not in Landing canvas) |
+| Live Ontario grid mono tag | **Done** — shown from `lg` up so 390 nav doesn’t overflow |
+| Hero /00 stamp, h1, lead | **Done** |
+| Plan selector + lime “Find my cheapest time” | **Done** |
+| Dot-panel demo + hero Ribbon + 3 chore cards + sample tags | **Done** |
+| Electricity-cost disclaimer | **Done** |
+| Proof strip (4 text cells) | **Done** |
+| Scroll moment (lines + sticky laundry card + ticker) | **Done** — ticker/prog skip under reduced motion |
+| How it works 3 steps | **Done** |
+| Plans panel + 3 plan mini ribbons | **Done** |
+| Grid teaser + wholesale label + sparkline | **Done** — live when API ok; sample tagged on failure |
+| Method card | **Done** |
+| Final lime CTA | **Done** |
+| Footer | **Done** |
+
+### Design checklist — Grid (`Grid.dc.html`)
+
+| Element | Status |
+|---------|--------|
+| App chrome (side nav desk / bottom nav mobile) | **Done** — ThemeToggle added (needed) |
+| Wholesale banner always visible | **Done** |
+| Title + source mono stamps | **Done** |
+| Delayed/stale/error banner | **Done** |
+| Live price card + updates/countdown | **Done** |
+| Chart + scrub + average-line toggle | **Done** |
+| Toggle label “Average lines” not “Forecast lines” | **Deviated** — Session 3 decision: never call averages forecasts |
+| Explainer + forecast-accuracy ghost + Sample data | **Done** |
+| IESO copyright footer | **Done** |
+| Sample tag on live price when API ok | **Deviated** — must not tag live numbers as sample |
+
+### Other deviations (unchanged / noted)
+
+| Item | Why |
+|------|-----|
+| No holiday calendar for TOU “holidays” | v1 only knows weekday vs weekend day-kind; holidays need a calendar to auto-flip |
+| Teaser sparkline y-scale near design sample range | May clip unusual wholesale spikes |
+| Theme toggle on Landing/Grid chrome | Required for light/dark; not drawn in every canvas |
+
+### Exact next step (for you — do not skip)
+
+See commit/push instructions in the Session 4 handoff message (agent did **not** push).
 
 ---
 
 ## Deploy-prep — Done
 
-### Repo hygiene
-
-- `.gitignore` covers: `node_modules`, `.venv`, `.next`, `__pycache__`, `.env` / `.env.*`, `.vercel`, `.DS_Store`, `.cursor/`, and `PowerSave-Design/**/*.zip`.
-- **`powersave-design.zip` is not tracked** (never was in git index). It is now **ignored** so `git add PowerSave-Design/` will not commit the 94K zip. `PowerSave-Design/project/` remains includable. Nothing removed from tracking (nothing to untrack).
-- `git status`: everything is still **untracked** (first commit not made). Nothing secret appears in the tree (no `.env` files). Largest ignorable item: the zip. Design `.dc.html` files are intentional.
-- Do **not** commit `.venv`, `node_modules`, `.next`.
-
-### Vercel config
-
-- Added [`vercel.json`](../vercel.json): `api/wholesale.py` → **`maxDuration: 300`**.
-- **Why 300:** Vercel Hobby Fluid compute max duration is **300 seconds (5 minutes)** — that is both the default and the plan maximum ([Functions limits](https://vercel.com/docs/functions/limitations)). Python uses `vercel.json` `functions` (not a JS `export const maxDuration`).
-- `.python-version` = `3.12`; `requirements.txt` = stdlib only (no pytest).
-- `/api/wholesale.py` deploys as a serverless function beside Next.js with no extra dashboard config required.
-
-### Timeout safety
-
-- Work budget **`TIME_BUDGET_SECONDS = 8`** (far under 300s maxDuration).
-- Always: live latest XML → today’s series → then history for averages until budget spent.
-- Response `averages.status`: `complete` | `partial` | `missing` + `daysUsed`; never labels partial as full 3-day/7-day.
-- Grid UI: honest note; hides full 3/7 lines unless earned; may show an N-day partial line.
-- pytest: Deadline helper, budget + live-price, averages mislabel guard — **13 passed**.
-
-### Preview checklist
-
-- [`docs/DEPLOY.md`](./DEPLOY.md) — GitHub private repo, Vercel Hobby import, post-deploy checks, logs.
-
-### Test results (deploy-prep)
-
-| Command | Result |
-|---------|--------|
-| `npm test` | 26 passed |
-| `npm run test:py` / pytest | 13 passed |
-| `npm run build` | Success, no errors |
-
-### Exact next step (for you)
-
-1. Follow [`docs/DEPLOY.md`](./DEPLOY.md): commit (excluding ignored paths), push private GitHub, import Vercel Hobby.
-2. Confirm `/api/wholesale`, `/`, `/app/grid` on the preview.
-3. Then start **Session 4** in a new chat when ready.
+See prior section details in git history. Site is on Vercel Hobby project **powersave**; push to `main` redeploys.
 
 ---
 
-## Decisions (approved before Session 2 code)
+## Decisions (approved)
 
-1. **Data feed — APPROVED.** `RealtimeOntarioZonalPrice` + historical hourly files; aggressive caching; IESO copyright notice reproduced **verbatim** from the Terms of Use page wherever IESO-derived data is shown (do not edit the year). No IESO logos, no affiliation claim. Session 3: freshness from `DeliveryDate` + `DeliveryHour` inside the XML, never from the file name or “latest” alias alone.
-2. **“Forecast” lines — APPROVED** as historical same-hour 3-day and 7-day **averages**. Label as averages everywhere; never call them forecasts. Forecast-accuracy panel stays design ghost state + Sample data; no invented accuracy numbers.
-3. **Stubs — APPROVED** for `/how-it-works`, `/plan`, `/privacy`. Route is **`/plan`**, not `/plans`. Exact stub URLs: `/start`, `/app`, `/app/tomorrow`, `/app/settings`, `/app/signin`, `/app/chore/[id]`, `/how-it-works`, `/plan`, `/privacy`. Shared `ComingSoon` component + site nav.
-4. **Handoff decisions — follow the design file.**
-5. **Fonts — APPROVED:** `geist` / `next/font` only (no Google Fonts CDN).
-
-### Session 3 local-dev decision
-
-- **Option B approved:** stdlib local Python runner + **dev-only** Next rewrite.
-- pytest in `requirements-dev.txt` + `.venv` (gitignored); **not** in `requirements.txt`.
-- `scripts/dev.sh` starts API + `npm run dev` together.
-- Handler wrapper tested via pytest against fixtures (Vercel runtime still to be confirmed with a preview deploy before Session 4 ends).
+1. Data feed `RealtimeOntarioZonalPrice` + averages (never “forecast”); IESO copyright verbatim.
+2. Stubs for out-of-scope routes; `/plan` not `/plans`.
+3. Geist via `geist` package only.
+4. Option B local Python + dev rewrite only when `NODE_ENV=development` && `POWERSAVE_DEV_REWRITE=1`.
 
 ---
 
-## Session 3 — Done
+## Session 3 / 2 / 1 — Done
 
-### Python version targeted
-
-**Python 3.12** (Vercel default; also supports 3.13 and 3.14).  
-Pinned in [`.python-version`](../.python-version). Code uses only 3.12-compatible stdlib (`zoneinfo`, `from __future__ import annotations`, etc.). Local machine may run 3.14 in `.venv`; syntax stays ≤3.12.
-
-### Delivered
-
-- [`api/wholesale_core.py`](../api/wholesale_core.py) — parse, freshness, version pick, averages, caching, IESO fetch (stdlib)
-- [`api/wholesale.py`](../api/wholesale.py) — Vercel `BaseHTTPRequestHandler` + `handle_get()`
-- [`scripts/dev_wholesale.py`](../scripts/dev_wholesale.py) — local server on `:8001`
-- [`scripts/dev.sh`](../scripts/dev.sh) — one-command local stack
-- pytest suite in [`tests_py/`](../tests_py/) with saved XML fixtures (no live network in tests) — **10 passed**, including handler wrapper test
-- Full [`/app/grid`](../app/app/grid/page.tsx) wired to API
-- Landing Grid teaser uses live latest price; falls back to sample + **Sample data** tag on failure
-- Verbatim IESO copyright on Grid and live Landing teaser
-- Chart toggle / legend: **Average lines** (not “forecast”)
-- Forecast-accuracy panel: design ghost bars + Sample data only
-
-### Freshness
-
-Computed from XML `DeliveryDate` + `DeliveryHour` + last filled `Interval` (hour-ending, America/Toronto).  
-- **live** ≤ 5 min age  
-- **delayed** > 5 min  
-- **stale** > 20 min  
-
-### Caching / IESO politeness
-
-- Live JSON: `Cache-Control: public, s-maxage=90, stale-while-revalidate=60`
-- In-process: live ~90s, directory + averages ~1 hour
-- User-Agent: `PowerSave/1.0 (+…)`; concurrency capped at **4**
-- Version pick: prefer **unversioned** hour file if present, else highest `_vN`
-
-### Worst-case cold-cache IESO requests
-
-**170** = 1 directory listing + 1 latest XML + up to **168** hourly archives (7×24).  
-Constant: `WORST_CASE_COLD_REQUESTS` in `wholesale_core.py`. After warm caches, typical refresh is **1** (latest) while averages stay cached.
-
-### Dev rewrite — production guarantee
-
-In [`next.config.ts`](../next.config.ts):
-
-```ts
-const enableDevWholesaleRewrite =
-  process.env.NODE_ENV === "development" && process.env.POWERSAVE_DEV_REWRITE === "1";
-```
-
-- `next build` / Vercel set `NODE_ENV=production` → rewrite **off** even if the flag were set.
-- Flag is only set by `scripts/dev.sh`, never on Vercel.
-- Verified: `NODE_ENV=production` + `POWERSAVE_DEV_REWRITE=1` still evaluates to **false**.
-
-### Run locally
-
-```bash
-cd /Users/zaree/Desktop/PowerSave/PowerSave
-
-# one-time
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements-dev.txt
-
-# tests
-npm test
-npm run test:py          # or: .venv/bin/pytest tests_py -v
-
-# app + API together
-bash scripts/dev.sh      # or: npm run dev:all
-```
-
-Open http://localhost:3000 — Grid at http://localhost:3000/app/grid  
-API (direct): http://127.0.0.1:8001/api/wholesale
-
-### Deviations / unmatched vs design
-
-| Item | Why |
-|------|-----|
-| Chart control label “Average lines” (design: “Forecast lines”) | Session decisions: never call them forecasts. |
-| Sample data tag on live Grid price card removed when API ok | Design canvas used sample; live data must not be tagged sample. |
-| Theme toggle in app chrome | Needed for light/dark; not drawn in Grid.dc.html. |
-| Teaser sparkline y-scale still tuned near design sample range | May clip unusual wholesale spikes; Session 4 polish candidate. |
-| Vercel preview not yet deployed | Handler covered by pytest; **you will deploy a preview before Session 4 ends** to confirm the real Python runtime. |
-
-### Open questions
-
-None blocking Session 4. Optional: confirm IESO hour-ending interpretation against a known dispatch timestamp if freshness looks consistently stale/early.
-
-### Exact next step
-
-**Session 4 only:** responsive/a11y pass at 390 & 1440 light+dark; check every non-negotiable rule; deploy to Vercel free tier (include Python preview confirmation); final checklist of design elements done/deviated.
-
----
-
-## Session 2 — Done
-
-Scaffold, tokens, rates + Vitest, Ribbon, Landing, Coming soon stubs. See git history / prior section details in Session 2 commit notes if needed.
-
-### Run (frontend only)
-
-```bash
-npm run dev
-```
-
-Without `scripts/dev.sh`, `/api/wholesale` will **not** resolve locally (no rewrite).
-
----
-
-## Session 1 — Done
-
-Design read + IESO research + PRD. Feed approved in Decisions.
+API + Grid + Landing scaffold + PRD. See earlier commits / prior PROGRESS sections in history if needed.

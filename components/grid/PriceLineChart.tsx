@@ -94,10 +94,10 @@ export function PriceLineChart({ series, averages, showAverages, idx, onIdx }: P
   };
 
   return (
-    <div className="flex flex-col gap-3.5 rounded-card border border-hairline bg-surface p-6">
+    <div className="flex flex-col gap-3.5 overflow-hidden rounded-card border border-hairline bg-surface p-4 sm:p-6">
       <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
         <div>
-          <div className="text-xl font-medium">Today, every five minutes</div>
+          <div className="text-lg font-medium sm:text-xl">Today, every five minutes</div>
           <div className="mt-0.5 text-xs text-muted-strong">
             Wholesale market price. Not what you pay. ¢/kWh equivalent.
           </div>
@@ -111,14 +111,15 @@ export function PriceLineChart({ series, averages, showAverages, idx, onIdx }: P
       <div
         className="min-h-11 rounded-lg border border-hairline bg-page px-3 py-2 text-sm tabular leading-snug"
         aria-live="polite"
+        role="status"
       >
         {tip}
       </div>
       <svg
         viewBox="0 0 800 280"
-        className="block h-auto w-full touch-none"
+        className="block h-auto w-full max-w-full touch-none"
         role="img"
-        aria-label="Wholesale price chart for today with same-hour average lines when available"
+        aria-label="Wholesale price chart for today with same-hour average lines when available. Use the scrub slider below for keyboard access."
       >
         {uniqueY.map((v) => (
           <g key={v}>
@@ -199,6 +200,11 @@ export function PriceLineChart({ series, averages, showAverages, idx, onIdx }: P
           step={1}
           value={safeIdx}
           onChange={(e) => onIdx(Number(e.target.value))}
+          aria-valuemin={0}
+          aria-valuemax={maxIdx}
+          aria-valuenow={safeIdx}
+          aria-valuetext={tip}
+          aria-label="Scrub wholesale price chart by five-minute interval"
           className="min-h-11 w-full accent-[var(--bl)]"
         />
       </label>

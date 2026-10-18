@@ -75,6 +75,8 @@ export function findBestWindow(
   };
 }
 
+export const TIERED_VERDICT = "Any time. Same price all day.";
+
 export type ChoreAdvice = {
   chore: ChoreId;
   label: string;
@@ -99,23 +101,26 @@ export function adviceForChore(
 ): ChoreAdvice {
   const meta = CHORES[chore];
 
-  if (plan === "TIERED") {
+  const anyTimeSpec =
+    chore === "Laundry"
+      ? "3 kWh · 90 min"
+      : chore === "Dishwasher"
+        ? "1.2 kWh · 2 h"
+        : "28.8 kWh · 4 h";
+
+  // Tiered, and TOU on weekends/holidays: same price all day (rule 4).
+  if (plan === "TIERED" || (plan === "TOU" && day === "weekend")) {
     return {
       chore,
       label: meta.label,
-      spec:
-        chore === "Laundry"
-          ? "3 kWh · 90 min"
-          : chore === "Dishwasher"
-            ? "1.2 kWh · 2 h"
-            : "28.8 kWh · 4 h",
-      verdict: "Any time. Same price all day.",
+      spec: anyTimeSpec,
+      verdict: TIERED_VERDICT,
       hasSave: false,
       saveLabel: "",
-      nowLabel: "Tier 1",
-      bestLabel: "Tier 2",
-      nowCost: "11.2¢/kWh",
-      bestCost: "13.2¢/kWh",
+      nowLabel: plan === "TIERED" ? "Tier 1" : "Off-peak",
+      bestLabel: plan === "TIERED" ? "Tier 2" : "All day",
+      nowCost: plan === "TIERED" ? "11.2¢/kWh" : "9.1¢/kWh",
+      bestCost: plan === "TIERED" ? "13.2¢/kWh" : "9.1¢/kWh",
       winStart: -1,
       durationMin: meta.durationMin,
     };
@@ -145,5 +150,3 @@ export function adviceForChore(
     durationMin: meta.durationMin,
   };
 }
-
-export const TIERED_VERDICT = "Any time. Same price all day.";

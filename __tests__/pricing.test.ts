@@ -4,6 +4,7 @@ import {
   CHORES,
   DEMO_NOW_MIN,
   TIERED_VERDICT,
+  adviceForChore,
   choreCostCents,
   findBestWindow,
 } from "@/lib/pricing";
@@ -99,6 +100,12 @@ describe("Checks.dc.html golden values (Wed Nov 18 2026, 5:30 PM)", () => {
 
   it("Tiered Any chore Verdict", () => {
     expect(TIERED_VERDICT).toBe("Any time. Same price all day.");
+  });
+
+  it("TOU weekend Any chore Verdict", () => {
+    const a = adviceForChore("TOU", "Laundry", DEMO_NOW_MIN, "weekend");
+    expect(a.verdict).toBe(TIERED_VERDICT);
+    expect(a.hasSave).toBe(false);
   });
 });
 

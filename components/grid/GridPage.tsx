@@ -102,9 +102,14 @@ export function GridPage() {
 
   return (
     <AppChrome current="Grid">
-      <main className="mx-auto box-border flex w-full max-w-[1040px] flex-1 flex-col gap-6 px-6 py-6 md:px-12 md:py-12">
-        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 rounded-xl border-2 border-ink px-[18px] py-3.5">
-          <span className="text-lg font-medium">Wholesale market price. Not what you pay.</span>
+      <main
+        id="main-content"
+        className="mx-auto box-border flex w-full max-w-[1040px] flex-1 flex-col gap-6 px-4 py-6 sm:px-6 md:px-12 md:py-12"
+      >
+        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 rounded-xl border-2 border-ink px-3 py-3.5 sm:px-[18px]">
+          <span className="text-base font-medium sm:text-lg">
+            Wholesale market price. Not what you pay.
+          </span>
           <span className="font-mono-label text-muted-strong">[ WHOLESALE · NOT YOUR BILL ]</span>
         </div>
 
@@ -113,7 +118,7 @@ export function GridPage() {
             <span>{pullLabel}</span>
             <span>[ SOURCE IESO PUBLIC REPORTS ]</span>
           </div>
-          <h1 className="m-0 text-[40px] font-light leading-none tracking-[-0.03em] md:text-[56px]">
+          <h1 className="m-0 break-words text-[32px] font-light leading-none tracking-[-0.03em] sm:text-[40px] md:text-[56px]">
             The Grid<span className="text-muted"> Ontario, now.</span>
           </h1>
         </div>
@@ -148,7 +153,7 @@ export function GridPage() {
         ) : null}
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <div className="flex min-w-0 flex-col gap-3.5 rounded-card border border-hairline bg-surface p-6">
+          <div className="flex min-w-0 flex-col gap-3.5 rounded-card border border-hairline bg-surface p-4 sm:p-6">
             <div className="flex flex-wrap justify-between gap-2">
               <span className="font-mono-label flex items-center gap-2 text-muted-strong">
                 <span
@@ -169,8 +174,11 @@ export function GridPage() {
             </div>
             {data?.ok && cents != null ? (
               <>
-                <div className="flex flex-wrap items-baseline gap-x-3.5 gap-y-1.5">
-                  <span className="text-[72px] font-light leading-none tracking-[-0.04em] tabular md:text-[96px]">
+                <div
+                  className="flex flex-wrap items-baseline gap-x-3.5 gap-y-1.5"
+                  aria-live="polite"
+                >
+                  <span className="break-words text-[56px] font-light leading-none tracking-[-0.04em] tabular sm:text-[72px] md:text-[96px]">
                     {cents.toFixed(1)}¢
                   </span>
                   <span className="font-mono-label text-muted-strong">/kWh equivalent</span>
@@ -182,17 +190,17 @@ export function GridPage() {
             )}
           </div>
 
-          <div className="flex min-w-0 flex-col gap-3.5 rounded-card border border-hairline bg-surface p-6">
+          <div className="flex min-w-0 flex-col gap-3.5 rounded-card border border-hairline bg-surface p-4 sm:p-6">
             <div className="font-mono-label text-muted-strong">UPDATES</div>
             <div className="text-base">
               Last updated <b className="font-medium tabular">{lastUpdated}</b>
             </div>
             {live ? (
-              <div className="text-[22px] font-light leading-tight tracking-[-0.03em] tabular md:text-[28px]">
+              <div className="text-[20px] font-light leading-tight tracking-[-0.03em] tabular sm:text-[22px] md:text-[28px]">
                 Next update expected in <b className="font-medium">{fmtCountdown(sec)}</b>
               </div>
             ) : (
-              <div className="text-[22px] font-light leading-tight tracking-[-0.03em] md:text-[28px]">
+              <div className="text-[20px] font-light leading-tight tracking-[-0.03em] sm:text-[22px] md:text-[28px]">
                 Update delayed.
                 <br />
                 <span className="text-muted-strong">Showing data from {lastUpdated}.</span>
@@ -211,6 +219,7 @@ export function GridPage() {
               type="button"
               onClick={() => setShowAvg((v) => !v)}
               aria-pressed={showAvg}
+              aria-label={`Average lines ${showAvg ? "on" : "off"}`}
               className="min-h-11 rounded-btn border border-ink bg-transparent px-3.5 text-sm font-medium text-ink"
             >
               Average lines: {showAvg ? "on" : "off"}

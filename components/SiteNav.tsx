@@ -6,26 +6,26 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 export function SiteNav() {
   return (
     <div className="border-b border-hairline">
-      <div className="mx-auto flex h-[72px] max-w-content items-center justify-between gap-4 box-border px-6 md:px-10">
+      <div className="mx-auto flex h-[72px] max-w-content items-center justify-between gap-2 box-border px-4 sm:gap-4 sm:px-6 md:px-10">
         <Link
           href="/"
-          className="text-[22px] font-medium tracking-[-0.03em] text-ink no-underline"
+          className="shrink-0 text-[20px] font-medium tracking-[-0.03em] text-ink no-underline sm:text-[22px]"
         >
           PowerSave
         </Link>
-        <nav className="hidden gap-8 text-[15px] md:flex">
-          <Link href="/how-it-works" className="text-ink no-underline">
+        <nav className="hidden gap-8 text-[15px] md:flex" aria-label="Primary">
+          <Link href="/how-it-works" className="inline-flex min-h-11 items-center text-ink no-underline">
             How it works
           </Link>
-          <Link href="/plan" className="text-ink no-underline">
+          <Link href="/plan" className="inline-flex min-h-11 items-center text-ink no-underline">
             Plans
           </Link>
-          <Link href="/app/grid" className="text-ink no-underline">
+          <Link href="/app/grid" className="inline-flex min-h-11 items-center text-ink no-underline">
             The Grid
           </Link>
         </nav>
-        <div className="flex items-center gap-3 md:gap-5">
-          <span className="font-mono-label hidden items-center gap-2 text-muted-strong md:flex">
+        <div className="flex min-w-0 items-center gap-2 sm:gap-3 md:gap-5">
+          <span className="font-mono-label hidden items-center gap-2 text-muted-strong lg:flex">
             <span
               className="inline-block h-2 w-2 rounded-full bg-accent"
               style={{ animation: "pspulse 1.6s infinite" }}
@@ -36,7 +36,7 @@ export function SiteNav() {
           <ThemeToggle />
           <Link
             href="/app"
-            className="inline-flex min-h-11 items-center rounded-btn bg-ink px-5 text-base font-medium text-page no-underline"
+            className="inline-flex min-h-11 shrink-0 items-center rounded-btn bg-ink px-3 text-sm font-medium text-page no-underline sm:px-5 sm:text-base"
           >
             Open app
           </Link>

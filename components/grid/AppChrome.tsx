@@ -76,11 +76,11 @@ export function AppChrome({ children, current = "Grid" }: { children: React.Reac
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <div className="flex items-center justify-between border-b border-hairline px-6 py-4 md:hidden">
-          <Link href="/" className="text-xl font-medium tracking-[-0.03em] text-ink no-underline">
+        <div className="flex items-center justify-between gap-2 border-b border-hairline px-4 py-4 sm:px-6 md:hidden">
+          <Link href="/" className="shrink-0 text-xl font-medium tracking-[-0.03em] text-ink no-underline">
             PowerSave
           </Link>
-          <div className="flex items-center gap-3">
+          <div className="flex min-w-0 items-center gap-2 sm:gap-3">
             <ThemeToggle />
             <span className="font-mono-label text-muted-strong">[ GUEST ]</span>
           </div>

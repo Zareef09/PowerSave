@@ -1,6 +1,6 @@
 # PowerSave v1 — Product Requirements Document
 
-**Status:** Session 3 complete; Session 4 not started  
+**Status:** Session 4 complete  
 **Design source of truth:** [`PowerSave-Design/project/`](../PowerSave-Design/project/) (READ-ONLY)  
 **Effective rates:** OEB RPP, Nov 1 2026
 
