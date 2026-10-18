@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Chore detail</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+</style>
+</helmet>
+<div style="{{vars}};background:var(--bg);color:var(--ink);font-family:Geist,system-ui,sans-serif;min-width:0;min-height:{{minH}}px;display:flex;flex-direction:{{shellDir}}">
+
+<sc-if value="{{desk}}" hint-placeholder-val="{{true}}">
+<aside style="flex:0 0 248px;border-right:1px solid var(--hl);padding:24px 16px;box-sizing:border-box;display:flex;flex-direction:column;gap:32px">
+<a href="{{L.Landing}}" style="font-size:22px;font-weight:500;letter-spacing:-0.03em;color:var(--ink);text-decoration:none;padding:0 12px">PowerSave</a>
+<nav style="display:flex;flex-direction:column;gap:4px">
+<sc-for list="{{nav}}" as="n" hint-placeholder-count="4"><a href="{{n.href}}" style="{{n.side}}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{n.d}}"/></svg>{{n.name}}</a></sc-for>
+</nav>
+<div style="margin-top:auto;display:flex;flex-direction:column;gap:8px;padding:0 12px"><span style="{{s.mono}}color:var(--m2)">[ GUEST · THIS DEVICE ]</span><a href="{{L.SignIn}}" style="color:var(--bl);font-size:14px">Save across devices →</a></div>
+</aside>
+</sc-if>
+
+<div style="flex:1 1 0;min-width:0;display:flex;flex-direction:column">
+<sc-if value="{{mobile}}" hint-placeholder-val="{{false}}"><div style="display:flex;justify-content:space-between;align-items:center;padding:16px 24px;border-bottom:1px solid var(--hl)"><a href="{{L.Landing}}" style="font-size:20px;font-weight:500;letter-spacing:-0.03em;color:var(--ink);text-decoration:none">PowerSave</a><span style="{{s.mono}}color:var(--m2)">[ GUEST ]</span></div></sc-if>
+
+<main style="flex:1 1 auto;padding:{{padY}}px {{padX}}px;box-sizing:border-box;max-width:1040px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:24px">
+<a href="{{L.Today}}" style="color:var(--bl);font-size:14px;min-height:44px;display:inline-flex;align-items:center">← Today</a>
+<div style="display:flex;flex-direction:column;gap:12px">
+<div style="{{s.mono}}color:var(--mu);display:flex;flex-wrap:wrap;gap:6px 20px;justify-content:space-between"><span>[ {{plan}} · WINTER · 17:30 · {{spec}} ]</span><span>[ RATES OEB · NOV 1 2026 ]</span></div>
+<h1 style="margin:0;font-weight:300;font-size:{{h1}}px;letter-spacing:-0.03em;line-height:1">{{name}}</h1>
+</div>
+
+<!-- answer -->
+<div style="background:var(--sf);border:1px solid var(--hl);border-radius:24px;padding:{{cardPad}}px;display:flex;flex-direction:column;gap:20px">
+<div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><span style="{{s.mono}}color:var(--m2)">THE ANSWER</span><span style="{{s.sample}}">Sample data</span></div>
+<div style="font-size:{{ans}}px;font-weight:300;letter-spacing:-0.03em;line-height:1.02;text-wrap:balance">{{verdict}}</div>
+<sc-if value="{{bestSave}}" hint-placeholder-val="{{true}}"><div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px"><span style="{{s.lime}}">Save about {{bestSaveText}}</span><span style="font-size:14px;color:var(--m2);font-variant-numeric:tabular-nums">Now {{nowCost}} · {{bestAt}} {{bestCost}}</span></div></sc-if>
+<dc-import name="Ribbon" theme="{{theme}}" plan="{{plan}}" variant="full" startMin="1050" nowMin="1050" winStart="{{winStart}}" winLen="{{dur}}" winLabel="{{winLabel}}" hint-size="100%,110px"></dc-import>
+<div style="{{s.mono}}color:var(--m2)">Next 24 hours from 5:30 PM · {{dstNote}}</div>
+</div>
+
+<!-- try a window -->
+<div style="display:grid;grid-template-columns:{{cols2}};gap:16px">
+<div style="{{s.card}}">
+<div style="{{s.mono}}color:var(--m2)">TRY A DIFFERENT START</div>
+<label style="display:flex;flex-direction:column;gap:8px;font-size:14px">Start time: <b style="font-weight:500;font-variant-numeric:tabular-nums">{{startText}}</b> → ends {{endText}}
+<input type="range" min="1050" max="{{maxStart}}" step="15" value="{{start}}" onInput="{{setStart}}" style="width:100%;min-height:44px;accent-color:var(--bl)"></label>
+<div style="display:flex;flex-wrap:wrap;gap:8px">
+<button onClick="{{earlier}}" style="{{s.btn2}}">− 15 min</button><button onClick="{{later}}" style="{{s.btn2}}">+ 15 min</button><button onClick="{{jumpBest}}" style="{{s.btn1}}">Jump to best</button></div>
+<div style="font-size:28px;font-weight:300;letter-spacing:-0.03em;font-variant-numeric:tabular-nums">{{curCost}}</div>
+<div style="font-size:14px;line-height:1.5;color:var(--m2)">{{curNote}}</div>
+</div>
+
+<div style="{{s.card}}">
+<div style="{{s.mono}}color:var(--m2)">COST BY PERIOD</div>
+<div style="display:grid;grid-template-columns:1.5fr .7fr .7fr .7fr .8fr;gap:8px;{{s.mono}}color:var(--m2);font-size:10px"><span>Period</span><span>Min</span><span>kWh</span><span>Rate</span><span>Cost</span></div>
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="2">
+<div style="display:grid;grid-template-columns:1.5fr .7fr .7fr .7fr .8fr;gap:8px;font-size:14px;font-variant-numeric:tabular-nums;padding:8px 0;border-top:1px solid var(--hl);align-items:center"><span style="display:flex;align-items:center;gap:8px"><span style="{{r.sw}}"></span>{{r.name}}</span><span>{{r.min}}</span><span>{{r.kwh}}</span><span>{{r.rate}}</span><span>{{r.cost}}</span></div>
+</sc-for>
+<div style="display:flex;justify-content:space-between;border-top:1px solid var(--ink);padding-top:10px;font-size:16px;font-weight:500;font-variant-numeric:tabular-nums"><span>Total, rounded to the cent</span><span>{{curCost}}</span></div>
+</div>
+</div>
+
+<!-- settings -->
+<div style="{{s.card}}">
+<div style="{{s.mono}}color:var(--m2)">SETTINGS FOR THIS CHORE · TYPICAL ESTIMATE, EDIT TO MATCH YOURS</div>
+<div style="display:grid;grid-template-columns:{{cols3}};gap:16px">
+<label style="display:flex;flex-direction:column;gap:6px;font-size:14px">Energy (kWh)<input type="number" step="0.1" min="0.1" value="{{kwhVal}}" onInput="{{setKwh}}" style="{{s.field}}"></label>
+<label style="display:flex;flex-direction:column;gap:6px;font-size:14px">Run time (minutes)<input type="number" step="15" min="15" value="{{durVal}}" onInput="{{setDur}}" style="{{s.field}}"></label>
+<label style="display:flex;flex-direction:column;gap:6px;font-size:14px">Must be done by<select style="{{s.field}}"><option>No deadline</option><option>6:00 PM</option><option>9:00 PM</option><option>7:00 AM</option></select></label>
+</div>
+<div style="display:flex;align-items:center;justify-content:space-between;gap:16px;border-top:1px solid var(--hl);padding-top:16px">
+<span style="font-size:16px">Only suggest times when I'm awake<br><span style="{{s.mono}}color:var(--m2)">Quiet hours 10 PM–7 AM</span></span>
+<button onClick="{{toggleQuiet}}" aria-pressed="{{quietP}}" aria-label="Only suggest times when I'm awake" style="{{quietBtn}}"><span style="{{quietKnob}}"></span></button></div>
+<div style="font-size:14px;color:var(--m2)">{{quietNote}}</div>
+</div>
+
+<!-- feedback -->
+<div style="{{s.card}}">
+<div style="font-size:20px;font-weight:500">Did you follow this?</div>
+<div style="display:flex;flex-wrap:wrap;gap:8px"><button onClick="{{fbYes}}" style="{{s.btn2}}">Yes</button><button onClick="{{fbNo}}" style="{{s.btn2}}">No</button><button onClick="{{fbSkip}}" style="{{s.btn2}}">Not today</button></div>
+<sc-if value="{{hasToast}}" hint-placeholder-val="{{false}}"><div role="status" style="background:var(--ink);color:var(--bg);border-radius:12px;padding:12px 16px;font-size:14px">{{toast}}</div></sc-if>
+</div>
+
+<div style="font-size:13px;line-height:1.5;color:var(--m2);border-top:1px solid var(--hl);padding-top:16px">Estimates cover electricity cost only. Delivery, regulatory charges, HST and the Ontario Electricity Rebate are not included. <a href="{{L.HowItWorks}}" style="color:var(--bl)">How we calculate →</a></div>
+</main>
+
+<sc-if value="{{mobile}}" hint-placeholder-val="{{false}}">
+<nav style="position:sticky;bottom:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid var(--hl);background:var(--bg)">
+<sc-for list="{{nav}}" as="n" hint-placeholder-count="4"><a href="{{n.href}}" style="{{n.tab}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{n.d}}"/></svg><span style="font-size:11px">{{n.name}}</span></a></sc-for>
+</nav>
+</sc-if>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"device":{"editor":"enum","options":["desktop","mobile"],"default":"desktop"},"plan":{"editor":"enum","options":["TOU","ULO"],"default":"TOU"},"chore":{"editor":"enum","options":["laundry","dishwasher","ev"],"default":"laundry"},"$preview":{"width":1440,"height":1700}}'>
+class Component extends DCLogic {
+renderVals() {
+const TH={light:{'--bg':'#F4F3F1','--sf':'#FFFFFF','--pn':'#ECEBE7','--ink':'#1C1D24','--mu':'#6B6E76','--m2':'#5A5D65','--hl':'#D6D5D1','--bl':'#2548F6','--ul':'#DCE3FF','--of':'#B7C4FF','--md':'#6F89FF','--on':'#2548F6','--tm':'#1C1D24','--to':'#FFFFFF','--tbl':'#FFFFFF'},dark:{'--bg':'#0E0F13','--sf':'#16171D','--pn':'#1C1D24','--ink':'#F4F3F1','--mu':'#9A9DA6','--m2':'#B4B7BF','--hl':'#2A2B33','--bl':'#5C78FF','--ul':'#1E2760','--of':'#2F409A','--md':'#5C78FF','--on':'#A9B8FF','--tm':'#0E0F13','--to':'#0E0F13','--tbl':'#0E0F13'}};
+const th=this.props.theme==='dark'?'dark':'light', mob=this.props.device==='mobile', dk=th==='dark';
+const vars=Object.entries(TH[th]).map(([k,v])=>k+':'+v).join(';');
+const sx=(dk?'-dk':'')+(mob?'-m':''); const L={}; ['Landing','HowItWorks','Plan','Privacy','Start','Today','Chore','Tomorrow','Grid','Settings','SignIn'].forEach(n=>L[n]=n+sx+'.dc.html');
+const mono="font-family:'Geist Mono',ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-variant-numeric:tabular-nums;";
+const s={mono,
+card:"background:var(--sf);border:1px solid var(--hl);border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:16px;min-width:0;",
+lime:"display:inline-block;background:#DDF247;color:#1C1D24;border-radius:999px;padding:6px 14px;font-weight:500;font-size:16px;font-variant-numeric:tabular-nums;",
+sample:mono+"display:inline-block;border:1px solid var(--mu);color:var(--m2);border-radius:999px;padding:3px 10px;font-size:10px;white-space:nowrap;",
+btn1:"background:var(--ink);color:var(--bg);border:0;border-radius:6px;min-height:44px;padding:0 18px;font-size:16px;font-weight:500;font-family:inherit;cursor:pointer;",
+btn2:"background:transparent;color:var(--ink);border:1px solid var(--ink);border-radius:6px;min-height:44px;padding:0 18px;font-size:16px;font-weight:500;font-family:inherit;cursor:pointer;",
+field:"min-height:44px;border:1px solid var(--hl);border-radius:6px;background:var(--bg);color:var(--ink);padding:0 12px;font-size:16px;font-family:inherit;box-sizing:border-box;width:100%;"};
+const plan=this.props.plan==='ULO'?'ULO':'TOU';
+const CH={laundry:['Laundry',3,90],dishwasher:['Dishwasher',1.2,120],ev:['EV charging',28.8,240]};
+const [name,kwh0,dur0]=CH[this.props.chore]||CH.laundry;
+const st=this.state||{};
+const kwh=st.kwh!==undefined&&st.kwh>0?st.kwh:kwh0, dur=st.dur!==undefined&&st.dur>=15?st.dur:dur0;
+const quiet=!!st.quiet;
+const per=(m)=>{ if(plan==='ULO'){ if(m>=1380||m<420) return ['ul',3.7]; if(m>=960&&m<1260) return ['on',37.7]; return ['md',14.6]; } if(m>=1140||m<420) return ['of',9.1]; if(m>=660&&m<1020) return ['md',14.6]; return ['on',18.9]; };
+const cost=(start)=>{let c=0;for(let i=0;i<dur;i++){c+=per((start+i)%1440)[1]*(kwh/dur);}return Math.round(c);};
+const fm=(c)=>c<100?c+'¢':'$'+(c/100).toFixed(2);
+const fmt=(m)=>{m=((Math.round(m)%1440)+1440)%1440;const h=Math.floor(m/60),mm=m%60;return (h%12||12)+':'+String(mm).padStart(2,'0')+' '+(h>=12?'PM':'AM');};
+const awake=(t)=>{const m=t%1440;return !(m>=1320||m<420);};
+const NOW=1050; let bs=NOW,bc=cost(NOW); if(quiet&&!awake(NOW)){bc=1e9;}
+for(let t=NOW;t<=NOW+1440-dur;t+=15){if(quiet&&!awake(t))continue;const x=cost(t);if(x<bc){bc=x;bs=t;}}
+const nowC=cost(NOW), maxStart=NOW+1440-dur;
+const start=st.start!==undefined?Math.min(st.start,maxStart):bs;
+const curC=cost(start);
+const names={ul:'Ultra-low',of:'Off-peak',md:'Mid-peak',on:'On-peak'};
+const acc={};for(let i=0;i<dur;i++){const [k,r]=per((start+i)%1440);acc[k]=acc[k]||{min:0,kwh:0,c:0,r};acc[k].min++;acc[k].kwh+=kwh/dur;acc[k].c+=r*kwh/dur;}
+const hc=dk?'rgba(244,243,241,':'rgba(28,29,36,', onc=dk?'rgba(14,15,19,':'rgba(255,255,255,';
+const pat={ul:"background-image:radial-gradient("+hc+".45) 1px,transparent 1.4px);background-size:5px 5px;",of:"background-image:repeating-linear-gradient(0deg,"+hc+".3) 0 1px,transparent 1px 4px);",md:"background-image:repeating-linear-gradient(45deg,"+hc+".4) 0 1px,transparent 1px 5px);",on:"background-image:repeating-linear-gradient(45deg,"+onc+".5) 0 1px,transparent 1px 4px),repeating-linear-gradient(-45deg,"+onc+".5) 0 1px,transparent 1px 4px);"};
+const order=['ul','of','md','on'];
+const rows=order.filter(k=>acc[k]).map(k=>({name:names[k],min:acc[k].min,kwh:acc[k].kwh.toFixed(2),rate:acc[k].r+'¢',cost:acc[k].c.toFixed(1)+'¢',sw:"display:inline-block;width:18px;height:18px;border-radius:4px;border:1px solid var(--hl);background-color:var(--"+k+");"+pat[k]}));
+const save=nowC-bc;
+const verdict=(bs===NOW||save<1)?"Run now. You're already at the cheapest time.":'Wait until '+fmt(bs)+'.';
+const diff=nowC-curC;
+const curNote=diff>0?'This start saves about '+fm(diff)+' compared with starting now.':diff===0?'Same cost as starting now.':'This start costs '+fm(-diff)+' more than starting now.';
+const toast=st.toast||'';
+const quietNote=quiet?'Delay-start appliances can still run overnight. Quiet hours only limit when we suggest you press start.':'Off by default.';
+const navI=[['Today','M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4L7 17M17 7l1.4-1.4M12 8a4 4 0 100 8 4 4 0 000-8z',L.Today],['Tomorrow','M4 7h16v13H4zM4 11h16M8 4v4M16 4v4',L.Tomorrow],['Grid','M4 20V12M10 20V5M16 20v-9M22 20H2',L.Grid],['Settings','M4 8h10M18 8h2M4 16h2M10 16h10M14 6v4M6 14v4',L.Settings]];
+const nav=navI.map(([n,d,href],i)=>({name:n,d,href,side:"display:flex;align-items:center;gap:12px;min-height:44px;padding:0 12px;border-radius:8px;font-size:16px;text-decoration:none;color:var(--ink);",tab:"display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:60px;text-decoration:none;color:var(--ink);"}));
+const step=(d)=>()=>this.setState({start:Math.max(NOW,Math.min(maxStart,start+d))});
+return {vars,theme:th,s,L,nav,desk:!mob,mobile:mob,shellDir:mob?'column':'row',minH:mob?2300:1800,padX:mob?24:48,padY:mob?16:48,h1:mob?40:56,cardPad:mob?20:40,ans:mob?36:64,cols2:mob?'1fr':'repeat(2,minmax(0,1fr))',cols3:mob?'1fr':'repeat(3,minmax(0,1fr))',
+plan,name,spec:kwh+' kWh · '+(dur%60===0?dur/60+' h':dur+' MIN'),verdict,bestSave:!(bs===NOW||save<1),bestSaveText:fm(save),nowCost:fm(nowC),bestCost:fm(bc),bestAt:fmt(bs),
+winStart:start%1440,dur,winLabel:'Start '+fmt(start),dstNote:'Nov 1 clocks go back; today is a normal 24 hours',
+startText:fmt(start),endText:fmt(start+dur),maxStart,start,setStart:(e)=>this.setState({start:Number(e.target.value)}),earlier:step(-15),later:step(15),jumpBest:()=>this.setState({start:bs}),
+curCost:fm(curC),curNote,rows,kwhVal:kwh,durVal:dur,setKwh:(e)=>this.setState({kwh:parseFloat(e.target.value)||kwh0,start:undefined}),setDur:(e)=>this.setState({dur:parseInt(e.target.value,10)||dur0,start:undefined}),
+quietP:quiet?'true':'false',toggleQuiet:()=>this.setState({quiet:!quiet,start:undefined}),quietNote,
+quietBtn:"width:52px;height:32px;flex:0 0 auto;border-radius:999px;border:1px solid var(--ink);padding:3px;cursor:pointer;display:flex;align-items:center;background:"+(quiet?'var(--ink)':'transparent')+";justify-content:"+(quiet?'flex-end':'flex-start')+";",quietKnob:"display:block;width:24px;height:24px;border-radius:999px;background:"+(quiet?'var(--bg)':'var(--ink)')+";",
+fbYes:()=>this.setState({toast:'Thanks. Logged: followed.'}),fbNo:()=>this.setState({toast:'Thanks. Logged: did not follow.'}),fbSkip:()=>this.setState({toast:'Okay. Skipped for today.'}),hasToast:!!toast,toast};
+}
+}
+</script>
+</body>
+</html>

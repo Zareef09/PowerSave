@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>How it works</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+@keyframes pspulse{0%{box-shadow:0 0 0 0 rgba(37,72,246,.55)}100%{box-shadow:0 0 0 9px rgba(37,72,246,0)}}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+</style>
+</helmet>
+<div style="{{vars}};background:var(--bg);color:var(--ink);font-family:Geist,system-ui,sans-serif;min-width:0;overflow-x:hidden">
+
+<div style="border-bottom:1px solid var(--hl)">
+<div style="max-width:1200px;margin:0 auto;padding:0 {{pad}}px;height:72px;display:flex;align-items:center;justify-content:space-between;gap:16px;box-sizing:border-box">
+<a href="{{L.Landing}}" style="font-size:22px;font-weight:500;letter-spacing:-0.03em;color:var(--ink);text-decoration:none">PowerSave</a>
+<sc-if value="{{desk}}" hint-placeholder-val="{{true}}"><nav style="display:flex;gap:32px;font-size:15px"><a href="{{L.HowItWorks}}" style="color:var(--ink);text-decoration:none;font-weight:500">How it works</a><a href="{{L.Plan}}" style="{{s.link}}">Plans</a><a href="{{L.Grid}}" style="{{s.link}}">The Grid</a></nav></sc-if>
+<a href="{{L.Today}}" style="{{s.btn1}}">Open app</a>
+</div></div>
+
+<div style="max-width:1200px;margin:0 auto;padding:{{heroTop}}px {{pad}}px 0;box-sizing:border-box">
+<div style="{{s.mono}}color:var(--mu);display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between"><span>/HOW-IT-WORKS</span><span>[ RATES OEB · NOV 1 2026 ]</span></div>
+<h1 style="margin:{{h1m}}px 0 20px;font-weight:300;font-size:{{h1}}px;letter-spacing:-0.03em;line-height:1;text-wrap:balance"><span style="color:var(--mu)">The maths, </span>in the open.</h1>
+<p style="margin:0;max-width:640px;font-size:20px;line-height:1.4;color:var(--mu)">No black box. Here is exactly how a start time is chosen, and what we can't know.</p>
+</div>
+
+<!-- method -->
+<div style="max-width:1200px;margin:0 auto;padding:{{sec}}px {{pad}}px 0;box-sizing:border-box">
+<div style="{{s.mono}}color:var(--mu)">/01 [ THE METHOD ]</div>
+<div style="display:grid;grid-template-columns:{{cols3}};gap:16px;margin-top:32px">
+<sc-for list="{{method}}" as="m" hint-placeholder-count="3">
+<div style="background:var(--sf);border:1px solid var(--hl);border-radius:16px;padding:28px 24px;display:flex;flex-direction:column;gap:40px;min-height:220px;justify-content:space-between"><span style="{{s.mono}}color:var(--m2)">{{m.i}}</span><div style="font-size:24px;font-weight:300;letter-spacing:-0.02em;line-height:1.2">{{m.t}}</div></div>
+</sc-for></div></div>
+
+<!-- worked example -->
+<div style="max-width:1200px;margin:0 auto;padding:{{sec}}px {{pad}}px 0;box-sizing:border-box">
+<div style="{{s.mono}}color:var(--mu)">/02 [ A WORKED EXAMPLE ]</div>
+<h2 style="{{s.h2}}">Laundry, <span style="color:var(--mu)">5:30 PM.</span></h2>
+<p style="margin:16px 0 0;max-width:640px;font-size:18px;line-height:1.5;color:var(--mu)">Wednesday, November 18, TOU plan. 3 kWh over 90 minutes, so 2 kW the whole time.</p>
+<div style="display:grid;grid-template-columns:{{cols2}};gap:16px;margin-top:32px">
+<div style="{{s.card}}"><div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><span style="{{s.mono}}color:var(--m2)">RUN NOW · 5:30 PM</span><span style="{{s.sample}}">Sample data</span></div>
+<dc-import name="Ribbon" theme="{{theme}}" plan="TOU" variant="compact" startMin="1050" nowMin="1050" winStart="1050" winLen="90" hint-size="100%,26px"></dc-import>
+<div style="font-size:16px;line-height:1.6;font-variant-numeric:tabular-nums">90 min on-peak<br>3 kWh × 18.9¢ = 56.7¢<br><b style="font-weight:500">Rounded: 57¢</b></div></div>
+<div style="{{s.card}}"><div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><span style="{{s.mono}}color:var(--m2)">START AT 7:00 PM</span><span style="{{s.sample}}">Sample data</span></div>
+<dc-import name="Ribbon" theme="{{theme}}" plan="TOU" variant="compact" startMin="1050" nowMin="1050" winStart="1140" winLen="90" hint-size="100%,26px"></dc-import>
+<div style="font-size:16px;line-height:1.6;font-variant-numeric:tabular-nums">90 min off-peak<br>3 kWh × 9.1¢ = 27.3¢<br><b style="font-weight:500">Rounded: 27¢</b></div></div>
+</div>
+<div style="margin-top:16px;background:var(--pn);border-radius:16px;padding:24px;display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify-content:space-between"><span style="font-size:18px;color:var(--ink)">We round each cost to the cent first, then show the saving as the difference: 57¢ − 27¢ =</span><span style="{{s.lime}}">Save about 30¢</span></div>
+<div style="margin-top:16px;background:var(--sf);border:1px solid var(--hl);border-radius:16px;padding:24px;font-size:16px;line-height:1.6"><b style="font-weight:500">When a run crosses a boundary,</b> each minute is priced in its own period. The dishwasher (1.2 kWh over 2 hours) started at 5:30 PM spends 90 minutes on-peak and 30 minutes off-peak: 0.9 kWh × 18.9¢ + 0.3 kWh × 9.1¢ = 19.7¢, shown as 20¢.</div>
+</div>
+
+<!-- search -->
+<div style="max-width:1200px;margin:0 auto;padding:{{sec}}px {{pad}}px 0;box-sizing:border-box">
+<div style="{{s.mono}}color:var(--mu)">/03 [ THE SEARCH ]</div>
+<h2 style="{{s.h2}}">Every 15 minutes, <span style="color:var(--mu)">next 24 hours.</span></h2>
+<div style="display:grid;grid-template-columns:{{cols2}};gap:16px;margin-top:32px">
+<div style="{{s.card}}"><div style="font-size:20px;font-weight:500">Ties go to the earliest</div><p style="margin:0;font-size:16px;line-height:1.5;color:var(--m2)">If two start times cost the same to the cent, we pick the earlier one. You get your chores done sooner.</p></div>
+<div style="{{s.card}}"><div style="font-size:20px;font-weight:500">Deadlines and quiet hours</div><p style="margin:0;font-size:16px;line-height:1.5;color:var(--m2)">A "must be done by" time removes any start that would finish late. Quiet hours remove starts while you're asleep. Delay-start appliances can still run overnight.</p></div>
+<div style="{{s.card}}"><div style="font-size:20px;font-weight:500">When timing does not matter, we say so</div><p style="margin:0;font-size:16px;line-height:1.5;color:var(--m2)">On weekends and holidays (TOU), and always on Tiered, the answer is "Any time. Same price all day." We never invent a saving.</p></div>
+<div style="{{s.card}}"><div style="font-size:20px;font-weight:500">Holidays, 2026</div><p style="margin:0;font-size:14px;line-height:1.6;color:var(--m2)">Jan 1, Feb 16, Apr 3, May 18, Jul 1, Aug 3, Sep 7, Oct 12, Dec 25 and Dec 28 (Boxing Day, observed). TOU is off-peak all day. ULO uses weekend off-peak plus ultra-low overnight. When a holiday falls on a weekend, the next weekday that isn't a holiday gets holiday prices.</p></div>
+</div></div>
+
+<!-- limits -->
+<div style="max-width:1200px;margin:0 auto;padding:{{sec}}px {{pad}}px 0;box-sizing:border-box">
+<div style="background:var(--pn);border:1px solid var(--hl);border-radius:24px;padding:{{panelPad}}px">
+<div style="{{s.mono}}color:var(--m2)">/04 [ WHAT WE DON'T KNOW ]</div>
+<h2 style="{{s.h2}}">Estimates, <span style="color:var(--m2)">not a bill.</span></h2>
+<div style="display:grid;grid-template-columns:{{cols3}};gap:16px;margin-top:32px">
+<sc-for list="{{limits}}" as="l" hint-placeholder-count="3"><div style="background:var(--sf);border:1px solid var(--hl);border-radius:16px;padding:24px"><div style="font-size:20px;font-weight:500">{{l.t}}</div><p style="margin:10px 0 0;font-size:16px;line-height:1.5;color:var(--m2)">{{l.p}}</p></div></sc-for></div>
+<p style="margin:24px 0 0;font-size:16px;line-height:1.5">Every saving is an estimate of the electricity cost only. Delivery, regulatory charges, HST and the Ontario Electricity Rebate are not included.</p>
+</div></div>
+
+<!-- wholesale -->
+<div style="max-width:1200px;margin:0 auto;padding:{{sec}}px {{pad}}px 0;box-sizing:border-box">
+<div style="{{s.mono}}color:var(--mu)">/05 [ WHOLESALE VS YOUR BILL ]</div>
+<h2 style="{{s.h2}}">The Grid page <span style="color:var(--mu)">isn't your bill.</span></h2>
+<p style="margin:16px 0 0;max-width:680px;font-size:18px;line-height:1.5;color:var(--mu)">Homes on the Regulated Price Plan pay fixed prices by time period. The wholesale market price shows how stressed Ontario's system is, but it doesn't change what you pay. Wherever we show it, it is labelled: "Wholesale market price. Not what you pay."</p>
+</div>
+
+<!-- sources -->
+<div style="max-width:1200px;margin:0 auto;padding:{{sec}}px {{pad}}px {{sec}}px;box-sizing:border-box">
+<div style="{{s.mono}}color:var(--mu)">/06 [ DATA SOURCES ]</div>
+<div style="margin-top:24px;border:1px solid var(--hl);border-radius:16px;overflow:hidden;background:var(--sf)">
+<sc-for list="{{sources}}" as="r" hint-placeholder-count="3"><div style="display:grid;grid-template-columns:{{srcCols}};gap:8px 24px;padding:20px 24px;border-bottom:1px solid var(--hl)"><span style="font-size:16px;font-weight:500">{{r.a}}</span><span style="font-size:15px;color:var(--m2);line-height:1.5">{{r.b}}</span><span style="{{s.mono}}color:var(--m2)">{{r.c}}</span></div></sc-for></div>
+<p style="margin:20px 0 0;font-size:14px;line-height:1.6;color:var(--mu)">Sources are credited in text only. PowerSave is independent and not affiliated with or endorsed by the Ontario Energy Board, the IESO or any utility.</p>
+</div>
+
+<div style="border-top:1px solid var(--hl)"><div style="max-width:1200px;margin:0 auto;padding:40px {{pad}}px;box-sizing:border-box;display:flex;flex-wrap:wrap;gap:16px 32px;justify-content:space-between;align-items:center"><span style="{{s.mono}}color:var(--m2)">[ V1 · RATES NOV 1 2026 ]</span><div style="display:flex;gap:24px;font-size:15px"><a href="{{L.Plan}}" style="{{s.link}}">Plans</a><a href="{{L.Privacy}}" style="{{s.link}}">Privacy</a><a href="{{L.Landing}}" style="{{s.link}}">Home</a></div></div></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"device":{"editor":"enum","options":["desktop","mobile"],"default":"desktop"},"$preview":{"width":1440,"height":2900}}'>
+class Component extends DCLogic {
+renderVals() {
+const TH={light:{'--bg':'#F4F3F1','--sf':'#FFFFFF','--pn':'#ECEBE7','--ink':'#1C1D24','--mu':'#6B6E76','--m2':'#5A5D65','--hl':'#D6D5D1','--bl':'#2548F6','--ul':'#DCE3FF','--of':'#B7C4FF','--md':'#6F89FF','--on':'#2548F6','--tm':'#1C1D24','--to':'#FFFFFF','--tbl':'#FFFFFF'},dark:{'--bg':'#0E0F13','--sf':'#16171D','--pn':'#1C1D24','--ink':'#F4F3F1','--mu':'#9A9DA6','--m2':'#B4B7BF','--hl':'#2A2B33','--bl':'#5C78FF','--ul':'#1E2760','--of':'#2F409A','--md':'#5C78FF','--on':'#A9B8FF','--tm':'#0E0F13','--to':'#0E0F13','--tbl':'#0E0F13'}};
+const th=this.props.theme==='dark'?'dark':'light', mob=this.props.device==='mobile', dk=th==='dark';
+const vars=Object.entries(TH[th]).map(([k,v])=>k+':'+v).join(';');
+const sx=(dk?'-dk':'')+(mob?'-m':''); const L={}; ['Landing','HowItWorks','Plan','Privacy','Start','Today','Chore','Tomorrow','Grid','Settings','SignIn'].forEach(n=>L[n]=n+sx+'.dc.html');
+const mono="font-family:'Geist Mono',ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-variant-numeric:tabular-nums;";
+const s={mono,link:"color:var(--ink);text-decoration:none;",
+h2:"margin:12px 0 0;font-weight:300;font-size:"+(mob?32:40)+"px;letter-spacing:-0.03em;line-height:1.05;",
+card:"background:var(--sf);border:1px solid var(--hl);border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:14px;min-width:0;",
+lime:"display:inline-block;background:#DDF247;color:#1C1D24;border-radius:999px;padding:6px 14px;font-weight:500;font-size:16px;font-variant-numeric:tabular-nums;",
+sample:mono+"display:inline-block;border:1px solid var(--mu);color:var(--m2);border-radius:999px;padding:3px 10px;font-size:10px;white-space:nowrap;",
+btn1:"display:inline-flex;align-items:center;background:var(--ink);color:var(--bg);border-radius:6px;min-height:44px;padding:0 20px;font-size:16px;font-weight:500;text-decoration:none;box-sizing:border-box;"};
+return {vars,theme:th,s,L,desk:!mob,pad:mob?24:40,heroTop:mob?48:96,h1:mob?48:88,h1m:mob?32:56,sec:mob?96:160,panelPad:mob?20:40,
+cols2:mob?'1fr':'repeat(2,minmax(0,1fr))',cols3:mob?'1fr':'repeat(3,minmax(0,1fr))',srcCols:mob?'1fr':'1fr 2fr 1fr',
+method:[{i:'/01',t:'We price your chore minute by minute across the time periods it overlaps.'},{i:'/02',t:'We test start times every 15 minutes over the next 24 hours.'},{i:'/03',t:'We pick the cheapest, and the earliest when there’s a tie.'}],
+limits:[{t:'Your exact appliance use',p:'We use a typical kWh and run time. Edit them to match your machine and the numbers get closer.'},{t:'Delivery and other charges',p:'Delivery, regulatory charges and HST are not in our estimates. They don’t change with the hour on these plans.'},{t:'The rebate',p:'The Ontario Electricity Rebate is not included. Your real bill will be a little different.'}],
+sources:[{a:'Ontario Energy Board',b:'Regulated Price Plan prices and time-period hours for TOU, ULO and Tiered. Credited in text only.',c:'Reviewed every Nov 1'},{a:'IESO public reports',b:'The wholesale market price shown on The Grid. Credited in text only.',c:'Updates every 5 min'},{a:'Holiday list',b:'2026 holidays as listed by the OEB.',c:'Rates as of Nov 1, 2026'}]};
+}
+}
+</script>
+</body>
+</html>

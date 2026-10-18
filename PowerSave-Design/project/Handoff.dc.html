@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dev handoff</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>body{margin:0}</style>
+</helmet>
+<div style="font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;color:#111;background:#fff;min-height:2600px;padding:32px 40px;box-sizing:border-box;line-height:1.5">
+<h1 style="margin:0 0 4px;font-size:20px;font-weight:600">/dev/handoff</h1>
+<p style="margin:0 0 24px;color:#444;max-width:900px">Tokens and components for React, Next.js and Tailwind. Tokens are CSS custom properties set on a theme root; Tailwind reads them through <code>theme.extend</code>. Rates live in versioned data (<code>rates/2026-11-01.json</code>) with an effective date, never in components.</p>
+
+<h2 style="font-size:15px;margin:24px 0 8px">Tokens · colour</h2>
+<table style="border-collapse:collapse;width:100%;max-width:1100px"><thead><tr style="background:#eee;text-align:left"><th style="padding:5px 8px;border:1px solid #999">CSS var</th><th style="padding:5px 8px;border:1px solid #999">Tailwind</th><th style="padding:5px 8px;border:1px solid #999">Light</th><th style="padding:5px 8px;border:1px solid #999">Dark</th><th style="padding:5px 8px;border:1px solid #999">Use</th></tr></thead><tbody>
+<sc-for list="{{colours}}" as="c" hint-placeholder-count="14"><tr><td style="padding:4px 8px;border:1px solid #ccc">{{c.v}}</td><td style="padding:4px 8px;border:1px solid #ccc">{{c.tw}}</td><td style="padding:4px 8px;border:1px solid #ccc"><span style="display:inline-block;width:12px;height:12px;border:1px solid #666;vertical-align:-2px;margin-right:6px;background:{{c.l}}"></span>{{c.l}}</td><td style="padding:4px 8px;border:1px solid #ccc"><span style="display:inline-block;width:12px;height:12px;border:1px solid #666;vertical-align:-2px;margin-right:6px;background:{{c.d}}"></span>{{c.d}}</td><td style="padding:4px 8px;border:1px solid #ccc">{{c.u}}</td></tr></sc-for></tbody></table>
+
+<h2 style="font-size:15px;margin:24px 0 8px">Tokens · type, space, shape</h2>
+<table style="border-collapse:collapse;width:100%;max-width:1100px"><tbody>
+<sc-for list="{{misc}}" as="m" hint-placeholder-count="8"><tr><td style="padding:4px 8px;border:1px solid #ccc;width:200px;font-weight:600">{{m.k}}</td><td style="padding:4px 8px;border:1px solid #ccc">{{m.v}}</td></tr></sc-for></tbody></table>
+
+<h2 style="font-size:15px;margin:24px 0 8px">Components · name, variants, states</h2>
+<table style="border-collapse:collapse;width:100%;max-width:1100px"><thead><tr style="background:#eee;text-align:left"><th style="padding:5px 8px;border:1px solid #999">Component</th><th style="padding:5px 8px;border:1px solid #999">Variants and props</th><th style="padding:5px 8px;border:1px solid #999">States</th></tr></thead><tbody>
+<sc-for list="{{comps}}" as="c" hint-placeholder-count="21"><tr><td style="padding:4px 8px;border:1px solid #ccc;font-weight:600;white-space:nowrap">{{c.n}}</td><td style="padding:4px 8px;border:1px solid #ccc">{{c.v}}</td><td style="padding:4px 8px;border:1px solid #ccc">{{c.s}}</td></tr></sc-for></tbody></table>
+
+<h2 style="font-size:15px;margin:24px 0 8px">tailwind.config.ts (extend)</h2>
+<pre style="margin:0;padding:12px;background:#f4f4f4;border:1px solid #ccc;max-width:1100px;overflow:auto;font-size:12px">{{tw}}</pre>
+
+<h2 style="font-size:15px;margin:24px 0 8px">Decisions to confirm</h2>
+<ol style="margin:0;padding-left:20px;max-width:1000px">
+<sc-for list="{{notes}}" as="n" hint-placeholder-count="6"><li style="margin-bottom:6px">{{n.t}}</li></sc-for></ol>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2600}}'>
+class Component extends DCLogic {
+renderVals() {
+const C=[['--bg','bg-page','#F4F3F1','#0E0F13','Page'],['--sf','bg-surface','#FFFFFF','#16171D','Cards'],['--pn','bg-panel','#ECEBE7','#1C1D24','Large panels (dark value assumed)'],['--ink','text-ink','#1C1D24','#F4F3F1','Text, near-black buttons'],['--mu','text-muted','#6B6E76','#9A9DA6','Muted text on page or surface only'],['--m2','text-muted-strong','#5A5D65','#B4B7BF','Muted text on panels (brief grey fails AA there)'],['--hl','border-hairline','#D6D5D1','#2A2B33','1 px rules'],['--bl','text-accent, bg-accent','#2548F6','#5C78FF','Live data, links, focus, now line'],['lime','bg-lime','#DDF247','#DDF247','Saving figure and primary CTA only. Text on it is ink.'],['--ul','bg-p-ultra','#DCE3FF','#1E2760','Ultra-low period (dots)'],['--of','bg-p-off','#B7C4FF','#2F409A','Off-peak period (horizontal lines)'],['--md','bg-p-mid','#6F89FF','#5C78FF','Mid-peak period (diagonal lines)'],['--on','bg-p-on','#2548F6','#A9B8FF','On-peak period (cross-hatch)'],['--tm / --to / --tbl','text-on-mid, text-on-peak, text-on-accent','#1C1D24 / #FFFFFF / #FFFFFF','#0E0F13 / #0E0F13 / #0E0F13','Text on period fills and the now label']].map(([v,tw,l,d,u])=>({v,tw,l:/^#/.test(l)?l:'#999999',d:/^#/.test(d)?d:'#999999',u,lt:l,dt:d}));
+const colours=C.map(c=>({v:c.v,tw:c.tw,l:c.lt.length>7?c.lt:c.l,d:c.dt.length>7?c.dt:c.d,u:c.u}));
+const misc=[{k:'Fonts',v:'Geist (300, 400, 500, 600) and Geist Mono (400, 500). Both free, from Google Fonts or the geist npm package.'},{k:'Type scale desktop',v:'88 / 64 / 40 / 28 / 20 / 16 / 14 / 12. Mobile: hero 48, section 32.'},{k:'Display',v:'weight 300 to 400, tracking −0.02em to −0.03em, line-height 1.0 to 1.05. Two-tone: first words muted, last words ink.'},{k:'Mono label',v:'11 to 12 px, uppercase, tracking 0.06em. tabular-nums on every price, time and countdown.'},{k:'Spacing',v:'8 pt: 4, 8, 16, 24, 32, 48, 64, 96, 160. Section padding 160 desktop, 96 mobile. Max content 1200, 12 columns.'},{k:'Radius',v:'button 6, card 16, panel 24, chip 999.'},{k:'Shadow',v:'none. 1 px hairline borders only.'},{k:'Motion',v:'UI 150 to 250 ms. Hero sequence up to 1.2 s. Reveal: fade plus 8 px rise. All of it off under prefers-reduced-motion.'},{k:'Targets',v:'44 px minimum height on every control.'}];
+const comps=[['PricePeriodChip','period: ultra | off | mid | on | tier; with price','default'],['PriceRibbon (24-hour timeline)','variant: hero | full | compact | mini; plan: TOU | ULO | TIERED; day; startMin; nowMin; winStart; winLen; winLabel; animate','default, no window, window, crosses midnight, weekend, tiered'],['ChoreCard','verdict: wait | now | any-time | cant-meet-deadline; plan','default, loading, empty, error, offline'],['VerdictText','wait | now | any-time','-'],['SavingFigure','amount in cents; hidden when under 1¢','lime fill, ink text'],['DoneByPicker','options: none, times','default, constrained, cannot-meet'],['QuietHoursToggle','switch with hint text','off, on'],['PlanSelectorCard','TOU | ULO | Tiered | Not sure','default, selected (2 px accent border)'],['BillHelper','generic bill mock, no utility branding','-'],['PriceLineChart','series: today; forecast: 3-day, 7-day; toggle; scrub','default, forecast off, hover/scrub, stale'],['Countdown + LastUpdated','mm:ss, tabular figures','live, delayed, stale'],['StaleBanner','delayed | stale (over 20 min)','-'],['SampleDataTag','-','-'],['DisclaimerLine','links to How it works','-'],['FeedbackButtons','Yes | No | Not today','default, answered (toast)'],['Field','text | email | number | select | textarea','default, focus, invalid'],['Button','primary (ink) | secondary (outline) | text | cta (lime, one per page)','default, hover, focus, disabled'],['Sidebar / TabBar','Today, Tomorrow, Grid, Settings; device: desktop | mobile','default, current'],['Toast','-','default'],['Skeleton','card, line','shimmer (static under reduced motion)'],['EmptyState','dashed outline, one action','-']].map(([n,v,s])=>({n,v,s}));
+const tw="theme: { extend: {\n  colors: {\n    page: 'var(--bg)', surface: 'var(--sf)', panel: 'var(--pn)',\n    ink: 'var(--ink)', muted: 'var(--mu)', 'muted-strong': 'var(--m2)',\n    hairline: 'var(--hl)', accent: 'var(--bl)', lime: '#DDF247',\n    p: { ultra: 'var(--ul)', off: 'var(--of)', mid: 'var(--md)', on: 'var(--on)' },\n  },\n  fontFamily: { sans: ['Geist', 'system-ui'], mono: ['Geist Mono', 'ui-monospace'] },\n  borderRadius: { btn: '6px', card: '16px', panel: '24px' },\n  boxShadow: { DEFAULT: 'none' },\n} }";
+const notes=[{t:'Muted grey #6B6E76 on the panel #ECEBE7 is 4.3:1 and fails AA. This design uses Muted strong (#5A5D65) on panels. Change the brief value if you prefer a single grey.'},{t:'Dark panel colour (#1C1D24) was not in the brief. It is an assumption.'},{t:'The lime outline on the best-window block is brief-sanctioned, but the checklist says lime appears only on the saving figure and primary CTA. Both are honoured; the window also carries an ink outline so it never relies on lime.'},{t:'The scroll moment is driven by a scroll listener with a static end state as the fallback.'},{t:'"Can\'t finish by 6 PM at a cheaper time, so run now" cannot be literally true for the 90-minute laundry at 5:30 PM: even running now ends at 7:00 PM. The design uses it where it holds (dishwasher, done by 7:30 PM) and uses a different message when even starting now misses the deadline.'},{t:'Tomorrow-plan savings (for example $2.82 for EV on TOU) are derived against the most expensive start tomorrow. They are not in the section 8 golden table.'}];
+return {colours,misc,comps,tw,notes};
+}
+}
+</script>
+</body>
+</html>

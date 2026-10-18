@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Today</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+@keyframes psshim{0%{opacity:.45}50%{opacity:1}100%{opacity:.45}}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+</style>
+</helmet>
+<div style="{{vars}};background:var(--bg);color:var(--ink);font-family:Geist,system-ui,sans-serif;min-width:0;min-height:{{minH}}px;display:flex;flex-direction:{{shellDir}}">
+
+<!-- sidebar (desktop) -->
+<sc-if value="{{desk}}" hint-placeholder-val="{{true}}">
+<aside style="flex:0 0 248px;border-right:1px solid var(--hl);padding:24px 16px;box-sizing:border-box;display:flex;flex-direction:column;gap:32px;background:var(--bg)">
+<a href="{{L.Landing}}" style="font-size:22px;font-weight:500;letter-spacing:-0.03em;color:var(--ink);text-decoration:none;padding:0 12px">PowerSave</a>
+<nav style="display:flex;flex-direction:column;gap:4px">
+<sc-for list="{{nav}}" as="n" hint-placeholder-count="4"><a href="{{n.href}}" aria-current="{{n.cur}}" style="{{n.side}}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{n.d}}"/></svg>{{n.name}}</a></sc-for>
+</nav>
+<div style="margin-top:auto;display:flex;flex-direction:column;gap:8px;padding:0 12px">
+<span style="{{s.mono}}color:var(--m2)">[ GUEST · THIS DEVICE ]</span>
+<a href="{{L.SignIn}}" style="color:var(--bl);font-size:14px">Save across devices →</a>
+</div>
+</aside>
+</sc-if>
+
+<div style="flex:1 1 0;min-width:0;display:flex;flex-direction:column">
+<sc-if value="{{mobile}}" hint-placeholder-val="{{false}}">
+<div style="display:flex;justify-content:space-between;align-items:center;padding:16px 24px;border-bottom:1px solid var(--hl)"><a href="{{L.Landing}}" style="font-size:20px;font-weight:500;letter-spacing:-0.03em;color:var(--ink);text-decoration:none">PowerSave</a><span style="{{s.mono}}color:var(--m2)">[ GUEST ]</span></div>
+</sc-if>
+
+<main style="flex:1 1 auto;padding:{{padY}}px {{padX}}px;box-sizing:border-box;max-width:1040px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:{{gap}}px">
+
+<div style="display:flex;flex-direction:column;gap:12px">
+<div style="{{s.mono}}color:var(--mu);display:flex;flex-wrap:wrap;gap:6px 20px;justify-content:space-between"><span>[ {{tagLeft}} ]</span><span>[ RATES OEB · NOV 1 2026 ]</span></div>
+<h1 style="margin:0;font-weight:300;font-size:{{h1}}px;letter-spacing:-0.03em;line-height:1">Today<span style="color:var(--mu)"> {{dateLine}}</span></h1>
+</div>
+
+<!-- top strip -->
+<div style="background:var(--sf);border:1px solid var(--hl);border-radius:16px;padding:16px 20px;display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify-content:space-between">
+<span style="{{perChip}}">{{perText}}</span>
+<span style="font-size:16px;font-weight:500">{{planLabel}}</span>
+<span style="{{s.mono}}color:var(--m2)">Rates as of Nov 1, 2026</span>
+</div>
+
+<!-- banners -->
+<sc-if value="{{showOffline}}" hint-placeholder-val="{{false}}"><div role="status" style="border:1px solid var(--ink);border-radius:12px;padding:12px 16px;font-size:14px;display:flex;gap:10px;align-items:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M2 8.8a15 15 0 0120 0M5 12.5a10 10 0 0114 0M8.5 16a5 5 0 017 0M12 19.5v.01M3 3l18 18"/></svg><span><b style="font-weight:500">You're offline.</b> Showing the advice from your last visit. Rates are saved on this device.</span></div></sc-if>
+<sc-if value="{{showError}}" hint-placeholder-val="{{false}}"><div role="alert" style="border:2px solid var(--ink);border-radius:12px;padding:16px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between"><span style="font-size:16px"><b style="font-weight:500">Couldn't load your rates.</b> Check your connection and try again.</span><a href="{{L.Today}}" style="{{s.btn2}}">Retry</a></div></sc-if>
+
+<!-- chore cards -->
+<sc-if value="{{showCards}}" hint-placeholder-val="{{true}}">
+<div style="display:grid;grid-template-columns:{{cardCols}};gap:16px">
+<sc-for list="{{cards}}" as="c" hint-placeholder-count="3">
+<div style="background:var(--sf);border:1px solid var(--hl);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:14px;min-width:0">
+<div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start"><div><div style="font-size:20px;font-weight:500">{{c.n}}</div><div style="{{s.mono}}color:var(--m2);margin-top:4px">{{c.spec}}</div></div><span style="{{s.sample}}">Sample data</span></div>
+<sc-if value="{{c.any}}" hint-placeholder-val="{{false}}">
+<div style="background:var(--pn);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:6px"><div style="font-size:24px;font-weight:300;letter-spacing:-0.02em;line-height:1.1">Any time today.<br>Same price all day.</div><div style="font-size:14px;color:var(--m2)">{{c.anyNote}}</div></div>
+</sc-if>
+<sc-if value="{{c.timed}}" hint-placeholder-val="{{true}}">
+<div style="font-size:28px;font-weight:300;letter-spacing:-0.03em;line-height:1.05">{{c.verdict}}</div>
+<sc-if value="{{c.hasSave}}" hint-placeholder-val="{{true}}"><div><span style="{{s.lime}}">Save about {{c.save}}</span></div></sc-if>
+<div style="font-size:14px;line-height:1.45;color:var(--m2)">{{c.sub}}</div>
+<sc-if value="{{c.hasCmp}}" hint-placeholder-val="{{true}}"><div style="display:flex;gap:20px;font-size:14px;color:var(--m2);font-variant-numeric:tabular-nums"><span>Now <b style="color:var(--ink);font-weight:500">{{c.v1}}</b></span><span>{{c.l2}} <b style="color:var(--ink);font-weight:500">{{c.v2}}</b></span></div></sc-if>
+<dc-import name="Ribbon" theme="{{theme}}" plan="{{plan}}" variant="compact" startMin="1050" nowMin="1050" winStart="{{c.win}}" winLen="{{c.dur}}" hint-size="100%,26px"></dc-import>
+<label style="display:flex;flex-direction:column;gap:6px;font-size:14px;color:var(--m2)">Must be done by
+<select onChange="{{c.setDone}}" style="{{s.field}}"><sc-for list="{{c.opts}}" as="o" hint-placeholder-count="5"><option value="{{o.v}}" selected="{{o.sel}}">{{o.t}}</option></sc-for></select></label>
+</sc-if>
+<a href="{{c.href}}" style="color:var(--bl);font-size:14px;font-weight:500;min-height:24px;display:inline-flex;align-items:center">Open details →</a>
+</div>
+</sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{showLoading}}" hint-placeholder-val="{{false}}">
+<div style="display:grid;grid-template-columns:{{cardCols}};gap:16px" role="status" aria-label="Loading your advice">
+<sc-for list="{{skels}}" as="k" hint-placeholder-count="3"><div style="background:var(--sf);border:1px solid var(--hl);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:14px"><div style="height:22px;width:50%;background:var(--pn);border-radius:6px;animation:psshim 1.4s infinite"></div><div style="height:34px;width:85%;background:var(--pn);border-radius:6px;animation:psshim 1.4s infinite"></div><div style="height:28px;width:45%;background:var(--pn);border-radius:999px;animation:psshim 1.4s infinite"></div><div style="height:14px;width:100%;background:var(--pn);border-radius:4px;animation:psshim 1.4s infinite"></div></div></sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{showEmpty}}" hint-placeholder-val="{{false}}">
+<div style="border:1px dashed var(--hl);border-radius:16px;padding:40px 24px;display:flex;flex-direction:column;gap:12px;align-items:flex-start"><div style="font-size:28px;font-weight:300;letter-spacing:-0.03em">No chores yet.</div><div style="font-size:16px;color:var(--mu);max-width:420px;line-height:1.5">Add laundry, the dishwasher or EV charging, and we'll tell you when to start each one.</div><a href="{{L.Settings}}" style="{{s.btn1}}">Add a chore</a></div>
+</sc-if>
+
+<div style="font-size:13px;line-height:1.5;color:var(--m2);border-top:1px solid var(--hl);padding-top:16px">Estimates cover electricity cost only. Delivery, regulatory charges, HST and the Ontario Electricity Rebate are not included. <a href="{{L.HowItWorks}}" style="color:var(--bl)">How we calculate →</a></div>
+</main>
+
+<sc-if value="{{mobile}}" hint-placeholder-val="{{false}}">
+<nav style="position:sticky;bottom:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid var(--hl);background:var(--bg)">
+<sc-for list="{{nav}}" as="n" hint-placeholder-count="4"><a href="{{n.href}}" aria-current="{{n.cur}}" style="{{n.tab}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{n.d}}"/></svg><span style="font-size:11px">{{n.name}}</span></a></sc-for>
+</nav>
+</sc-if>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"device":{"editor":"enum","options":["desktop","mobile"],"default":"desktop"},"scenario":{"editor":"enum","options":["weekday","ulo","weekend","tiered","loading","empty","error","offline"],"default":"weekday"},"$preview":{"width":1440,"height":1500}}'>
+class Component extends DCLogic {
+renderVals() {
+const TH={light:{'--bg':'#F4F3F1','--sf':'#FFFFFF','--pn':'#ECEBE7','--ink':'#1C1D24','--mu':'#6B6E76','--m2':'#5A5D65','--hl':'#D6D5D1','--bl':'#2548F6','--ul':'#DCE3FF','--of':'#B7C4FF','--md':'#6F89FF','--on':'#2548F6','--tm':'#1C1D24','--to':'#FFFFFF','--tbl':'#FFFFFF'},dark:{'--bg':'#0E0F13','--sf':'#16171D','--pn':'#1C1D24','--ink':'#F4F3F1','--mu':'#9A9DA6','--m2':'#B4B7BF','--hl':'#2A2B33','--bl':'#5C78FF','--ul':'#1E2760','--of':'#2F409A','--md':'#5C78FF','--on':'#A9B8FF','--tm':'#0E0F13','--to':'#0E0F13','--tbl':'#0E0F13'}};
+const th=this.props.theme==='dark'?'dark':'light', mob=this.props.device==='mobile', dk=th==='dark';
+const vars=Object.entries(TH[th]).map(([k,v])=>k+':'+v).join(';');
+const sx=(dk?'-dk':'')+(mob?'-m':''); const L={}; ['Landing','HowItWorks','Plan','Privacy','Start','Today','Chore','Tomorrow','Grid','Settings','SignIn'].forEach(n=>L[n]=n+sx+'.dc.html');
+const mono="font-family:'Geist Mono',ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-variant-numeric:tabular-nums;";
+const s={mono,
+lime:"display:inline-block;background:#DDF247;color:#1C1D24;border-radius:999px;padding:6px 14px;font-weight:500;font-size:16px;font-variant-numeric:tabular-nums;",
+sample:mono+"display:inline-block;border:1px solid var(--mu);color:var(--m2);border-radius:999px;padding:3px 10px;font-size:10px;white-space:nowrap;",
+btn1:"display:inline-flex;align-items:center;background:var(--ink);color:var(--bg);border-radius:6px;min-height:44px;padding:0 20px;font-size:16px;font-weight:500;text-decoration:none;box-sizing:border-box;",
+btn2:"display:inline-flex;align-items:center;border:1px solid var(--ink);color:var(--ink);border-radius:6px;min-height:44px;padding:0 20px;font-size:16px;font-weight:500;text-decoration:none;box-sizing:border-box;",
+field:"min-height:44px;border:1px solid var(--hl);border-radius:6px;background:var(--bg);color:var(--ink);padding:0 12px;font-size:16px;font-family:inherit;box-sizing:border-box;width:100%;"};
+const sc=this.props.scenario||'weekday';
+const plan=sc==='ulo'?'ULO':sc==='tiered'?'TIERED':'TOU', wk=sc!=='weekend';
+const any=plan==='TIERED'||(plan==='TOU'&&!wk);
+const st=this.state||{}, done=st.done||{};
+const per=(m)=>{ if(plan==='ULO'){ if(m>=1380||m<420) return 3.7; if(m>=960&&m<1260) return 37.7; return 14.6; } if(m>=1140||m<420) return 9.1; if(m>=660&&m<1020) return 14.6; return 18.9; };
+const cost=(start,kwh,dur)=>{let c=0;for(let i=0;i<dur;i++){c+=per(((start+i)%1440))*(kwh/dur);}return Math.round(c);};
+const fm=(c)=>c<100?c+'¢':'$'+(c/100).toFixed(2);
+const fmt=(m)=>{m=((Math.round(m)%1440)+1440)%1440;const h=Math.floor(m/60),mm=m%60;return (h%12||12)+':'+String(mm).padStart(2,'0')+' '+(h>=12?'PM':'AM');};
+const NOW=1050;
+const DL=[['none','No deadline',null],['6:00 PM','6:00 PM',1080],['7:30 PM','7:30 PM',1170],['9:00 PM','9:00 PM',1260],['7:00 AM','7:00 AM',1860]];
+const CH=[['Laundry',3,90,'3 kWh · 90 min'],['Dishwasher',1.2,120,'1.2 kWh · 2 h'],['EV charging',28.8,240,'28.8 kWh · 4 h']];
+const cards=CH.map(([n,kwh,dur,spec],i)=>{
+ const key=done[i]||'none', dl=DL.find(d=>d[0]===key)[2];
+ const c={n,spec,dur,any,timed:!any,anyNote:plan==='TIERED'?'Tiered plans charge the same price at every hour.':'Weekend or holiday on TOU: off-peak all day.',win:-1,href:L.Chore,setDone:(e)=>this.setState({done:{...done,[i]:e.target.value}}),opts:DL.map(d=>({v:d[0],t:d[1],sel:d[0]===key})),hasSave:false,hasCmp:false,save:'',v1:'',l2:'',v2:'',verdict:'',sub:''};
+ if(any) return c;
+ const nowC=cost(NOW,kwh,dur);
+ if(dl!==null&&NOW+dur>dl){c.verdict="Can't finish by "+key+".";c.sub="Even starting now, it runs until "+fmt(NOW+dur)+". Run now to get as close as you can.";c.win=NOW;return c;}
+ let bs=NOW,bc=nowC;
+ for(let t=NOW;t<=NOW+1440;t+=15){if(dl!==null&&t+dur>dl)break;const x=cost(t,kwh,dur);if(x<bc){bc=x;bs=t;}}
+ const save=nowC-bc;
+ c.win=bs%1440; c.v1=fm(nowC); c.hasCmp=true;
+ let ub=NOW,uc=nowC;for(let t=NOW;t<=NOW+1440;t+=15){const x=cost(t,kwh,dur);if(x<uc){uc=x;ub=t;}}
+ if(bs===NOW||save<1){c.verdict='Run now';c.sub=(dl!==null&&nowC-uc>=1)?"Can't finish by "+key+" at a cheaper time, so run now.":"Run now: you're already at the cheapest time.";c.l2='Best';c.v2=fm(nowC);c.win=NOW;c.hasCmp=false;}
+ else{c.verdict='Wait until '+fmt(bs)+(bs>=1440?' tomorrow':'')+'.';c.hasSave=true;c.save=fm(save);c.l2=fmt(bs);c.v2=fm(bc);c.sub=dl!==null?'Done by '+key+' at the latest.':(dur>=90?'Timing matters for runs of '+(dur>=240?'4 hours':dur+' minutes')+' like this.':'');if(bs>=1440)c.sub='Cheapest window is tomorrow.';}
+ return c;
+});
+const patBg={ul:"background-image:radial-gradient("+(dk?'rgba(244,243,241,':'rgba(28,29,36,')+".45) 1px,transparent 1.4px);background-size:7px 7px;",of:"background-image:repeating-linear-gradient(0deg,"+(dk?'rgba(244,243,241,':'rgba(28,29,36,')+".28) 0 1px,transparent 1px 6px);",md:"background-image:repeating-linear-gradient(45deg,"+(dk?'rgba(244,243,241,':'rgba(28,29,36,')+".38) 0 1px,transparent 1px 7px);",on:"background-image:repeating-linear-gradient(45deg,"+(dk?'rgba(14,15,19,':'rgba(255,255,255,')+".5) 0 1.5px,transparent 1.5px 6px),repeating-linear-gradient(-45deg,"+(dk?'rgba(14,15,19,':'rgba(255,255,255,')+".5) 0 1.5px,transparent 1.5px 6px);"};
+let pk='on',perText='On-peak · 18.9¢ until 7:00 PM';
+if(plan==='ULO'){pk='on';perText='On-peak · 37.7¢ until 9:00 PM';}
+else if(plan==='TIERED'){pk='of';perText='Tier 1 · 11.2¢ · all day';}
+else if(!wk){pk='of';perText='Off-peak · 9.1¢ · all day';}
+const tc={ul:'var(--ink)',of:'var(--ink)',md:'var(--tm)',on:'var(--to)'}[pk];
+const perChip="display:inline-flex;align-items:center;min-height:36px;padding:0 16px;border-radius:999px;border:1px solid var(--hl);font-size:16px;font-weight:500;font-variant-numeric:tabular-nums;background-color:var(--"+pk+");"+patBg[pk]+"color:"+tc+";";
+const navI=[['Today','M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4L7 17M17 7l1.4-1.4M12 8a4 4 0 100 8 4 4 0 000-8z',L.Today],['Tomorrow','M4 7h16v13H4zM4 11h16M8 4v4M16 4v4',L.Tomorrow],['Grid','M4 20V12M10 20V5M16 20v-9M22 20H2',L.Grid],['Settings','M4 8h10M18 8h2M4 16h2M10 16h10M14 6v4M6 14v4',L.Settings]];
+const nav=navI.map(([name,d,href],i)=>({name,d,href,cur:i===0?'page':'false',side:"display:flex;align-items:center;gap:12px;min-height:44px;padding:0 12px;border-radius:8px;font-size:16px;text-decoration:none;"+(i===0?"background:var(--ink);color:var(--bg);font-weight:500;":"color:var(--ink);"),tab:"display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:60px;text-decoration:none;"+(i===0?"background:var(--ink);color:var(--bg);":"color:var(--ink);")}));
+const planLabel=plan==='TIERED'?'Tiered plan':plan==='ULO'?'Ultra-Low Overnight (ULO)':'Time-of-Use (TOU)';
+const tagLeft=plan==='TIERED'?'TIERED · WINTER · 17:30':(!wk?'TOU · WINTER · WEEKEND · 17:30':plan+' · WINTER · 17:30');
+const dateLine=!wk?'Saturday, Nov 21':'Wednesday, Nov 18';
+const loading=sc==='loading', empty=sc==='empty', error=sc==='error', offline=sc==='offline';
+return {vars,theme:th,s,L,nav,desk:!mob,mobile:mob,shellDir:mob?'column':'row',minH:mob?2000:1000,padX:mob?24:48,padY:mob?24:48,gap:mob?20:24,h1:mob?40:56,cardCols:mob?'1fr':'repeat(3,minmax(0,1fr))',
+plan,perChip,perText,planLabel,tagLeft,dateLine,cards,skels:[1,2,3],showCards:!(loading||empty||error),showLoading:loading,showEmpty:empty,showError:error,showOffline:offline};
+}
+}
+</script>
+</body>
+</html>

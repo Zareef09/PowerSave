@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>PowerSave design system</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+@keyframes psshim{0%{opacity:.45}50%{opacity:1}100%{opacity:.45}}
+@keyframes pspulse{0%{box-shadow:0 0 0 0 rgba(37,72,246,.5)}100%{box-shadow:0 0 0 8px rgba(37,72,246,0)}}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+</style>
+</helmet>
+<div style="{{vars}};background:var(--bg);color:var(--ink);font-family:Geist,system-ui,sans-serif;min-width:0;overflow-x:hidden">
+
+<!-- header -->
+<div style="border-bottom:1px solid var(--hl)">
+<div style="max-width:1200px;margin:0 auto;padding:{{padTop}}px {{pad}}px 64px;box-sizing:border-box">
+<div style="{{s.mono}};color:var(--mu);display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between"><span>/00 [ DESIGN SYSTEM · V1 ]</span><span>[ RATES OEB · NOV 1 2026 ]</span></div>
+<h1 style="margin:48px 0 16px;font-weight:300;font-size:{{h1}}px;letter-spacing:-0.03em;line-height:1">PowerSave<span style="color:var(--mu)"> tokens and parts.</span></h1>
+<p style="margin:0;max-width:640px;font-size:20px;line-height:1.4;color:var(--mu)">Every screen in this canvas is built from the colours, type and components on this page. Light and dark share one structure.</p>
+</div>
+</div>
+
+<!-- taglines -->
+<div style="max-width:1200px;margin:0 auto;padding:96px {{pad}}px 0;box-sizing:border-box">
+<div style="{{s.mono}};color:var(--mu)">/01 [ TAGLINES · PICK ONE ]</div>
+<div style="display:grid;grid-template-columns:{{cols3}};gap:16px;margin-top:24px">
+<sc-for list="{{taglines}}" as="t" hint-placeholder-count="3">
+<div style="background:var(--sf);border:1px solid var(--hl);border-radius:16px;padding:32px 24px;min-height:140px;display:flex;flex-direction:column;justify-content:space-between;gap:24px">
+<span style="{{s.mono}};color:var(--mu)">{{t.n}}</span>
+<span style="font-size:32px;font-weight:300;letter-spacing:-0.03em;line-height:1.05">{{t.a}}<span style="color:var(--mu)">{{t.b}}</span></span>
+</div>
+</sc-for>
+</div>
+<p style="margin:16px 0 0;color:var(--mu);font-size:14px">Voice rules: short and certain, two to five words in headlines, Canadian spelling, no exclamation marks.</p>
+</div>
+
+<!-- colour -->
+<div style="max-width:1200px;margin:0 auto;padding:160px {{pad}}px 0;box-sizing:border-box">
+<div style="{{s.mono}};color:var(--mu)">/02 [ COLOUR ]</div>
+<h2 style="{{s.h2}}">Warm page. Ink. One blue.</h2>
+<p style="margin:16px 0 0;max-width:640px;color:var(--mu);font-size:16px;line-height:1.5">Lime appears on the saving figure and the single primary call to action, nothing else. Text on lime is always ink. The dark panel colour (#1C1D24) is an assumption; the brief did not specify one.</p>
+<div style="display:grid;grid-template-columns:{{cols2}};gap:24px;margin-top:40px">
+<div style="background:#F4F3F1;border:1px solid #D6D5D1;border-radius:24px;padding:24px;color:#1C1D24">
+<div style="{{s.mono}};color:#5A5D65;margin-bottom:16px">LIGHT</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(150px,100%),1fr));gap:12px">
+<sc-for list="{{lightSw}}" as="c" hint-placeholder-count="9">
+<div style="background:#FFFFFF;border:1px solid #D6D5D1;border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:10px"><div style="height:48px;border-radius:8px;border:1px solid #D6D5D1;background:{{c.hex}}"></div><div style="font-size:14px">{{c.name}}</div><div style="{{s.mono}};color:#5A5D65">{{c.hex}}</div></div>
+</sc-for>
+</div></div>
+<div style="background:#0E0F13;border:1px solid #2A2B33;border-radius:24px;padding:24px;color:#F4F3F1">
+<div style="{{s.mono}};color:#B4B7BF;margin-bottom:16px">DARK</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(150px,100%),1fr));gap:12px">
+<sc-for list="{{darkSw}}" as="c" hint-placeholder-count="9">
+<div style="background:#16171D;border:1px solid #2A2B33;border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:10px"><div style="height:48px;border-radius:8px;border:1px solid #2A2B33;background:{{c.hex}}"></div><div style="font-size:14px">{{c.name}}</div><div style="{{s.mono}};color:#B4B7BF">{{c.hex}}</div></div>
+</sc-for>
+</div></div>
+</div>
+
+<h3 style="margin:64px 0 8px;font-weight:400;font-size:28px;letter-spacing:-0.02em">Price periods</h3>
+<p style="margin:0 0 24px;color:var(--mu);font-size:16px;max-width:640px;line-height:1.5">A blue-density scale, lightest to densest. In dark mode density reads as brightness. Every period also carries a hatch pattern and a text label, so colour is never the only signal.</p>
+<div style="display:grid;grid-template-columns:{{cols4}};gap:16px">
+<sc-for list="{{periods}}" as="p" hint-placeholder-count="4">
+<div style="background:var(--sf);border:1px solid var(--hl);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px">
+<div style="{{p.fill}};height:72px;border-radius:10px;border:1px solid var(--hl)"></div>
+<div style="font-size:16px;font-weight:500">{{p.name}}</div>
+<div style="{{s.mono}};color:var(--mu)">{{p.pat}} · {{p.hex}}</div>
+<div style="{{s.mono}};color:var(--mu)">{{p.price}}</div>
+</div>
+</sc-for>
+</div>
+
+<h3 style="margin:64px 0 8px;font-weight:400;font-size:28px;letter-spacing:-0.02em">Contrast pairs</h3>
+<p style="margin:0 0 24px;color:var(--mu);font-size:16px;max-width:680px;line-height:1.5">Ratios are computed from the hex values. One pair fails: the brief's muted grey on the panel colour. Use Muted strong whenever grey text sits on a panel.</p>
+<div style="border:1px solid var(--hl);border-radius:16px;overflow:hidden;background:var(--sf)">
+<sc-for list="{{pairs}}" as="r" hint-placeholder-count="10">
+<div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;padding:12px 20px;border-bottom:1px solid var(--hl)">
+<span style="{{r.chip}}">Aa</span>
+<span style="flex:1 1 200px;font-size:14px">{{r.label}}</span>
+<span style="{{s.mono}};color:var(--mu)">{{r.fg}} on {{r.bg}}</span>
+<span style="{{s.mono}};min-width:64px">{{r.ratio}}</span>
+<span style="{{s.mono}};min-width:120px;font-weight:500">{{r.verdict}}</span>
+</div>
+</sc-for>
+</div>
+</div>
+
+<!-- type -->
+<div style="max-width:1200px;margin:0 auto;padding:160px {{pad}}px 0;box-sizing:border-box">
+<div style="{{s.mono}};color:var(--mu)">/03 [ TYPE · GEIST + GEIST MONO ]</div>
+<h2 style="{{s.h2}}">Light display. Mono for data.</h2>
+<div style="background:var(--sf);border:1px solid var(--hl);border-radius:24px;padding:{{pad}}px;margin-top:40px">
+<sc-for list="{{typeScale}}" as="t" hint-placeholder-count="8">
+<div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 24px;padding:14px 0;border-bottom:1px solid var(--hl)">
+<span style="{{s.mono}};color:var(--mu);flex:0 0 120px">{{t.size}} / {{t.role}}</span>
+<span style="{{t.style}};flex:1 1 280px;min-width:0">{{t.sample}}</span>
+</div>
+</sc-for>
+<div style="display:flex;flex-wrap:wrap;gap:16px 32px;padding-top:24px;align-items:baseline">
+<span style="{{s.mono}};color:var(--mu)">/0.01 [ X 34.6, Y 70.2 ]</span>
+<span style="{{s.mono}};color:var(--mu)">[ LAST PULL 18:05 · NEXT ~18:10 ]</span>
+<span style="font-size:28px;font-weight:300;letter-spacing:-0.03em;font-variant-numeric:tabular-nums">18.9¢ &nbsp; 9.1¢ &nbsp; 3.7¢ &nbsp; 06:05</span>
+</div>
+</div>
+<div style="display:grid;grid-template-columns:{{cols3}};gap:16px;margin-top:16px">
+<div style="background:var(--sf);border:1px solid var(--hl);border-radius:16px;padding:20px"><div style="{{s.mono}};color:var(--mu)">DISPLAY</div><p style="margin:8px 0 0;font-size:14px;line-height:1.5">Geist 300 to 400, tracking −2% to −3%, line height 1.0 to 1.05. Hero 88 on desktop, 48 on mobile. Section titles 40, 32 on mobile.</p></div>
+<div style="background:var(--sf);border:1px solid var(--hl);border-radius:16px;padding:20px"><div style="{{s.mono}};color:var(--mu)">LABELS</div><p style="margin:8px 0 0;font-size:14px;line-height:1.5">Geist Mono 11 to 12, uppercase, tracking +6%. Used for tags, coordinates, timestamps and data stamps.</p></div>
+<div style="background:var(--sf);border:1px solid var(--hl);border-radius:16px;padding:20px"><div style="{{s.mono}};color:var(--mu)">FIGURES</div><p style="margin:8px 0 0;font-size:14px;line-height:1.5">Tabular figures on every price, time and countdown, so digits never jitter when they tick.</p></div>
+</div>
+</div>
+
+<!-- shape -->
+<div style="max-width:1200px;margin:0 auto;padding:160px {{pad}}px 0;box-sizing:border-box">
+<div style="{{s.mono}};color:var(--mu)">/04 [ SPACE · SHAPE · LINE ]</div>
+<h2 style="{{s.h2}}">8 pt grid. Hairlines, not shadows.</h2>
+<div style="display:grid;grid-template-columns:{{cols2}};gap:24px;margin-top:40px">
+<div style="background:var(--sf);border:1px solid var(--hl);border-radius:24px;padding:24px">
+<div style="{{s.mono}};color:var(--mu);margin-bottom:16px">SPACING</div>
+<sc-for list="{{spacing}}" as="sp" hint-placeholder-count="9">
+<div style="display:flex;align-items:center;gap:16px;padding:5px 0"><span style="{{s.mono}};color:var(--mu);flex:0 0 56px">{{sp.n}}</span><span style="{{sp.bar}}"></span></div>
+</sc-for>
+<div style="{{s.mono}};color:var(--mu);margin-top:16px">12 columns · 1200 content · section padding 160 / 96</div>
+</div>
+<div style="background:var(--sf);border:1px solid var(--hl);border-radius:24px;padding:24px;display:flex;flex-direction:column;gap:20px">
+<div style="{{s.mono}};color:var(--mu)">RADIUS</div>
+<div style="display:flex;flex-wrap:wrap;gap:16px">
+<sc-for list="{{radii}}" as="r" hint-placeholder-count="4">
+<div style="display:flex;flex-direction:column;gap:8px;align-items:flex-start"><div style="{{r.style}}"></div><span style="{{s.mono}};color:var(--mu)">{{r.name}}</span></div>
+</sc-for>
+</div>
+<div style="{{s.mono}};color:var(--mu)">SHADOW</div>
+<div style="font-size:14px;line-height:1.5;color:var(--mu)">None. Separation comes from a 1 px border in the hairline colour. The only glow is the pulsing dot on the live tag.</div>
+<div style="display:flex;align-items:center;gap:12px"><span style="width:10px;height:10px;border-radius:999px;background:var(--bl);animation:pspulse 1.6s infinite"></span><span style="{{s.mono}}">[ ● LIVE · ONTARIO GRID ]</span></div>
+</div>
+</div>
+</div>
+
+<!-- components -->
+<div style="max-width:1200px;margin:0 auto;padding:160px {{pad}}px 160px;box-sizing:border-box">
+<div style="{{s.mono}};color:var(--mu)">/05 [ COMPONENTS ]</div>
+<h2 style="{{s.h2}}">Parts, with their states.</h2>
+<div style="display:grid;grid-template-columns:{{cols2}};gap:16px;margin-top:40px">
+
+<div style="{{s.card}}"><div style="{{s.mono}};color:var(--mu)">C01 PRICE-PERIOD CHIP</div>
+<div style="display:flex;flex-wrap:wrap;gap:8px">
+<sc-for list="{{chips}}" as="c" hint-placeholder-count="4"><span style="{{c.style}}">{{c.text}}</span></sc-for>
+</div></div>
+
+<div style="{{s.card}}"><div style="{{s.mono}};color:var(--mu)">C02 24-HOUR TIMELINE · COMPACT + FULL</div>
+<dc-import name="Ribbon" theme="{{theme}}" plan="TOU" variant="compact" startMin="1050" nowMin="1050" winStart="1140" winLen="90" hint-size="100%,26px"></dc-import>
+<dc-import name="Ribbon" theme="{{theme}}" plan="TOU" variant="full" startMin="0" nowMin="1050" winStart="1140" winLen="90" winLabel="Best · 7:00 PM" hint-size="100%,110px"></dc-import>
+</div>
+
+<div style="{{s.card}}"><div style="{{s.mono}};color:var(--mu)">C03 CHORE CARD · WAIT</div>
+<div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start"><div><div style="font-size:20px;font-weight:500">Laundry</div><div style="{{s.mono}};color:var(--mu);margin-top:4px">3 kWh · 90 min</div></div><span style="{{s.sample}}">Sample data</span></div>
+<div style="font-size:28px;font-weight:300;letter-spacing:-0.03em;line-height:1.05">Wait until 7:00 PM.</div>
+<div><span style="{{s.lime}}">Save about 30¢</span></div>
+<div style="display:flex;gap:24px;font-variant-numeric:tabular-nums;font-size:14px;color:var(--mu)"><span>Now <b style="color:var(--ink);font-weight:500">57¢</b></span><span>7:00 PM <b style="color:var(--ink);font-weight:500">27¢</b></span></div>
+<dc-import name="Ribbon" theme="{{theme}}" plan="TOU" variant="compact" startMin="1050" nowMin="1050" winStart="1140" winLen="90" hint-size="100%,26px"></dc-import>
+</div>
+
+<div style="{{s.card}}"><div style="{{s.mono}};color:var(--mu)">C03 CHORE CARD · ANY TIME + ALREADY CHEAPEST</div>
+<div style="background:var(--pn);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:6px"><div style="font-size:20px;font-weight:300;letter-spacing:-0.02em">Any time today. Same price all day.</div><div style="font-size:14px;color:var(--m2)">Weekend, holiday or Tiered plan. No saving is shown.</div></div>
+<div style="background:var(--pn);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:6px"><div style="font-size:20px;font-weight:300;letter-spacing:-0.02em">Run now.</div><div style="font-size:14px;color:var(--m2)">You're already at the cheapest time.</div></div>
+</div>
+
+<div style="{{s.card}}"><div style="{{s.mono}};color:var(--mu)">C04 DONE-BY PICKER · C05 QUIET HOURS</div>
+<label style="display:flex;flex-direction:column;gap:6px;font-size:14px">Must be done by
+<select onChange="{{setDone}}" style="{{s.field}}"><option>No deadline</option><option>6:00 PM</option><option>9:00 PM</option><option>7:00 AM</option></select></label>
+<div style="font-size:14px;color:var(--mu)">{{doneNote}}</div>
+<div style="display:flex;align-items:center;justify-content:space-between;gap:16px;border-top:1px solid var(--hl);padding-top:16px">
+<span style="font-size:16px">Only suggest times when I'm awake<br><span style="{{s.mono}};color:var(--mu)">Quiet hours 10 PM–7 AM</span></span>
+<button onClick="{{toggleQuiet}}" aria-pressed="{{quiet}}" aria-label="Quiet hours" style="{{quietBtn}}"><span style="{{quietKnob}}"></span></button></div>
+<div style="font-size:14px;color:var(--mu)">{{quietNote}}</div>
+</div>
+
+<div style="{{s.card}}"><div style="{{s.mono}};color:var(--mu)">C06 PLAN SELECTOR CARD</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(150px,100%),1fr));gap:8px">
+<sc-for list="{{plans}}" as="pl" hint-placeholder-count="3">
+<button onClick="{{pl.pick}}" aria-pressed="{{pl.on}}" style="{{pl.style}}"><span style="font-size:20px;font-weight:500">{{pl.name}}</span><span style="{{s.mono}};opacity:.75">{{pl.tag}}</span></button>
+</sc-for></div>
+<div style="font-size:14px;color:var(--mu)">{{planNote}}</div>
+</div>
+
+<div style="{{s.card}}"><div style="{{s.mono}};color:var(--mu)">C07 BILL HELPER · GENERIC, NO UTILITY BRANDING</div>
+<div style="background:#fff;color:#1C1D24;border:1px solid var(--hl);border-radius:8px;padding:16px;font-size:13px;display:flex;flex-direction:column;gap:8px">
+<div style="display:flex;justify-content:space-between"><b>Your electricity bill</b><span style="font-family:'Geist Mono',monospace;font-size:11px">PAGE 2</span></div>
+<div style="height:6px;background:#ECEBE7;border-radius:3px"></div>
+<div style="display:flex;justify-content:space-between;border:2px solid #2548F6;border-radius:6px;padding:8px;background:#EEF1FF"><span>Rate plan</span><b>Time-of-Use (TOU)</b></div>
+<div style="height:6px;background:#ECEBE7;border-radius:3px;width:70%"></div><div style="height:6px;background:#ECEBE7;border-radius:3px;width:85%"></div>
+</div>
+<div style="font-size:14px;color:var(--mu)">Look for "Rate plan", "Price plan" or the periods named on-peak, mid-peak and off-peak. If you can't find it, we'll use TOU.</div></div>
+
+<div style="{{s.card}}"><div style="{{s.mono}};color:var(--mu)">C08 LINE CHART · FORECAST LINES</div>
+<div style="font-size:14px;font-weight:500">Wholesale market price. Not what you pay.</div>
+<svg viewBox="0 0 400 140" style="width:100%;height:auto;display:block" role="img" aria-label="Sample wholesale price, last ten five-minute readings, with 3-day and 7-day average lines">
+<line x1="0" y1="120" x2="400" y2="120" stroke="var(--hl)"/><line x1="0" y1="70" x2="400" y2="70" stroke="var(--hl)"/><line x1="0" y1="20" x2="400" y2="20" stroke="var(--hl)"/>
+<polyline points="{{f3}}" fill="none" stroke="var(--mu)" stroke-width="1.5" stroke-dasharray="6 4"/>
+<polyline points="{{f7}}" fill="none" stroke="var(--mu)" stroke-width="1.5" stroke-dasharray="1 4"/>
+<polyline points="{{pts}}" fill="none" stroke="var(--bl)" stroke-width="2.5"/>
+<circle cx="{{lastX}}" cy="{{lastY}}" r="5" fill="var(--bl)"/>
+</svg>
+<div style="display:flex;flex-wrap:wrap;gap:8px 20px;font-size:12px;color:var(--mu)"><span>— Today, 5 min</span><span>- - 3-day average for this hour</span><span>··· 7-day average for this hour</span></div>
+<span style="{{s.sample}}">Sample data</span></div>
+
+<div style="{{s.card}}"><div style="{{s.mono}};color:var(--mu)">C09 COUNTDOWN · LAST-UPDATED · STALE BANNER</div>
+<div style="display:flex;flex-wrap:wrap;gap:12px 24px;align-items:baseline"><span style="{{s.mono}};color:var(--mu)">Last updated 6:05 PM</span><span style="font-size:20px;font-variant-numeric:tabular-nums">Next update expected in <b style="font-weight:500">3:12</b></span></div>
+<div style="border:1px solid var(--ink);border-radius:12px;padding:12px 16px;display:flex;gap:12px;align-items:flex-start;font-size:14px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 8v5M12 16.5v.5M10.3 3.9L2.6 17.5A2 2 0 004.3 20.5h15.4a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg><span><b style="font-weight:500">Update delayed.</b> Showing data from 6:05 PM. Your advice on Today doesn't depend on this.</span></div></div>
+
+<div style="{{s.card}}"><div style="{{s.mono}};color:var(--mu)">C10 TAGS · C11 DISCLAIMER · C12 FEEDBACK</div>
+<div style="display:flex;flex-wrap:wrap;gap:8px"><span style="{{s.sample}}">Sample data</span><span style="{{s.tag}}">[ TOU · WINTER · 17:30 ]</span><span style="{{s.tag}}">[ RATES OEB · NOV 1 2026 ]</span></div>
+<div style="font-size:13px;color:var(--mu);line-height:1.5">Estimates cover electricity cost only. Delivery, regulatory charges, HST and the Ontario Electricity Rebate are not included. <a href="#how" style="color:var(--bl)">How we calculate →</a></div>
+<div style="font-size:16px">Did you follow this?</div>
+<div style="display:flex;flex-wrap:wrap;gap:8px"><button style="{{s.btn2}}">Yes</button><button style="{{s.btn2}}">No</button><button style="{{s.btn2}}">Not today</button></div></div>
+
+<div style="{{s.card}}"><div style="{{s.mono}};color:var(--mu)">C13 BUTTONS · C14 FORM FIELDS</div>
+<div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center"><button style="{{s.btnLime}}">Find my cheapest time</button><button style="{{s.btn1}}">Open app</button><button style="{{s.btn2}}">Continue as guest</button><button style="background:none;border:0;color:var(--bl);font-size:16px;min-height:44px;padding:0 8px;font-family:inherit;cursor:pointer;text-decoration:underline">How it works</button></div>
+<label style="display:flex;flex-direction:column;gap:6px;font-size:14px">Email<input type="email" placeholder="you@example.com" style="{{s.field}}"></label>
+<label style="display:flex;flex-direction:column;gap:6px;font-size:14px">Email, invalid state<input type="email" value="you@" aria-invalid="true" style="{{s.fieldErr}}"><span style="color:var(--ink);font-size:13px">Enter a full email address, like you@example.com.</span></label></div>
+
+<div style="{{s.card}}"><div style="{{s.mono}};color:var(--mu)">C15 SIDEBAR · C16 TAB BAR</div>
+<div style="display:flex;flex-direction:column;gap:4px">
+<sc-for list="{{nav}}" as="n" hint-placeholder-count="4"><div style="{{n.side}}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{n.d}}"/></svg>{{n.name}}</div></sc-for></div>
+<div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:1px solid var(--hl);border-radius:16px;overflow:hidden">
+<sc-for list="{{nav}}" as="n" hint-placeholder-count="4"><div style="{{n.tab}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{n.d}}"/></svg><span style="font-size:11px">{{n.name}}</span></div></sc-for></div></div>
+
+<div style="{{s.card}}"><div style="{{s.mono}};color:var(--mu)">C17 TOAST · C18 SKELETON · C19 EMPTY STATE</div>
+<div role="status" style="background:var(--ink);color:var(--bg);border-radius:12px;padding:12px 16px;font-size:14px;display:flex;justify-content:space-between;gap:12px"><span>Plan copied to clipboard.</span><span style="{{s.mono}}">Dismiss</span></div>
+<div style="display:flex;flex-direction:column;gap:10px" aria-label="Loading" role="img"><div style="height:20px;width:40%;background:var(--pn);border-radius:6px;animation:psshim 1.4s infinite"></div><div style="height:36px;width:80%;background:var(--pn);border-radius:6px;animation:psshim 1.4s infinite"></div><div style="height:14px;width:100%;background:var(--pn);border-radius:6px;animation:psshim 1.4s infinite"></div></div>
+<div style="border:1px dashed var(--hl);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:6px;align-items:flex-start"><div style="font-size:20px;font-weight:300;letter-spacing:-0.02em">No chores yet.</div><div style="font-size:14px;color:var(--mu)">Add laundry, the dishwasher or EV charging to get a start time.</div><button style="{{s.btn1}}">Add a chore</button></div></div>
+
+</div>
+<div id="how" style="margin-top:64px;font-size:14px;color:var(--mu)">Rates as of Nov 1, 2026 · PowerSave is independent and not affiliated with the Ontario Energy Board, the IESO or any utility.</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"device":{"editor":"enum","options":["desktop","mobile"],"default":"desktop"},"$preview":{"width":1440,"height":5200}}'>
+class Component extends DCLogic {
+renderVals() {
+const TH={light:{'--bg':'#F4F3F1','--sf':'#FFFFFF','--pn':'#ECEBE7','--ink':'#1C1D24','--mu':'#6B6E76','--m2':'#5A5D65','--hl':'#D6D5D1','--bl':'#2548F6','--ul':'#DCE3FF','--of':'#B7C4FF','--md':'#6F89FF','--on':'#2548F6','--tm':'#1C1D24','--to':'#FFFFFF','--tbl':'#FFFFFF'},dark:{'--bg':'#0E0F13','--sf':'#16171D','--pn':'#1C1D24','--ink':'#F4F3F1','--mu':'#9A9DA6','--m2':'#B4B7BF','--hl':'#2A2B33','--bl':'#5C78FF','--ul':'#1E2760','--of':'#2F409A','--md':'#5C78FF','--on':'#A9B8FF','--tm':'#0E0F13','--to':'#0E0F13','--tbl':'#0E0F13'}};
+const th=this.props.theme==='dark'?'dark':'light', mob=this.props.device==='mobile', st=this.state||{};
+const dk=th==='dark';
+const vars=Object.entries(TH[th]).map(([k,v])=>k+':'+v).join(';');
+const mono="font-family:'Geist Mono',ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-variant-numeric:tabular-nums;";
+const s={mono,
+h2:"margin:12px 0 0;font-weight:300;font-size:"+(mob?32:40)+"px;letter-spacing:-0.03em;line-height:1.05;",
+card:"background:var(--sf);border:1px solid var(--hl);border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:16px;min-width:0;",
+lime:"display:inline-block;background:#DDF247;color:#1C1D24;border-radius:999px;padding:6px 14px;font-weight:500;font-size:16px;font-variant-numeric:tabular-nums;",
+sample:mono+"display:inline-block;align-self:flex-start;border:1px solid var(--mu);color:var(--m2);border-radius:999px;padding:3px 10px;font-size:10px;",
+tag:mono+"color:var(--m2);border:1px solid var(--hl);border-radius:6px;padding:4px 8px;",
+btn1:"background:var(--ink);color:var(--bg);border:0;border-radius:6px;min-height:44px;padding:0 20px;font-size:16px;font-weight:500;font-family:inherit;cursor:pointer;",
+btn2:"background:transparent;color:var(--ink);border:1px solid var(--ink);border-radius:6px;min-height:44px;padding:0 20px;font-size:16px;font-weight:500;font-family:inherit;cursor:pointer;",
+btnLime:"background:#DDF247;color:#1C1D24;border:0;border-radius:6px;min-height:44px;padding:0 20px;font-size:16px;font-weight:500;font-family:inherit;cursor:pointer;",
+field:"min-height:44px;border:1px solid var(--hl);border-radius:6px;background:var(--bg);color:var(--ink);padding:0 12px;font-size:16px;font-family:inherit;box-sizing:border-box;width:100%;",
+fieldErr:"min-height:44px;border:2px solid var(--ink);border-radius:6px;background:var(--bg);color:var(--ink);padding:0 12px;font-size:16px;font-family:inherit;box-sizing:border-box;width:100%;"};
+const LS=[['Page','#F4F3F1'],['Surface','#FFFFFF'],['Panel','#ECEBE7'],['Ink','#1C1D24'],['Muted','#6B6E76'],['Muted strong','#5A5D65'],['Hairline','#D6D5D1'],['Electric blue','#2548F6'],['Lime','#DDF247']];
+const DS=[['Page','#0E0F13'],['Surface','#16171D'],['Panel','#1C1D24'],['Ink','#F4F3F1'],['Muted','#9A9DA6'],['Muted strong','#B4B7BF'],['Hairline','#2A2B33'],['Electric blue','#5C78FF'],['Lime','#DDF247']];
+const hc=dk?'rgba(244,243,241,':'rgba(28,29,36,', onc=dk?'rgba(14,15,19,':'rgba(255,255,255,';
+const patBg={ul:"background-image:radial-gradient("+hc+".4) 1px,transparent 1.4px);background-size:7px 7px;",of:"background-image:repeating-linear-gradient(0deg,"+hc+".25) 0 1px,transparent 1px 6px);",md:"background-image:repeating-linear-gradient(45deg,"+hc+".35) 0 1px,transparent 1px 7px);",on:"background-image:repeating-linear-gradient(45deg,"+onc+".5) 0 1.5px,transparent 1.5px 6px),repeating-linear-gradient(-45deg,"+onc+".5) 0 1.5px,transparent 1.5px 6px);"};
+const PER=[['ul','Ultra-low overnight','Dots','3.7¢/kWh · ULO'],['of','Off-peak','Horizontal lines','9.1¢/kWh · TOU, ULO weekend'],['md','Mid-peak','Diagonal lines','14.6¢/kWh · TOU, ULO'],['on','On-peak','Cross-hatch','18.9¢ TOU · 37.7¢ ULO']];
+const T=TH[th];
+const periods=PER.map(([k,name,pat,price])=>({name,pat,price,hex:T['--'+k],fill:"background-color:var(--"+k+");"+patBg[k]}));
+const chips=PER.map(([k,name,pat,price])=>({text:name,style:"display:inline-flex;align-items:center;min-height:32px;padding:0 14px;border-radius:999px;border:1px solid var(--hl);font-size:14px;font-weight:500;background-color:var(--"+k+");"+patBg[k]+"color:"+(k==='md'?'var(--tm)':k==='on'?'var(--to)':'var(--ink)')+";"}));
+const lum=h=>{const c=[1,3,5].map(i=>parseInt(h.substr(i,2),16)/255).map(v=>v<=0.03928?v/12.92:Math.pow((v+0.055)/1.055,2.4));return .2126*c[0]+.7152*c[1]+.0722*c[2];};
+const cr=(a,b)=>{const x=lum(a),y=lum(b);return (Math.max(x,y)+.05)/(Math.min(x,y)+.05);};
+const PR=[['Ink on Page','#1C1D24','#F4F3F1'],['Ink on Surface','#1C1D24','#FFFFFF'],['Muted on Page','#6B6E76','#F4F3F1'],['Muted on Surface','#6B6E76','#FFFFFF'],['Muted on Panel (brief value)','#6B6E76','#ECEBE7'],['Muted strong on Panel','#5A5D65','#ECEBE7'],['Blue on Page','#2548F6','#F4F3F1'],['White on Blue / On-peak','#FFFFFF','#2548F6'],['Ink on Lime','#1C1D24','#DDF247'],['Ink on Mid-peak','#1C1D24','#6F89FF'],['DARK · Ink on Page','#F4F3F1','#0E0F13'],['DARK · Muted on Surface','#9A9DA6','#16171D'],['DARK · Muted on Page','#9A9DA6','#0E0F13'],['DARK · Blue on Page','#5C78FF','#0E0F13'],['DARK · Page-ink on Blue (now label)','#0E0F13','#5C78FF'],['DARK · Ink on Off-peak','#F4F3F1','#2F409A'],['DARK · Page-ink on On-peak','#0E0F13','#A9B8FF'],['DARK · Muted on Panel','#9A9DA6','#1C1D24']];
+const pairs=PR.map(([label,fg,bg])=>{const r=cr(fg,bg);const ok=r>=4.5;return {label,fg,bg,ratio:r.toFixed(2)+':1',verdict:ok?'AA PASS':'FAIL · USE MUTED STRONG',chip:"display:inline-flex;align-items:center;justify-content:center;width:44px;height:32px;border-radius:6px;border:1px solid #8884;font-weight:500;background:"+bg+";color:"+fg+";"};});
+const ts=[['88','Hero','font-size:'+(mob?48:88)+'px;font-weight:300;letter-spacing:-0.03em;line-height:1;','Run it when it’s cheap.'],['64','Display','font-size:'+(mob?40:64)+'px;font-weight:300;letter-spacing:-0.03em;line-height:1;','Wait until 7:00 PM.'],['40','Section','font-size:'+(mob?32:40)+'px;font-weight:300;letter-spacing:-0.03em;line-height:1.05;','How it works'],['28','Title','font-size:28px;font-weight:400;letter-spacing:-0.02em;line-height:1.1;','Save about 30¢'],['20','Lead','font-size:20px;line-height:1.4;','Reads your rate plan and tells you when to start.'],['16','Body','font-size:16px;line-height:1.5;','Estimates cover electricity cost only.'],['14','Small','font-size:14px;line-height:1.5;','Rates as of Nov 1, 2026'],['12','Mono label',mono+'font-size:12px;','[ TOU · WINTER · 17:30 ]']];
+const typeScale=ts.map(([size,role,style,sample])=>({size,role,style,sample}));
+const sp=[4,8,16,24,32,48,64,96,160];
+const spacing=sp.map(n=>({n:n+' px',bar:"display:block;height:12px;border-radius:2px;background:var(--bl);width:"+Math.min(n*2,480)+"px;max-width:70%;"}));
+const radii=[['6 · button',6,64],['16 · card',16,64],['24 · panel',24,64],['999 · chip',999,64]].map(([name,r,w])=>({name,style:"width:"+(w+ (r===999?32:0))+"px;height:48px;border:1px solid var(--ink);border-radius:"+r+"px;"}));
+const navI=[['Today','M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4L7 17M17 7l1.4-1.4M12 8a4 4 0 100 8 4 4 0 000-8z'],['Tomorrow','M4 7h16v13H4zM4 11h16M8 4v4M16 4v4'],['Grid','M4 20V12M10 20V5M16 20v-9M22 20H2'],['Settings','M4 8h10M18 8h2M4 16h2M10 16h10M14 6v4M6 14v4']];
+const nav=navI.map(([name,d],i)=>({name,d,side:"display:flex;align-items:center;gap:12px;min-height:44px;padding:0 12px;border-radius:8px;font-size:16px;"+(i===0?"background:var(--ink);color:var(--bg);font-weight:500;":"color:var(--ink);"),tab:"display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:56px;"+(i===0?"background:var(--ink);color:var(--bg);":"color:var(--ink);")}));
+const y=[5.1,5.5,5.5,5.3,5.3,5.1,5.0,4.9,4.9,4.6];
+const X=i=>20+i*(360/9), Y=v=>120-(v-4.2)/(5.8-4.2)*100;
+const pts=y.map((v,i)=>X(i).toFixed(0)+','+Y(v).toFixed(0)).join(' ');
+const f3=y.map((v,i)=>X(i).toFixed(0)+','+Y(5.2-0.04*i).toFixed(0)).join(' ');
+const f7=y.map((v,i)=>X(i).toFixed(0)+','+Y(5.45-0.05*i).toFixed(0)).join(' ');
+const plans=[['TOU','Default for most homes'],['ULO','Popular with EV owners'],['Tiered','Time does not matter']].map(([name,tag])=>{const on=(st.plan||'TOU')===name;return {name,tag,on:on?'true':'false',pick:()=>this.setState({plan:name}),style:"display:flex;flex-direction:column;align-items:flex-start;gap:6px;text-align:left;min-height:88px;padding:14px;border-radius:12px;font-family:inherit;cursor:pointer;border:"+(on?"2px solid var(--bl)":"1px solid var(--hl)")+";background:"+(on?"var(--bg)":"var(--sf)")+";color:var(--ink);"};});
+const planSel=st.plan||'TOU';
+const planNote=planSel==='Tiered'?'Timing does not change your price. The app will say so.':planSel==='ULO'?'Ultra-low overnight is 3.7¢ from 11 PM to 7 AM.':'Off-peak is 9.1¢ after 7 PM on weekdays and all weekend.';
+const quiet=!!st.quiet, done=st.done||'No deadline';
+const doneNote=done==='6:00 PM'?"Can't finish by 6 PM at a cheaper time, so run now.":done==='No deadline'?'No deadline. We search the next 24 hours.':'Deadline set. Only windows that finish in time are offered.';
+return {vars,theme:th,s,pad:mob?24:40,padTop:mob?32:48,h1:mob?48:88,cols2:mob?'1fr':'repeat(2,minmax(0,1fr))',cols3:mob?'1fr':'repeat(3,minmax(0,1fr))',cols4:mob?'repeat(2,minmax(0,1fr))':'repeat(4,minmax(0,1fr))',
+taglines:[{n:'A',a:'Run it when ',b:'it’s cheap.'},{n:'B',a:'Same chores. ',b:'Smaller bill.'},{n:'C',a:'Know when to ',b:'press start.'}],
+lightSw:LS.map(([name,hex])=>({name,hex})),darkSw:DS.map(([name,hex])=>({name,hex})),periods,chips,pairs,typeScale,spacing,radii,nav,pts,f3,f7,lastX:X(9).toFixed(0),lastY:Y(4.6).toFixed(0),plans,planNote,
+quiet:quiet?'true':'false',toggleQuiet:()=>this.setState({quiet:!quiet}),quietNote:quiet?'Delay-start appliances can still run overnight.':'Off by default.',
+quietBtn:"width:52px;height:32px;border-radius:999px;border:1px solid var(--ink);padding:3px;cursor:pointer;display:flex;align-items:center;background:"+(quiet?'var(--ink)':'transparent')+";justify-content:"+(quiet?'flex-end':'flex-start')+";",
+quietKnob:"display:block;width:24px;height:24px;border-radius:999px;background:"+(quiet?'var(--bg)':'var(--ink)')+";",
+setDone:(e)=>this.setState({done:e.target.value}),doneNote};
+}
+}
+</script>
+</body>
+</html>

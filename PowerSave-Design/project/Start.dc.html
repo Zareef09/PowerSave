@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Setup</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+</style>
+</helmet>
+<div style="{{vars}};background:var(--bg);color:var(--ink);font-family:Geist,system-ui,sans-serif;min-width:0;min-height:{{minH}}px;display:flex;flex-direction:column">
+<div style="border-bottom:1px solid var(--hl)"><div style="max-width:1200px;margin:0 auto;padding:0 {{padX}}px;height:72px;display:flex;align-items:center;justify-content:space-between;box-sizing:border-box"><a href="{{L.Landing}}" style="font-size:22px;font-weight:500;letter-spacing:-0.03em;color:var(--ink);text-decoration:none">PowerSave</a><a href="{{L.Today}}" style="color:var(--bl);font-size:15px;min-height:44px;display:inline-flex;align-items:center">Skip setup</a></div></div>
+
+<main style="flex:1 1 auto;display:flex;justify-content:center;padding:{{padY}}px {{padX}}px;box-sizing:border-box">
+<div style="width:100%;max-width:640px;display:flex;flex-direction:column;gap:24px">
+
+<div style="display:flex;flex-direction:column;gap:10px">
+<div style="{{s.mono}}color:var(--m2);display:flex;justify-content:space-between"><span>/START · STEP {{step}} OF 3</span><span>{{stepName}}</span></div>
+<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px" role="progressbar" aria-valuemin="1" aria-valuemax="3" aria-valuenow="{{step}}" aria-label="Setup progress">
+<sc-for list="{{bars}}" as="b" hint-placeholder-count="3"><div style="{{b.style}}"></div></sc-for></div>
+</div>
+
+<!-- step 1 -->
+<sc-if value="{{s1}}" hint-placeholder-val="{{true}}">
+<h1 style="margin:0;font-weight:300;font-size:{{h1}}px;letter-spacing:-0.03em;line-height:1">Your plan.</h1>
+<p style="margin:0;font-size:18px;line-height:1.5;color:var(--mu)">Prices depend on your rate plan. Pick the one on your bill.</p>
+<div style="display:grid;grid-template-columns:{{cols2}};gap:12px">
+<sc-for list="{{plans}}" as="pl" hint-placeholder-count="4"><button onClick="{{pl.pick}}" aria-pressed="{{pl.on}}" style="{{pl.style}}"><span style="font-size:24px;font-weight:300;letter-spacing:-0.02em">{{pl.name}}</span><span style="font-size:14px;color:var(--m2);line-height:1.4">{{pl.tag}}</span></button></sc-for>
+</div>
+<sc-if value="{{notSure}}" hint-placeholder-val="{{false}}">
+<div style="background:var(--pn);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:14px">
+<div style="{{s.mono}}color:var(--m2)">WHERE TO FIND IT · GENERIC BILL</div>
+<div style="background:#fff;color:#1C1D24;border:1px solid #D6D5D1;border-radius:8px;padding:16px;font-size:13px;display:flex;flex-direction:column;gap:8px">
+<div style="display:flex;justify-content:space-between"><b>Your electricity bill</b><span style="font-family:'Geist Mono',monospace;font-size:11px">PAGE 2</span></div>
+<div style="height:6px;background:#ECEBE7;border-radius:3px"></div>
+<div style="display:flex;justify-content:space-between;gap:8px;border:2px solid #2548F6;border-radius:6px;padding:8px;background:#EEF1FF"><span>Rate plan</span><b>Time-of-Use (TOU)</b></div>
+<div style="height:6px;background:#ECEBE7;border-radius:3px;width:70%"></div></div>
+<div style="font-size:15px;line-height:1.5">Look for "Rate plan" or "Price plan". If you see on-peak, mid-peak and off-peak, that's TOU. <b style="font-weight:500">Most Ontario homes are on TOU. You can change this any time.</b></div>
+<div><button onClick="{{useTOU}}" style="{{s.btn1}}">Use TOU for now</button></div>
+</div>
+</sc-if>
+</sc-if>
+
+<!-- step 2 -->
+<sc-if value="{{s2}}" hint-placeholder-val="{{false}}">
+<h1 style="margin:0;font-weight:300;font-size:{{h1}}px;letter-spacing:-0.03em;line-height:1">Your chores.</h1>
+<p style="margin:0;font-size:18px;line-height:1.5;color:var(--mu)">Typical estimate, edit to match yours.</p>
+<div style="display:flex;flex-direction:column;gap:12px">
+<sc-for list="{{chores}}" as="c" hint-placeholder-count="3">
+<div style="{{c.box}}">
+<button onClick="{{c.toggle}}" aria-pressed="{{c.onP}}" style="display:flex;align-items:center;gap:12px;background:none;border:0;padding:0;min-height:44px;font-family:inherit;color:var(--ink);cursor:pointer;text-align:left"><span style="{{c.check}}"></span><span style="font-size:20px;font-weight:500">{{c.n}}</span></button>
+<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px">
+<label style="display:flex;flex-direction:column;gap:6px;font-size:14px">Energy (kWh)<input type="number" step="0.1" value="{{c.kwh}}" onInput="{{c.setK}}" style="{{s.field}}"></label>
+<label style="display:flex;flex-direction:column;gap:6px;font-size:14px">Run time (min)<input type="number" step="15" value="{{c.dur}}" onInput="{{c.setD}}" style="{{s.field}}"></label></div>
+<div style="{{s.mono}}color:var(--m2)">Typical estimate, edit to match yours</div>
+</div>
+</sc-for>
+</div>
+<div><button onClick="{{addChore}}" style="{{s.btn2}}">Add custom chore</button></div>
+</sc-if>
+
+<!-- step 3 -->
+<sc-if value="{{s3}}" hint-placeholder-val="{{false}}">
+<h1 style="margin:0;font-weight:300;font-size:{{h1}}px;letter-spacing:-0.03em;line-height:1">A few <span style="color:var(--mu)">preferences.</span></h1>
+<div style="background:var(--sf);border:1px solid var(--hl);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:16px"><span style="font-size:16px">Only suggest times when I'm awake<br><span style="{{s.mono}}color:var(--m2)">Quiet hours 10 PM–7 AM · optional</span></span>
+<button onClick="{{toggleQuiet}}" aria-pressed="{{quietP}}" aria-label="Only suggest times when I'm awake" style="{{quietBtn}}"><span style="{{quietKnob}}"></span></button></div>
+<sc-if value="{{quiet}}" hint-placeholder-val="{{false}}"><div style="font-size:14px;color:var(--m2)">Delay-start appliances can still run overnight.</div></sc-if>
+</div>
+<div style="background:var(--sf);border:1px solid var(--hl);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:14px">
+<div style="font-size:20px;font-weight:500">Save across devices?</div>
+<div style="font-size:15px;line-height:1.5;color:var(--m2)">Optional. Everything works without an account.</div>
+<label style="display:flex;flex-direction:column;gap:6px;font-size:14px">Email<input type="email" placeholder="you@example.com" style="{{s.field}}"></label>
+<div style="display:grid;grid-template-columns:{{cols2}};gap:10px"><button onClick="{{sendLink}}" style="{{s.btn2b}}">Email me a magic link</button><a href="{{L.Today}}" style="{{s.btn2a}}">Continue as guest</a></div>
+<sc-if value="{{linkSent}}" hint-placeholder-val="{{false}}"><div role="status" style="font-size:14px;border:1px solid var(--ink);border-radius:8px;padding:10px 12px">Check your email for the link. You can keep going as a guest meanwhile.</div></sc-if>
+</div>
+</sc-if>
+
+<div style="display:flex;justify-content:space-between;gap:12px;align-items:center;border-top:1px solid var(--hl);padding-top:20px">
+<a href="{{backHref}}" onClick="{{back}}" style="{{s.btn2a}}">← Back</a>
+<sc-if value="{{notLast}}" hint-placeholder-val="{{true}}"><button onClick="{{next}}" style="{{s.btn1}}">Continue</button></sc-if>
+<sc-if value="{{isLast}}" hint-placeholder-val="{{false}}"><a href="{{L.Today}}" style="{{s.btn1a}}">See my cheapest times</a></sc-if>
+</div>
+</div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"device":{"editor":"enum","options":["desktop","mobile"],"default":"desktop"},"step":{"editor":"enum","options":["1","2","3"],"default":"1"},"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+renderVals() {
+const TH={light:{'--bg':'#F4F3F1','--sf':'#FFFFFF','--pn':'#ECEBE7','--ink':'#1C1D24','--mu':'#6B6E76','--m2':'#5A5D65','--hl':'#D6D5D1','--bl':'#2548F6'},dark:{'--bg':'#0E0F13','--sf':'#16171D','--pn':'#1C1D24','--ink':'#F4F3F1','--mu':'#9A9DA6','--m2':'#B4B7BF','--hl':'#2A2B33','--bl':'#5C78FF'}};
+const th=this.props.theme==='dark'?'dark':'light', mob=this.props.device==='mobile', dk=th==='dark';
+const vars=Object.entries(TH[th]).map(([k,v])=>k+':'+v).join(';');
+const sx=(dk?'-dk':'')+(mob?'-m':''); const L={}; ['Landing','HowItWorks','Plan','Privacy','Start','Today','Chore','Tomorrow','Grid','Settings','SignIn'].forEach(n=>L[n]=n+sx+'.dc.html');
+const mono="font-family:'Geist Mono',ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-variant-numeric:tabular-nums;";
+const s={mono,
+btn1:"background:var(--ink);color:var(--bg);border:0;border-radius:6px;min-height:48px;padding:0 22px;font-size:16px;font-weight:500;font-family:inherit;cursor:pointer;",
+btn1a:"display:inline-flex;align-items:center;background:var(--ink);color:var(--bg);border-radius:6px;min-height:48px;padding:0 22px;font-size:16px;font-weight:500;text-decoration:none;box-sizing:border-box;",
+btn2:"background:transparent;color:var(--ink);border:1px solid var(--ink);border-radius:6px;min-height:48px;padding:0 20px;font-size:16px;font-weight:500;font-family:inherit;cursor:pointer;",
+btn2b:"background:transparent;color:var(--ink);border:1px solid var(--ink);border-radius:6px;min-height:48px;padding:0 16px;font-size:16px;font-weight:500;font-family:inherit;cursor:pointer;",
+btn2a:"display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--ink);color:var(--ink);border-radius:6px;min-height:48px;padding:0 20px;font-size:16px;font-weight:500;text-decoration:none;box-sizing:border-box;",
+field:"min-height:44px;border:1px solid var(--hl);border-radius:6px;background:var(--bg);color:var(--ink);padding:0 12px;font-size:16px;font-family:inherit;box-sizing:border-box;width:100%;"};
+const st=this.state||{};
+const step=st.step||parseInt(this.props.step||'1',10)||1;
+const planSel=st.plan||'TOU', quiet=!!st.quiet;
+const P=[['TOU','Time-of-Use','The default for most Ontario homes. Cheaper evenings, nights and weekends.'],['ULO','Ultra-Low Overnight','3.7¢ overnight. Popular with EV owners.'],['Tiered','Tiered','One price at every hour. Timing doesn’t matter.'],['Not sure','Not sure','We’ll show you where to look on a bill.']];
+const notSure=planSel==='Not sure';
+const plans=P.map(([v,name,tag])=>{const on=planSel===v;return {name,tag,on:on?'true':'false',pick:()=>this.setState({plan:v}),style:"display:flex;flex-direction:column;align-items:flex-start;gap:8px;text-align:left;min-height:120px;padding:18px;border-radius:16px;font-family:inherit;cursor:pointer;border:"+(on?"2px solid var(--bl)":"1px solid var(--hl)")+";background:"+(on?"var(--bg)":"var(--sf)")+";color:var(--ink);"};});
+const base=st.chores||[{n:'Laundry',kwh:3,dur:90,on:true},{n:'Dishwasher',kwh:1.2,dur:120,on:true},{n:'EV charging',kwh:28.8,dur:240,on:false}];
+const upd=(i,p)=>this.setState({chores:base.map((c,j)=>j===i?{...c,...p}:c)});
+const chores=base.map((c,i)=>({...c,onP:c.on?'true':'false',box:"background:var(--sf);border:"+(c.on?"2px solid var(--bl)":"1px solid var(--hl)")+";border-radius:16px;padding:16px 20px;display:flex;flex-direction:column;gap:12px;",check:"display:inline-flex;width:24px;height:24px;border-radius:6px;border:2px solid var(--ink);box-sizing:border-box;background:"+(c.on?"var(--ink)":"transparent")+";",toggle:()=>upd(i,{on:!c.on}),setK:(e)=>upd(i,{kwh:parseFloat(e.target.value)||c.kwh}),setD:(e)=>upd(i,{dur:parseInt(e.target.value,10)||c.dur})}));
+const names=['','YOUR PLAN','YOUR CHORES','PREFERENCES'];
+const bars=[1,2,3].map(n=>({style:"height:4px;border-radius:2px;background:"+(n<=step?'var(--ink)':'var(--hl)')+";"}));
+const backHref=step===1?L.Landing:'#';
+return {vars,s,L,minH:mob?1550:1250,padX:mob?24:40,padY:mob?32:72,h1:mob?40:56,cols2:mob?'1fr':'repeat(2,minmax(0,1fr))',
+step,stepName:names[step],bars,s1:step===1,s2:step===2,s3:step===3,plans,notSure,useTOU:()=>this.setState({plan:'TOU'}),chores,addChore:()=>this.setState({chores:[...base,{n:'Custom chore',kwh:1,dur:60,on:true}]}),
+quiet,quietP:quiet?'true':'false',toggleQuiet:()=>this.setState({quiet:!quiet}),quietBtn:"width:52px;height:32px;flex:0 0 auto;border-radius:999px;border:1px solid var(--ink);padding:3px;cursor:pointer;display:flex;align-items:center;background:"+(quiet?'var(--ink)':'transparent')+";justify-content:"+(quiet?'flex-end':'flex-start')+";",quietKnob:"display:block;width:24px;height:24px;border-radius:999px;background:"+(quiet?'var(--bg)':'var(--ink)')+";",
+linkSent:!!st.link,sendLink:()=>this.setState({link:true}),
+backHref,back:(e)=>{if(step>1){try{e.preventDefault();}catch(x){} this.setState({step:step-1});}},next:()=>this.setState({step:Math.min(3,step+1)}),notLast:step<3,isLast:step===3};
+}
+}
+</script>
+</body>
+</html>

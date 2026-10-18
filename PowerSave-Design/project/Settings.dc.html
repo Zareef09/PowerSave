@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Settings</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+</style>
+</helmet>
+<div style="{{vars}};background:var(--bg);color:var(--ink);font-family:Geist,system-ui,sans-serif;min-width:0;min-height:{{minH}}px;display:flex;flex-direction:{{shellDir}}">
+
+<sc-if value="{{desk}}" hint-placeholder-val="{{true}}">
+<aside style="flex:0 0 248px;border-right:1px solid var(--hl);padding:24px 16px;box-sizing:border-box;display:flex;flex-direction:column;gap:32px">
+<a href="{{L.Landing}}" style="font-size:22px;font-weight:500;letter-spacing:-0.03em;color:var(--ink);text-decoration:none;padding:0 12px">PowerSave</a>
+<nav style="display:flex;flex-direction:column;gap:4px">
+<sc-for list="{{nav}}" as="n" hint-placeholder-count="4"><a href="{{n.href}}" aria-current="{{n.cur}}" style="{{n.side}}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{n.d}}"/></svg>{{n.name}}</a></sc-for>
+</nav>
+<div style="margin-top:auto;display:flex;flex-direction:column;gap:8px;padding:0 12px"><span style="{{s.mono}}color:var(--m2)">[ GUEST · THIS DEVICE ]</span><a href="{{L.SignIn}}" style="color:var(--bl);font-size:14px">Save across devices →</a></div>
+</aside>
+</sc-if>
+
+<div style="flex:1 1 0;min-width:0;display:flex;flex-direction:column">
+<sc-if value="{{mobile}}" hint-placeholder-val="{{false}}"><div style="display:flex;justify-content:space-between;align-items:center;padding:16px 24px;border-bottom:1px solid var(--hl)"><a href="{{L.Landing}}" style="font-size:20px;font-weight:500;letter-spacing:-0.03em;color:var(--ink);text-decoration:none">PowerSave</a><span style="{{s.mono}}color:var(--m2)">[ GUEST ]</span></div></sc-if>
+
+<main style="flex:1 1 auto;padding:{{padY}}px {{padX}}px;box-sizing:border-box;max-width:880px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:20px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<div style="{{s.mono}}color:var(--mu);display:flex;flex-wrap:wrap;gap:6px 20px;justify-content:space-between"><span>[ SAVED ON THIS DEVICE ]</span><span>[ RATES OEB · NOV 1 2026 ]</span></div>
+<h1 style="margin:0;font-weight:300;font-size:{{h1}}px;letter-spacing:-0.03em;line-height:1">Settings</h1>
+</div>
+
+<!-- plan -->
+<section style="{{s.card}}">
+<div style="{{s.mono}}color:var(--m2)">YOUR PLAN</div>
+<div style="display:grid;grid-template-columns:{{cols3}};gap:8px">
+<sc-for list="{{plans}}" as="pl" hint-placeholder-count="3"><button onClick="{{pl.pick}}" aria-pressed="{{pl.on}}" style="{{pl.style}}"><span style="font-size:20px;font-weight:500">{{pl.name}}</span><span style="{{s.mono}}color:var(--m2)">{{pl.tag}}</span></button></sc-for>
+</div>
+<div style="font-size:14px;color:var(--m2)">Not sure? <a href="{{L.Plan}}" style="color:var(--bl)">Find your plan on a bill →</a></div>
+</section>
+
+<!-- chores -->
+<section style="{{s.card}}">
+<div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><span style="{{s.mono}}color:var(--m2)">YOUR CHORES</span><span style="font-size:13px;color:var(--m2)">Typical estimates. Edit to match yours.</span></div>
+<sc-for list="{{chores}}" as="c" hint-placeholder-count="3">
+<div style="border:1px solid var(--hl);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;flex-wrap:wrap;gap:8px 16px;justify-content:space-between;align-items:center"><div><div style="font-size:18px;font-weight:500">{{c.n}}</div><div style="{{s.mono}}color:var(--m2);margin-top:2px">{{c.spec}}</div></div>
+<div style="display:flex;gap:8px"><button onClick="{{c.toggle}}" style="{{s.btn2}}">{{c.editLabel}}</button><button onClick="{{c.remove}}" aria-label="Delete {{c.n}}" style="{{s.btn2}}">Delete</button></div></div>
+<sc-if value="{{c.edit}}" hint-placeholder-val="{{false}}"><div style="display:grid;grid-template-columns:{{cols3}};gap:12px">
+<label style="display:flex;flex-direction:column;gap:6px;font-size:14px">Name<input type="text" value="{{c.n}}" onInput="{{c.setN}}" style="{{s.field}}"></label>
+<label style="display:flex;flex-direction:column;gap:6px;font-size:14px">Energy (kWh)<input type="number" step="0.1" value="{{c.kwh}}" onInput="{{c.setK}}" style="{{s.field}}"></label>
+<label style="display:flex;flex-direction:column;gap:6px;font-size:14px">Run time (min)<input type="number" step="15" value="{{c.dur}}" onInput="{{c.setD}}" style="{{s.field}}"></label></div></sc-if>
+</div>
+</sc-for>
+<div><button onClick="{{addChore}}" style="{{s.btn1}}">Add custom chore</button></div>
+</section>
+
+<!-- quiet hours + units + theme -->
+<section style="{{s.card}}">
+<div style="{{s.mono}}color:var(--m2)">PREFERENCES</div>
+<div style="display:flex;align-items:center;justify-content:space-between;gap:16px"><span style="font-size:16px">Only suggest times when I'm awake<br><span style="{{s.mono}}color:var(--m2)">Quiet hours 10 PM–7 AM</span></span>
+<button onClick="{{toggleQuiet}}" aria-pressed="{{quietP}}" aria-label="Only suggest times when I'm awake" style="{{quietBtn}}"><span style="{{quietKnob}}"></span></button></div>
+<div style="font-size:14px;color:var(--m2)">{{quietNote}}</div>
+<div style="border-top:1px solid var(--hl);padding-top:16px;display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify-content:space-between"><span style="font-size:16px">Show prices in</span>
+<div role="group" aria-label="Units" style="display:flex;border:1px solid var(--ink);border-radius:6px;overflow:hidden"><sc-for list="{{unitOpts}}" as="u" hint-placeholder-count="2"><button onClick="{{u.pick}}" aria-pressed="{{u.on}}" style="{{u.style}}">{{u.t}}</button></sc-for></div></div>
+<div style="font-size:14px;color:var(--m2);font-variant-numeric:tabular-nums">Example: laundry now costs {{exNow}}, at 7:00 PM {{exBest}}. Sample data.</div>
+<div style="border-top:1px solid var(--hl);padding-top:16px;display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify-content:space-between"><span style="font-size:16px">Theme</span>
+<div role="group" aria-label="Theme" style="display:flex;border:1px solid var(--ink);border-radius:6px;overflow:hidden"><sc-for list="{{themeOpts}}" as="u" hint-placeholder-count="3"><button onClick="{{u.pick}}" aria-pressed="{{u.on}}" style="{{u.style}}">{{u.t}}</button></sc-for></div></div>
+</section>
+
+<!-- account -->
+<section style="{{s.card}}">
+<div style="{{s.mono}}color:var(--m2)">ACCOUNT</div>
+<div style="font-size:16px;line-height:1.5">You're using PowerSave as a guest. Everything works without an account. Signing in only saves your settings across devices.</div>
+<div style="display:flex;flex-wrap:wrap;gap:8px"><a href="{{L.SignIn}}" style="{{s.btn1a}}">Sign in</a><button onClick="{{askDelete}}" style="{{s.btn2}}">Delete my data</button></div>
+<sc-if value="{{confirmDelete}}" hint-placeholder-val="{{false}}"><div role="alertdialog" aria-label="Confirm delete" style="border:2px solid var(--ink);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px"><div style="font-size:16px;font-weight:500">Delete all saved settings?</div><div style="font-size:14px;line-height:1.5;color:var(--m2)">This clears your plan, chores and preferences from this device. It can't be undone.</div><div style="display:flex;gap:8px"><button onClick="{{doDelete}}" style="{{s.btn1}}">Delete</button><button onClick="{{cancelDelete}}" style="{{s.btn2}}">Cancel</button></div></div></sc-if>
+<sc-if value="{{deleted}}" hint-placeholder-val="{{false}}"><div role="status" style="background:var(--ink);color:var(--bg);border-radius:12px;padding:12px 16px;font-size:14px">Your data was deleted from this device.</div></sc-if>
+</section>
+
+<!-- report -->
+<section style="{{s.card}}">
+<div style="{{s.mono}}color:var(--m2)">REPORT A WRONG RATE OR BUG</div>
+<label style="display:flex;flex-direction:column;gap:6px;font-size:14px">What's wrong?
+<select style="{{s.field}}"><option>A rate looks wrong</option><option>The advice looks wrong</option><option>Something is broken</option></select></label>
+<label style="display:flex;flex-direction:column;gap:6px;font-size:14px">Details
+<textarea rows="4" placeholder="Which plan, which time, what you expected." style="{{s.area}}"></textarea></label>
+<label style="display:flex;flex-direction:column;gap:6px;font-size:14px">Email, only if you want a reply (optional)<input type="email" placeholder="you@example.com" style="{{s.field}}"></label>
+<div><button onClick="{{sendReport}}" style="{{s.btn1}}">Send report</button></div>
+<sc-if value="{{reported}}" hint-placeholder-val="{{false}}"><div role="status" style="background:var(--ink);color:var(--bg);border-radius:12px;padding:12px 16px;font-size:14px">Thanks. Report sent.</div></sc-if>
+</section>
+</main>
+
+<sc-if value="{{mobile}}" hint-placeholder-val="{{false}}">
+<nav style="position:sticky;bottom:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid var(--hl);background:var(--bg)">
+<sc-for list="{{nav}}" as="n" hint-placeholder-count="4"><a href="{{n.href}}" aria-current="{{n.cur}}" style="{{n.tab}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{n.d}}"/></svg><span style="font-size:11px">{{n.name}}</span></a></sc-for>
+</nav>
+</sc-if>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"device":{"editor":"enum","options":["desktop","mobile"],"default":"desktop"},"$preview":{"width":1440,"height":1700}}'>
+class Component extends DCLogic {
+renderVals() {
+const TH={light:{'--bg':'#F4F3F1','--sf':'#FFFFFF','--pn':'#ECEBE7','--ink':'#1C1D24','--mu':'#6B6E76','--m2':'#5A5D65','--hl':'#D6D5D1','--bl':'#2548F6'},dark:{'--bg':'#0E0F13','--sf':'#16171D','--pn':'#1C1D24','--ink':'#F4F3F1','--mu':'#9A9DA6','--m2':'#B4B7BF','--hl':'#2A2B33','--bl':'#5C78FF'}};
+const th=this.props.theme==='dark'?'dark':'light', mob=this.props.device==='mobile', dk=th==='dark';
+const vars=Object.entries(TH[th]).map(([k,v])=>k+':'+v).join(';');
+const sx=(dk?'-dk':'')+(mob?'-m':''); const L={}; ['Landing','HowItWorks','Plan','Privacy','Start','Today','Chore','Tomorrow','Grid','Settings','SignIn'].forEach(n=>L[n]=n+sx+'.dc.html');
+const mono="font-family:'Geist Mono',ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-variant-numeric:tabular-nums;";
+const s={mono,
+card:"background:var(--sf);border:1px solid var(--hl);border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:16px;min-width:0;",
+btn1:"background:var(--ink);color:var(--bg);border:0;border-radius:6px;min-height:44px;padding:0 18px;font-size:16px;font-weight:500;font-family:inherit;cursor:pointer;",
+btn1a:"display:inline-flex;align-items:center;background:var(--ink);color:var(--bg);border-radius:6px;min-height:44px;padding:0 18px;font-size:16px;font-weight:500;text-decoration:none;box-sizing:border-box;",
+btn2:"background:transparent;color:var(--ink);border:1px solid var(--ink);border-radius:6px;min-height:44px;padding:0 16px;font-size:15px;font-weight:500;font-family:inherit;cursor:pointer;",
+field:"min-height:44px;border:1px solid var(--hl);border-radius:6px;background:var(--bg);color:var(--ink);padding:0 12px;font-size:16px;font-family:inherit;box-sizing:border-box;width:100%;",
+area:"border:1px solid var(--hl);border-radius:6px;background:var(--bg);color:var(--ink);padding:10px 12px;font-size:16px;font-family:inherit;box-sizing:border-box;width:100%;resize:vertical;"};
+const st=this.state||{};
+const planSel=st.plan||'TOU', quiet=!!st.quiet, units=st.units||'cents', themeSel=st.themeSel||'system';
+const plans=[['TOU','Default for most homes'],['ULO','Popular with EV owners'],['Tiered','Time doesn’t matter']].map(([name,tag])=>{const on=planSel===name;return {name,tag,on:on?'true':'false',pick:()=>this.setState({plan:name}),style:"display:flex;flex-direction:column;align-items:flex-start;gap:6px;text-align:left;min-height:84px;padding:14px;border-radius:12px;font-family:inherit;cursor:pointer;border:"+(on?"2px solid var(--bl)":"1px solid var(--hl)")+";background:"+(on?"var(--bg)":"var(--sf)")+";color:var(--ink);"};});
+const base=st.chores||[{n:'Laundry',kwh:3,dur:90,edit:false},{n:'Dishwasher',kwh:1.2,dur:120,edit:false},{n:'EV charging',kwh:28.8,dur:240,edit:false}];
+const upd=(i,patch)=>this.setState({chores:base.map((c,j)=>j===i?{...c,...patch}:c)});
+const chores=base.map((c,i)=>({...c,spec:c.kwh+' kWh · '+(c.dur%60===0?c.dur/60+' h':c.dur+' min'),editLabel:c.edit?'Done':'Edit',toggle:()=>upd(i,{edit:!c.edit}),remove:()=>this.setState({chores:base.filter((x,j)=>j!==i)}),setN:(e)=>upd(i,{n:e.target.value}),setK:(e)=>upd(i,{kwh:parseFloat(e.target.value)||c.kwh}),setD:(e)=>upd(i,{dur:parseInt(e.target.value,10)||c.dur})}));
+const seg=(on)=>"min-height:44px;padding:0 18px;border:0;font-size:15px;font-weight:500;font-family:inherit;cursor:pointer;background:"+(on?'var(--ink)':'transparent')+";color:"+(on?'var(--bg)':'var(--ink)')+";";
+const unitOpts=[['cents','¢ cents'],['dollars','$ dollars']].map(([v,t])=>({t,on:units===v?'true':'false',pick:()=>this.setState({units:v}),style:seg(units===v)}));
+const themeOpts=[['system','System'],['light','Light'],['dark','Dark']].map(([v,t])=>({t,on:themeSel===v?'true':'false',pick:()=>this.setState({themeSel:v}),style:seg(themeSel===v)}));
+const navI=[['Today','M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4L7 17M17 7l1.4-1.4M12 8a4 4 0 100 8 4 4 0 000-8z',L.Today],['Tomorrow','M4 7h16v13H4zM4 11h16M8 4v4M16 4v4',L.Tomorrow],['Grid','M4 20V12M10 20V5M16 20v-9M22 20H2',L.Grid],['Settings','M4 8h10M18 8h2M4 16h2M10 16h10M14 6v4M6 14v4',L.Settings]];
+const nav=navI.map(([name,d,href],i)=>({name,d,href,cur:i===3?'page':'false',side:"display:flex;align-items:center;gap:12px;min-height:44px;padding:0 12px;border-radius:8px;font-size:16px;text-decoration:none;"+(i===3?"background:var(--ink);color:var(--bg);font-weight:500;":"color:var(--ink);"),tab:"display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:60px;text-decoration:none;"+(i===3?"background:var(--ink);color:var(--bg);":"color:var(--ink);")}));
+return {vars,s,L,nav,desk:!mob,mobile:mob,shellDir:mob?'column':'row',minH:mob?2600:1650,padX:mob?24:48,padY:mob?24:48,h1:mob?40:56,cols3:mob?'1fr':'repeat(3,minmax(0,1fr))',
+plans,chores,unitOpts,themeOpts,exNow:units==='cents'?'57¢':'$0.57',exBest:units==='cents'?'27¢':'$0.27',
+addChore:()=>this.setState({chores:[...base,{n:'Custom chore',kwh:1,dur:60,edit:true}]}),
+quietP:quiet?'true':'false',toggleQuiet:()=>this.setState({quiet:!quiet}),quietNote:quiet?'Delay-start appliances can still run overnight.':'Off by default.',
+quietBtn:"width:52px;height:32px;flex:0 0 auto;border-radius:999px;border:1px solid var(--ink);padding:3px;cursor:pointer;display:flex;align-items:center;background:"+(quiet?'var(--ink)':'transparent')+";justify-content:"+(quiet?'flex-end':'flex-start')+";",quietKnob:"display:block;width:24px;height:24px;border-radius:999px;background:"+(quiet?'var(--bg)':'var(--ink)')+";",
+confirmDelete:!!st.confirm,deleted:!!st.deleted,askDelete:()=>this.setState({confirm:true,deleted:false}),cancelDelete:()=>this.setState({confirm:false}),doDelete:()=>this.setState({confirm:false,deleted:true}),
+reported:!!st.reported,sendReport:()=>this.setState({reported:true})};
+}
+}
+</script>
+</body>
+</html>

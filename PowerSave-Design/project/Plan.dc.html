@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Plans</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+</style>
+</helmet>
+<div style="{{vars}};background:var(--bg);color:var(--ink);font-family:Geist,system-ui,sans-serif;min-width:0;overflow-x:hidden">
+
+<div style="border-bottom:1px solid var(--hl)">
+<div style="max-width:1200px;margin:0 auto;padding:0 {{pad}}px;height:72px;display:flex;align-items:center;justify-content:space-between;gap:16px;box-sizing:border-box">
+<a href="{{L.Landing}}" style="font-size:22px;font-weight:500;letter-spacing:-0.03em;color:var(--ink);text-decoration:none">PowerSave</a>
+<sc-if value="{{desk}}" hint-placeholder-val="{{true}}"><nav style="display:flex;gap:32px;font-size:15px"><a href="{{L.HowItWorks}}" style="{{s.link}}">How it works</a><a href="{{L.Plan}}" style="color:var(--ink);text-decoration:none;font-weight:500">Plans</a><a href="{{L.Grid}}" style="{{s.link}}">The Grid</a></nav></sc-if>
+<a href="{{L.Today}}" style="{{s.btn1}}">Open app</a>
+</div></div>
+
+<div style="max-width:1200px;margin:0 auto;padding:{{heroTop}}px {{pad}}px 0;box-sizing:border-box">
+<div style="{{s.mono}}color:var(--mu);display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between"><span>/PLAN</span><span>[ RATES OEB · NOV 1 2026 ]</span></div>
+<h1 style="margin:{{h1m}}px 0 20px;font-weight:300;font-size:{{h1}}px;letter-spacing:-0.03em;line-height:1;text-wrap:balance"><span style="color:var(--mu)">Which plan </span>am I on?</h1>
+<p style="margin:0;max-width:640px;font-size:20px;line-height:1.4;color:var(--mu)">Your plan sets the prices, and the prices set the advice. Three plans, side by side.</p>
+</div>
+
+<!-- plans -->
+<div style="max-width:1200px;margin:0 auto;padding:{{sec}}px {{pad}}px 0;box-sizing:border-box">
+<div style="display:flex;flex-wrap:wrap;gap:12px 24px;justify-content:space-between;align-items:center">
+<div style="{{s.mono}}color:var(--mu)">/01 [ THE THREE PLANS ]</div>
+<div role="group" aria-label="Day type" style="display:flex;border:1px solid var(--ink);border-radius:6px;overflow:hidden"><sc-for list="{{dayOpts}}" as="d" hint-placeholder-count="2"><button onClick="{{d.pick}}" aria-pressed="{{d.on}}" style="{{d.style}}">{{d.t}}</button></sc-for></div>
+</div>
+<div style="display:grid;grid-template-columns:{{cols3}};gap:16px;margin-top:24px">
+<sc-for list="{{plans}}" as="p" hint-placeholder-count="3">
+<div style="background:var(--sf);border:1px solid var(--hl);border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:18px;min-width:0">
+<div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px"><span style="font-size:32px;font-weight:300;letter-spacing:-0.03em">{{p.name}}</span><span style="{{s.mono}}color:var(--m2)">{{p.long}}</span></div>
+<dc-import name="Ribbon" theme="{{theme}}" plan="{{p.plan}}" day="{{day}}" variant="mini" startMin="0" nowMin="-1" winStart="-1" hint-size="100%,42px"></dc-import>
+<div style="display:flex;justify-content:space-between;{{s.mono}}color:var(--m2);font-size:10px"><span>12 AM</span><span>12 PM</span><span>12 AM</span></div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<sc-for list="{{p.rows}}" as="r" hint-placeholder-count="4"><div style="display:flex;align-items:center;gap:10px;font-size:15px;font-variant-numeric:tabular-nums"><span style="{{r.sw}}"></span><span style="flex:1">{{r.t}}</span><b style="font-weight:500">{{r.v}}</b></div></sc-for></div>
+<p style="margin:0;font-size:15px;line-height:1.5;color:var(--m2)">{{p.line}}</p>
+</div>
+</sc-for>
+</div>
+<div style="margin-top:12px;font-size:13px;color:var(--m2);line-height:1.5">TOU hours shown are the winter schedule (Nov 1 to Apr 30). In summer (May 1 to Oct 31) the on-peak and mid-peak periods swap. ULO hours are the same all year. {{dayNote}}</div>
+</div>
+
+<!-- bill helper -->
+<div style="max-width:1200px;margin:0 auto;padding:{{sec}}px {{pad}}px 0;box-sizing:border-box">
+<div style="background:var(--pn);border:1px solid var(--hl);border-radius:24px;padding:{{panelPad}}px">
+<div style="{{s.mono}}color:var(--m2)">/02 [ FIND IT ON YOUR BILL ]</div>
+<h2 style="{{s.h2}}">Not sure? <span style="color:var(--m2)">Look here.</span></h2>
+<div style="display:grid;grid-template-columns:{{cols2}};gap:{{gap}}px;margin-top:32px;align-items:center">
+<div style="background:#fff;color:#1C1D24;border:1px solid #D6D5D1;border-radius:12px;padding:20px;font-size:14px;display:flex;flex-direction:column;gap:10px">
+<div style="display:flex;justify-content:space-between"><b>Your electricity bill</b><span style="font-family:'Geist Mono',monospace;font-size:11px">PAGE 2</span></div>
+<div style="height:7px;background:#ECEBE7;border-radius:3px"></div><div style="height:7px;background:#ECEBE7;border-radius:3px;width:60%"></div>
+<div style="display:flex;justify-content:space-between;gap:8px;border:2px solid #2548F6;border-radius:8px;padding:10px;background:#EEF1FF"><span>Rate plan</span><b>Time-of-Use (TOU)</b></div>
+<div style="height:7px;background:#ECEBE7;border-radius:3px;width:80%"></div>
+<div style="display:grid;grid-template-columns:1fr auto;gap:6px 12px;font-size:13px"><span>On-peak</span><span>kWh</span><span>Mid-peak</span><span>kWh</span><span>Off-peak</span><span>kWh</span></div>
+<div style="font-size:12px;color:#5A5D65">Generic example. Your bill's layout will differ.</div></div>
+<div style="display:flex;flex-direction:column;gap:14px">
+<sc-for list="{{billSteps}}" as="b" hint-placeholder-count="3"><div style="display:flex;gap:14px;align-items:flex-start"><span style="{{s.mono}}color:var(--m2);flex:0 0 32px;padding-top:3px">{{b.i}}</span><span style="font-size:17px;line-height:1.5">{{b.t}}</span></div></sc-for>
+<div style="margin-top:6px;font-size:16px;line-height:1.5"><b style="font-weight:500">Still not sure?</b> Most Ontario homes are on TOU. Start there. You can change this any time.</div>
+<div><a href="{{L.Start}}" style="{{s.btnLime}}">Set up my plan</a></div></div>
+</div></div></div>
+
+<!-- switching -->
+<div style="max-width:1200px;margin:0 auto;padding:{{sec}}px {{pad}}px {{sec}}px;box-sizing:border-box">
+<div style="{{s.mono}}color:var(--mu)">/03 [ SWITCHING ]</div>
+<h2 style="{{s.h2}}">Thinking of switching?</h2>
+<p style="margin:16px 0 0;max-width:640px;font-size:18px;line-height:1.5;color:var(--mu)">Plan changes are made through your utility, not through PowerSave. We don't recommend a plan. We just show what each one costs hour by hour.</p>
+</div>
+
+<div style="border-top:1px solid var(--hl)"><div style="max-width:1200px;margin:0 auto;padding:40px {{pad}}px;box-sizing:border-box;display:flex;flex-wrap:wrap;gap:16px 32px;justify-content:space-between;align-items:center"><span style="{{s.mono}}color:var(--m2)">[ V1 · RATES NOV 1 2026 ]</span><div style="display:flex;gap:24px;font-size:15px"><a href="{{L.HowItWorks}}" style="{{s.link}}">How it works</a><a href="{{L.Privacy}}" style="{{s.link}}">Privacy</a><a href="{{L.Landing}}" style="{{s.link}}">Home</a></div></div></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"device":{"editor":"enum","options":["desktop","mobile"],"default":"desktop"},"$preview":{"width":1440,"height":3000}}'>
+class Component extends DCLogic {
+renderVals() {
+const TH={light:{'--bg':'#F4F3F1','--sf':'#FFFFFF','--pn':'#ECEBE7','--ink':'#1C1D24','--mu':'#6B6E76','--m2':'#5A5D65','--hl':'#D6D5D1','--bl':'#2548F6','--ul':'#DCE3FF','--of':'#B7C4FF','--md':'#6F89FF','--on':'#2548F6','--tm':'#1C1D24','--to':'#FFFFFF','--tbl':'#FFFFFF'},dark:{'--bg':'#0E0F13','--sf':'#16171D','--pn':'#1C1D24','--ink':'#F4F3F1','--mu':'#9A9DA6','--m2':'#B4B7BF','--hl':'#2A2B33','--bl':'#5C78FF','--ul':'#1E2760','--of':'#2F409A','--md':'#5C78FF','--on':'#A9B8FF','--tm':'#0E0F13','--to':'#0E0F13','--tbl':'#0E0F13'}};
+const th=this.props.theme==='dark'?'dark':'light', mob=this.props.device==='mobile', dk=th==='dark';
+const vars=Object.entries(TH[th]).map(([k,v])=>k+':'+v).join(';');
+const sx=(dk?'-dk':'')+(mob?'-m':''); const L={}; ['Landing','HowItWorks','Plan','Privacy','Start','Today','Chore','Tomorrow','Grid','Settings','SignIn'].forEach(n=>L[n]=n+sx+'.dc.html');
+const mono="font-family:'Geist Mono',ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-variant-numeric:tabular-nums;";
+const s={mono,link:"color:var(--ink);text-decoration:none;",
+h2:"margin:12px 0 0;font-weight:300;font-size:"+(mob?32:40)+"px;letter-spacing:-0.03em;line-height:1.05;",
+btn1:"display:inline-flex;align-items:center;background:var(--ink);color:var(--bg);border-radius:6px;min-height:44px;padding:0 20px;font-size:16px;font-weight:500;text-decoration:none;box-sizing:border-box;",
+btnLime:"display:inline-flex;align-items:center;background:#DDF247;color:#1C1D24;border-radius:6px;min-height:48px;padding:0 24px;font-size:16px;font-weight:500;text-decoration:none;box-sizing:border-box;"};
+const st=this.state||{}; const day=st.day||'weekday', wkd=day==='weekday';
+const hc=dk?'rgba(244,243,241,':'rgba(28,29,36,', onc=dk?'rgba(14,15,19,':'rgba(255,255,255,';
+const pat={ul:"background-image:radial-gradient("+hc+".45) 1px,transparent 1.4px);background-size:5px 5px;",of:"background-image:repeating-linear-gradient(0deg,"+hc+".3) 0 1px,transparent 1px 4px);",md:"background-image:repeating-linear-gradient(45deg,"+hc+".4) 0 1px,transparent 1px 5px);",on:"background-image:repeating-linear-gradient(45deg,"+onc+".5) 0 1px,transparent 1px 4px),repeating-linear-gradient(-45deg,"+onc+".5) 0 1px,transparent 1px 4px);"};
+const sw=(k)=>"display:inline-block;flex:0 0 auto;width:18px;height:18px;border-radius:4px;border:1px solid var(--hl);background-color:var(--"+k+");"+pat[k];
+const plans=[
+{name:'TOU',long:'Time-of-Use',plan:'TOU',rows:[{sw:sw('of'),t:wkd?'Off-peak · 7 PM–7 AM':'Off-peak · all day',v:'9.1¢'},{sw:sw('md'),t:wkd?'Mid-peak · 11 AM–5 PM':'No mid-peak on weekends',v:wkd?'14.6¢':'—'},{sw:sw('on'),t:wkd?'On-peak · 7–11 AM, 5–7 PM':'No on-peak on weekends',v:wkd?'18.9¢':'—'}],line:wkd?'The default for most Ontario homes. Evenings after 7 PM are the cheap stretch.':'Weekends and holidays are off-peak all day. Timing doesn’t matter.'},
+{name:'ULO',long:'Ultra-Low Overnight',plan:'ULO',rows:[{sw:sw('ul'),t:'Ultra-low · 11 PM–7 AM',v:'3.7¢'},{sw:sw('of'),t:wkd?'Weekend off-peak · not today':'Weekend off-peak · 7 AM–11 PM',v:'9.1¢'},{sw:sw('md'),t:wkd?'Mid-peak · 7 AM–4 PM, 9–11 PM':'No mid-peak on weekends',v:wkd?'14.6¢':'—'},{sw:sw('on'),t:wkd?'On-peak · 4–9 PM':'No on-peak on weekends',v:wkd?'37.7¢':'—'}],line:'Overnight is very cheap. The 4 to 9 PM window is very expensive. Popular with EV owners and delay-start habits.'},
+{name:'Tiered',long:'Tiered',plan:'TIERED',rows:[{sw:sw('of'),t:'Tier 1 · up to 1,000 kWh/mo winter',v:'11.2¢'},{sw:sw('of'),t:'Tier 2 · above that',v:'13.2¢'}],line:'Time of day doesn’t matter, so we never suggest waiting. Summer Tier 1 is up to 600 kWh a month.'}];
+return {vars,theme:th,s,L,desk:!mob,pad:mob?24:40,heroTop:mob?48:96,h1:mob?48:88,h1m:mob?32:56,sec:mob?96:160,panelPad:mob?20:48,gap:mob?24:48,
+cols2:mob?'1fr':'repeat(2,minmax(0,1fr))',cols3:mob?'1fr':'repeat(3,minmax(0,1fr))',plans,day,
+dayNote:wkd?'Showing a weekday.':'Showing a weekend or holiday.',
+dayOpts:[['weekday','Weekday'],['weekend','Weekend or holiday']].map(([v,t])=>({t,on:day===v?'true':'false',pick:()=>this.setState({day:v}),style:"min-height:44px;padding:0 18px;border:0;font-size:15px;font-weight:500;font-family:inherit;cursor:pointer;background:"+(day===v?'var(--ink)':'transparent')+";color:"+(day===v?'var(--bg)':'var(--ink)')+";"})),
+billSteps:[{i:'/01',t:'Open your latest electricity bill or your utility account.'},{i:'/02',t:'Look for "Rate plan" or "Price plan". It names TOU, ULO or Tiered.'},{i:'/03',t:'No plan name? If you see on-peak, mid-peak and off-peak, it is TOU.'}]};
+}
+}
+</script>
+</body>
+</html>

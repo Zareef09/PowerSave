@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Document docID="RealtimeOntarioZonalPrice" xmlns="http://www.ieso.ca/schema">
+<DocHeader>
+<DocTitle>Real-Time 5-min Ontario Zonal Energy Price Report</DocTitle>
+<CreatedAt>2026-11-18T17:28:00</CreatedAt>
+</DocHeader>
+<DocBody>
+<DeliveryDate>2026-11-18</DeliveryDate>
+<DeliveryHour>18</DeliveryHour>
+<ZonalPrice>
+<Interval>1</Interval>
+<LmpCap>51.0</LmpCap>
+</ZonalPrice>
+<ZonalPrice>
+<Interval>2</Interval>
+<LmpCap>50.0</LmpCap>
+</ZonalPrice>
+<ZonalPrice>
+<Interval>3</Interval>
+<LmpCap>46.0</LmpCap>
+</ZonalPrice>
+<ZonalPrice>
+<Interval>4</Interval>
+<Flag/>
+<LmpCap/>
+</ZonalPrice>
+</DocBody>
+</Document>

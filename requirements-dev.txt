@@ -1,0 +1,2 @@
+# Dev-only. Install into .venv — never used by Vercel (see requirements.txt).
+pytest>=8.0,<9

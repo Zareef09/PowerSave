@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>PowerSave landing</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+@keyframes pspulse{0%{box-shadow:0 0 0 0 rgba(37,72,246,.55)}100%{box-shadow:0 0 0 9px rgba(37,72,246,0)}}
+@keyframes psrise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+</style>
+</helmet>
+<div style="{{vars}};background:var(--bg);color:var(--ink);font-family:Geist,system-ui,sans-serif;min-width:0;overflow-x:hidden">
+
+<!-- nav -->
+<div style="border-bottom:1px solid var(--hl)">
+<div style="max-width:1200px;margin:0 auto;padding:0 {{pad}}px;height:72px;display:flex;align-items:center;justify-content:space-between;gap:16px;box-sizing:border-box">
+<a href="{{L.Landing}}" style="font-size:22px;font-weight:500;letter-spacing:-0.03em;color:var(--ink);text-decoration:none">PowerSave</a>
+<sc-if value="{{desk}}" hint-placeholder-val="{{true}}">
+<nav style="display:flex;gap:32px;font-size:15px"><a href="{{L.HowItWorks}}" style="{{s.link}}">How it works</a><a href="{{L.Plan}}" style="{{s.link}}">Plans</a><a href="{{L.Grid}}" style="{{s.link}}">The Grid</a></nav>
+</sc-if>
+<div style="display:flex;align-items:center;gap:20px">
+<sc-if value="{{desk}}" hint-placeholder-val="{{true}}"><span style="{{s.mono}}display:flex;align-items:center;gap:8px;color:var(--m2)"><span style="width:8px;height:8px;border-radius:999px;background:var(--bl);animation:pspulse 1.6s infinite"></span>[ LIVE · ONTARIO GRID ]</span></sc-if>
+<a href="{{L.Today}}" style="{{s.btn1}}">Open app</a>
+</div></div></div>
+
+<!-- hero -->
+<div style="max-width:1200px;margin:0 auto;padding:{{heroTop}}px {{pad}}px 0;box-sizing:border-box">
+<div style="{{s.mono}}color:var(--mu);display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between"><span>/00 [ TOU · WINTER · 17:30 ]</span><span>[ RATES OEB · NOV 1 2026 ]</span></div>
+<h1 style="margin:{{h1m}}px 0 20px;font-weight:300;font-size:{{h1}}px;letter-spacing:-0.03em;line-height:1;max-width:1000px;text-wrap:balance"><span style="color:var(--mu)">Run it when </span>it’s cheap.</h1>
+<p style="margin:0;max-width:640px;font-size:{{lead}}px;line-height:1.4;color:var(--mu)">PowerSave reads your Ontario rate plan and tells you exactly when to start the laundry, the dishwasher or the EV.</p>
+<div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:32px">
+<label style="display:flex;align-items:center;gap:10px;border:1px solid var(--hl);background:var(--sf);border-radius:6px;min-height:48px;padding:0 6px 0 16px;font-size:16px"><span style="color:var(--mu)">Your plan:</span>
+<select onChange="{{setPlan}}" style="border:0;background:transparent;color:var(--ink);font-size:16px;font-weight:500;font-family:inherit;min-height:44px;cursor:pointer">
+<option value="TOU">TOU</option><option value="ULO">ULO</option><option value="TIERED">Tiered</option></select></label>
+<a href="{{L.Start}}" style="{{s.btnLime}}">Find my cheapest time</a>
+</div>
+
+<div style="margin-top:{{panelTop}}px;border:1px solid var(--hl);border-radius:24px;background-color:var(--pn);background-image:radial-gradient(var(--dot) 1px,transparent 1.3px);background-size:16px 16px;padding:{{panelPad}}px;display:flex;flex-direction:column;gap:{{panelGap}}px">
+<div style="display:flex;flex-wrap:wrap;gap:8px 16px;justify-content:space-between;align-items:center"><span style="{{s.mono}}color:var(--m2)">[ {{planName}} · WED NOV 18 · 17:30 ]</span><span style="{{s.sample}}">Sample data</span></div>
+<div style="background:var(--sf);border:1px solid var(--hl);border-radius:16px;padding:{{ribPad}}px">
+<dc-import name="Ribbon" theme="{{theme}}" plan="{{plan}}" variant="hero" startMin="0" nowMin="1050" winStart="{{heroWin}}" winLen="90" winLabel="{{heroWinLabel}}" animate="true" hint-size="100%,146px"></dc-import>
+</div>
+<div style="display:grid;grid-template-columns:{{cols3}};gap:16px;align-items:start">
+<sc-for list="{{cards}}" as="c" hint-placeholder-count="3">
+<div style="{{c.box}}">
+<div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start"><div><div style="font-size:18px;font-weight:500">{{c.n}}</div><div style="{{s.mono}}color:var(--m2);margin-top:4px">{{c.spec}}</div></div><span style="{{s.sample}}">Sample data</span></div>
+<div style="font-size:28px;font-weight:300;letter-spacing:-0.03em;line-height:1.05">{{c.verdict}}</div>
+<sc-if value="{{c.hasSave}}" hint-placeholder-val="{{true}}"><div><span style="{{s.lime}}">Save about {{c.save}}</span></div></sc-if>
+<div style="display:flex;gap:20px;font-size:14px;color:var(--m2);font-variant-numeric:tabular-nums"><span>{{c.l1}} <b style="color:var(--ink);font-weight:500">{{c.v1}}</b></span><span>{{c.l2}} <b style="color:var(--ink);font-weight:500">{{c.v2}}</b></span></div>
+<dc-import name="Ribbon" theme="{{theme}}" plan="{{plan}}" variant="compact" startMin="1050" nowMin="1050" winStart="{{c.win}}" winLen="{{c.dur}}" hint-size="100%,26px"></dc-import>
+</div>
+</sc-for>
+</div>
+<div style="font-size:13px;color:var(--m2);line-height:1.5">Estimates cover electricity cost only. Delivery, regulatory charges, HST and the Ontario Electricity Rebate are not included. <a href="{{L.HowItWorks}}" style="color:var(--bl)">How we calculate →</a></div>
+</div>
+</div>
+
+<!-- proof strip -->
+<div style="margin-top:{{sec}}px;border-top:1px solid var(--hl);border-bottom:1px solid var(--hl)">
+<div style="max-width:1200px;margin:0 auto;display:grid;grid-template-columns:{{cols4}};box-sizing:border-box">
+<sc-for list="{{proof}}" as="p" hint-placeholder-count="4"><div style="{{s.mono}}color:var(--m2);padding:24px {{proofPad}}px;{{p.bd}}">{{p.t}}</div></sc-for>
+</div></div>
+
+<!-- scroll moment -->
+<div id="psmoment" style="max-width:1200px;margin:0 auto;padding:{{sec}}px {{pad}}px 0;box-sizing:border-box">
+<div style="{{s.mono}}color:var(--mu)">/01 [ ONE LOAD · TWO START TIMES ]</div>
+<div style="display:flex;flex-direction:{{momDir}};gap:{{momGap}}px;margin-top:32px;align-items:flex-start">
+<div style="flex:1 1 0;min-width:0;order:{{momLinesOrder}}">
+<sc-for list="{{lines}}" as="l" hint-placeholder-count="3">
+<div style="min-height:{{lineH}}px;display:flex;align-items:center"><div style="{{l.style}}"><span style="color:var(--mu)">{{l.a}}</span>{{l.b}}</div></div>
+</sc-for>
+</div>
+<div style="flex:{{momCardFlex}};min-width:0;position:sticky;top:{{stickyTop}}px;align-self:flex-start;width:100%;order:{{momCardOrder}}">
+<div style="background:var(--sf);border:1px solid var(--hl);border-radius:24px;padding:{{momPad}}px;display:flex;flex-direction:column;gap:20px">
+<div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px"><span style="{{s.mono}}color:var(--m2)">[ LAUNDRY · 3 kWh · 90 MIN ]</span><span style="{{s.sample}}">Sample data</span></div>
+<div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 20px"><span style="font-size:{{momBig}}px;font-weight:300;letter-spacing:-0.04em;line-height:1;font-variant-numeric:tabular-nums">{{momCost}}</span><span style="{{s.mono}}color:var(--m2)">Start {{momStart}}</span></div>
+<dc-import name="Ribbon" theme="{{theme}}" plan="TOU" variant="full" startMin="0" nowMin="1050" winStart="{{momWin}}" winLen="90" winLabel="{{momLabel}}" hint-size="100%,110px"></dc-import>
+<div style="min-height:40px"><sc-if value="{{momHasSave}}" hint-placeholder-val="{{true}}"><span style="{{s.lime}}">Save about {{momSave}}</span></sc-if></div>
+</div></div>
+</div></div>
+
+<!-- how it works -->
+<div style="max-width:1200px;margin:0 auto;padding:{{sec}}px {{pad}}px 0;box-sizing:border-box">
+<div style="{{s.mono}}color:var(--mu)">/02 [ HOW IT WORKS ]</div>
+<h2 style="{{s.h2}}">Three steps. <span style="color:var(--mu)">No account.</span></h2>
+<div style="display:grid;grid-template-columns:{{cols3}};gap:16px;margin-top:48px">
+<sc-for list="{{steps}}" as="st" hint-placeholder-count="3">
+<div style="background:var(--sf);border:1px solid var(--hl);border-radius:16px;padding:28px 24px;display:flex;flex-direction:column;gap:56px;min-height:260px;justify-content:space-between">
+<div style="display:flex;justify-content:space-between;align-items:flex-start"><span style="{{s.mono}}color:var(--m2)">{{st.i}}</span><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--bl)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{st.d}}"/></svg></div>
+<div><div style="font-size:28px;font-weight:300;letter-spacing:-0.03em;line-height:1.05">{{st.t}}</div><p style="margin:10px 0 0;color:var(--mu);font-size:16px;line-height:1.5">{{st.p}}</p></div>
+</div>
+</sc-for>
+</div></div>
+
+<!-- plans -->
+<div style="max-width:1200px;margin:0 auto;padding:{{sec}}px {{pad}}px 0;box-sizing:border-box">
+<div style="background:var(--pn);border:1px solid var(--hl);border-radius:24px;padding:{{panelPad}}px">
+<div style="display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between;align-items:baseline"><div><div style="{{s.mono}}color:var(--m2)">/03 [ PLANS · RATES OEB · NOV 1 2026 ]</div><h2 style="{{s.h2}}">Your plan <span style="color:var(--m2)">sets the answer.</span></h2></div><a href="{{L.Plan}}" style="color:var(--bl);font-size:16px">Which plan am I on? →</a></div>
+<div style="display:grid;grid-template-columns:{{cols3}};gap:16px;margin-top:40px">
+<sc-for list="{{planCols}}" as="pc" hint-placeholder-count="3">
+<div style="background:var(--sf);border:1px solid var(--hl);border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:28px;font-weight:300;letter-spacing:-0.03em">{{pc.name}}</span><span style="{{s.mono}}color:var(--m2)">WEEKDAY</span></div>
+<dc-import name="Ribbon" theme="{{theme}}" plan="{{pc.plan}}" variant="mini" startMin="0" nowMin="-1" winStart="-1" hint-size="100%,42px"></dc-import>
+<div style="{{s.mono}}color:var(--m2)">{{pc.prices}}</div>
+<p style="margin:0;font-size:16px;line-height:1.5">{{pc.line}}</p>
+</div>
+</sc-for></div></div></div>
+
+<!-- grid teaser -->
+<div style="max-width:1200px;margin:0 auto;padding:{{sec}}px {{pad}}px 0;box-sizing:border-box">
+<div style="{{s.mono}}color:var(--mu)">/04 [ THE GRID ]</div>
+<div style="display:grid;grid-template-columns:{{cols2}};gap:{{momGap}}px;margin-top:24px;align-items:center">
+<div><h2 style="{{s.h2}}">Ontario's grid, <span style="color:var(--mu)">live.</span></h2><p style="margin:16px 0 24px;color:var(--mu);font-size:18px;line-height:1.5;max-width:460px">The wholesale price shows when the system is under stress. Your bill still uses your plan's fixed prices.</p><a href="{{L.Grid}}" style="{{s.btn2}}">Open The Grid</a></div>
+<div style="background:var(--sf);border:1px solid var(--hl);border-radius:24px;padding:{{momPad}}px;background-image:linear-gradient(var(--hl) 1px,transparent 1px),linear-gradient(90deg,var(--hl) 1px,transparent 1px);background-size:40px 40px;background-position:-1px -1px">
+<div style="background:var(--sf);padding:4px 0;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px"><span style="{{s.mono}}color:var(--m2);border:1px solid var(--hl);border-radius:6px;padding:4px 8px;background:var(--sf)">[ WHOLESALE · NOT YOUR BILL ]</span><span style="{{s.sample}}background:var(--sf)">Sample data</span></div>
+<div style="font-size:14px;font-weight:500">Wholesale market price. Not what you pay.</div>
+<div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 16px"><span style="font-size:56px;font-weight:300;letter-spacing:-0.04em;font-variant-numeric:tabular-nums;line-height:1">4.6¢</span><span style="{{s.mono}}color:var(--m2)">/kWh equivalent · $46/MWh</span></div>
+<svg viewBox="0 0 400 130" style="width:100%;height:auto;display:block;background:var(--sf)" role="img" aria-label="Sample wholesale price over the last ten five-minute readings, from 5.1 down to 4.6 cents per kilowatt-hour equivalent"><line x1="0" y1="110" x2="400" y2="110" stroke="var(--hl)"/><polyline points="{{gpts}}" fill="none" stroke="var(--bl)" stroke-width="2.5"/><circle cx="{{glx}}" cy="{{gly}}" r="5" fill="var(--bl)"/></svg>
+<div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px;{{s.mono}}color:var(--m2)"><span>Last updated 6:05 PM</span><span>Next update in 3:12</span></div>
+</div></div></div></div>
+
+<!-- method card -->
+<div style="max-width:1200px;margin:0 auto;padding:{{sec}}px {{pad}}px 0;box-sizing:border-box">
+<div style="{{s.mono}}color:var(--mu)">/05 [ THE METHOD ]</div>
+<div style="margin-top:24px;background:var(--sf);border:1px solid var(--hl);border-radius:24px;padding:{{methPad}}px;display:flex;flex-direction:column;gap:32px">
+<div style="font-size:{{quote}}px;font-weight:300;letter-spacing:-0.03em;line-height:1.1;text-wrap:balance"><span style="color:var(--mu)">“</span>3 kWh × 90 min, priced minute by minute across the periods it overlaps. <span style="color:var(--mu)">Start times tested every 15 minutes.”</span></div>
+<div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;align-items:center"><span style="{{s.mono}}color:var(--m2)">[ NO TESTIMONIALS. JUST THE MATHS. ]</span><a href="{{L.HowItWorks}}" style="color:var(--bl);font-size:16px">How it works →</a></div>
+</div></div>
+
+<!-- final cta -->
+<div style="border-top:1px solid var(--hl);margin-top:{{sec}}px">
+<div style="max-width:1200px;margin:0 auto;padding:{{ctaPad}}px {{pad}}px;box-sizing:border-box;display:flex;flex-direction:column;gap:40px;align-items:flex-start">
+<h2 style="margin:0;font-weight:300;font-size:{{h1}}px;letter-spacing:-0.03em;line-height:1;text-wrap:balance"><span style="color:var(--mu)">Know when to </span>press start.</h2>
+<a href="{{L.Start}}" style="{{s.btnLime}}">Find my cheapest time</a>
+</div></div>
+
+<!-- footer -->
+<div style="border-top:1px solid var(--hl)">
+<div style="max-width:1200px;margin:0 auto;padding:56px {{pad}}px 40px;box-sizing:border-box">
+<div style="display:grid;grid-template-columns:{{footCols}};gap:32px">
+<div><div style="font-size:22px;font-weight:500;letter-spacing:-0.03em">PowerSave</div><div style="{{s.mono}}color:var(--m2);margin-top:12px">[ V1 · RATES NOV 1 2026 ]</div></div>
+<div style="display:flex;flex-direction:column;gap:12px;font-size:15px"><a href="{{L.HowItWorks}}" style="{{s.link}}">How it works</a><a href="{{L.Plan}}" style="{{s.link}}">Plans</a><a href="{{L.Privacy}}" style="{{s.link}}">Privacy</a></div>
+<div style="font-size:14px;line-height:1.6;color:var(--mu)">Rates: Ontario Energy Board, effective November 1, 2026. Grid data: IESO public reports. Sources are credited in text only.<br>PowerSave is independent. It is not affiliated with or endorsed by the Ontario Energy Board, the IESO or any utility.</div>
+</div></div></div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"device":{"editor":"enum","options":["desktop","mobile"],"default":"desktop"},"$preview":{"width":1440,"height":7800}}'>
+class Component extends DCLogic {
+componentDidMount(){
+ try{
+  const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(!reduce){const t0=performance.now()+1100;const step=(t)=>{const k=Math.max(0,Math.min(1,(t-t0)/1300));this.setState({tick:0.3+0.7*(1-Math.pow(1-k,3))});if(k<1)requestAnimationFrame(step);};requestAnimationFrame(step);}
+  this._onScroll=()=>{const el=document.getElementById('psmoment');if(!el)return;const r=el.getBoundingClientRect(),vh=window.innerHeight||800;const sc=vh<r.height?r.height-vh*0.6:1;const p=Math.max(0,Math.min(1,(vh*0.35-r.top-100)/Math.max(sc,1)));this.setState({prog:p});};
+  window.addEventListener('scroll',this._onScroll,true);
+ }catch(e){}
+}
+componentWillUnmount(){try{window.removeEventListener('scroll',this._onScroll,true);}catch(e){}}
+renderVals() {
+const TH={light:{'--bg':'#F4F3F1','--sf':'#FFFFFF','--pn':'#ECEBE7','--ink':'#1C1D24','--mu':'#6B6E76','--m2':'#5A5D65','--hl':'#D6D5D1','--bl':'#2548F6','--dot':'#CFCDC8','--ul':'#DCE3FF','--of':'#B7C4FF','--md':'#6F89FF','--on':'#2548F6','--tm':'#1C1D24','--to':'#FFFFFF','--tbl':'#FFFFFF'},dark:{'--bg':'#0E0F13','--sf':'#16171D','--pn':'#1C1D24','--ink':'#F4F3F1','--mu':'#9A9DA6','--m2':'#B4B7BF','--hl':'#2A2B33','--bl':'#5C78FF','--dot':'#2F3039','--ul':'#1E2760','--of':'#2F409A','--md':'#5C78FF','--on':'#A9B8FF','--tm':'#0E0F13','--to':'#0E0F13','--tbl':'#0E0F13'}};
+const th=this.props.theme==='dark'?'dark':'light', mob=this.props.device==='mobile', desk=!mob, dk=th==='dark';
+const st=this.state||{}, plan=st.plan||'TOU', tk=st.tick===undefined?1:st.tick, prog=st.prog===undefined?1:st.prog;
+const vars=Object.entries(TH[th]).map(([k,v])=>k+':'+v).join(';');
+const sx=(dk?'-dk':'')+(mob?'-m':''); const L={}; ['Landing','HowItWorks','Plan','Privacy','Start','Today','Chore','Tomorrow','Grid','Settings','SignIn'].forEach(n=>L[n]=n+sx+'.dc.html');
+const mono="font-family:'Geist Mono',ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-variant-numeric:tabular-nums;";
+const s={mono,
+h2:"margin:12px 0 0;font-weight:300;font-size:"+(mob?32:40)+"px;letter-spacing:-0.03em;line-height:1.05;",
+link:"color:var(--ink);text-decoration:none;",
+lime:"display:inline-block;background:#DDF247;color:#1C1D24;border-radius:999px;padding:6px 14px;font-weight:500;font-size:16px;font-variant-numeric:tabular-nums;",
+sample:mono+"display:inline-block;border:1px solid var(--mu);color:var(--m2);border-radius:999px;padding:3px 10px;font-size:10px;white-space:nowrap;",
+btn1:"display:inline-flex;align-items:center;background:var(--ink);color:var(--bg);border-radius:6px;min-height:44px;padding:0 20px;font-size:16px;font-weight:500;text-decoration:none;box-sizing:border-box;",
+btn2:"display:inline-flex;align-items:center;border:1px solid var(--ink);color:var(--ink);border-radius:6px;min-height:44px;padding:0 20px;font-size:16px;font-weight:500;text-decoration:none;box-sizing:border-box;",
+btnLime:"display:inline-flex;align-items:center;background:#DDF247;color:#1C1D24;border-radius:6px;min-height:48px;padding:0 24px;font-size:16px;font-weight:500;text-decoration:none;box-sizing:border-box;"};
+// pricing
+const per=(m)=>{ if(m>=1140||m<420) return 9.1; if(m>=660&&m<1020) return 14.6; return 18.9; };
+const cost=(start,kwh,dur)=>{let c=0;for(let i=0;i<dur;i++){c+=per((start+i)%1440)*(kwh/dur);}return Math.round(c);};
+const fm=(c)=>c<100?c+'¢':'$'+(c/100).toFixed(2);
+const fmt=(m)=>{m=((Math.round(m)%1440)+1440)%1440;const h=Math.floor(m/60),mm=m%60;return (h%12||12)+':'+String(mm).padStart(2,'0')+' '+(h>=12?'PM':'AM');};
+// hero cards (golden values, section 8)
+const GOLD={TOU:[['Laundry','3 kWh · 90 min','57¢','27¢','7:00 PM',30,1140,90],['Dishwasher','1.2 kWh · 2 h','20¢','11¢','7:00 PM',9,1140,120],['EV charging','28.8 kWh · 4 h','$3.68','$2.62','7:00 PM',106,1140,240]],ULO:[['Laundry','3 kWh · 90 min','$1.13','11¢','11:00 PM',102,1380,90],['Dishwasher','1.2 kWh · 2 h','45¢','4¢','11:00 PM',41,1380,120],['EV charging','28.8 kWh · 4 h','$10.03','$1.07','11:00 PM',896,1380,240]]};
+const planName=plan==='TIERED'?'TIERED':plan;
+const cards=(plan==='TIERED'?[['Laundry','3 kWh · 90 min'],['Dishwasher','1.2 kWh · 2 h'],['EV charging','28.8 kWh · 4 h']].map(([n,spec],i)=>({n,spec,verdict:'Any time. Same price all day.',hasSave:false,save:'',l1:'Tier 1',v1:'11.2¢/kWh',l2:'Tier 2',v2:'13.2¢/kWh',win:-1,dur:60})):GOLD[plan].map(([n,spec,now,best,at,save,win,dur])=>({n,spec,verdict:'Wait until '+at+'.',hasSave:true,save:fm(Math.round(save*tk)),l1:'Now',v1:now,l2:at,v2:best,win,dur}))).map((c,i)=>({...c,box:"background:var(--sf);border:1px solid var(--hl);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:14px;min-width:0;animation:psrise .5s ease-out both;animation-delay:"+(1.0+i*0.15)+"s;"+(desk&&i===1?"margin-top:28px;":"")+(desk&&i===2?"margin-top:8px;":"")}));
+const heroWin=plan==='TIERED'?-1:GOLD[plan][0][6];
+const heroWinLabel=plan==='TIERED'?'':(plan==='ULO'?'Laundry · 11:00 PM':'Laundry · 7:00 PM');
+// scroll moment: laundry slides 5:30 PM -> 7:00 PM
+const mStart=Math.round((1050+90*prog)/15)*15, mCostC=cost(mStart,3,90), mSaveC=57-mCostC;
+const lines=[['Same ','laundry.'],['Same ','dishes.'],['Smaller ','bill.']].map(([a,b],i)=>({a,b,style:"font-size:"+(mob?48:88)+"px;font-weight:300;letter-spacing:-0.03em;line-height:1;opacity:"+(prog>=i*0.3-0.01?1:0.25)+";transition:opacity .25s;"}));
+// teaser chart
+const y=[5.1,5.5,5.5,5.3,5.3,5.1,5.0,4.9,4.9,4.6];const GX=i=>20+i*(360/9),GY=v=>110-(v-4.2)/(5.8-4.2)*90;
+const gpts=y.map((v,i)=>GX(i).toFixed(0)+','+GY(v).toFixed(0)).join(' ');
+const planCols=[{name:'TOU',plan:'TOU',prices:'9.1¢ · 14.6¢ · 18.9¢',line:'Cheap after 7 PM and all weekend. Mornings and early evenings cost the most.'},{name:'ULO',plan:'ULO',prices:'3.7¢ · 9.1¢ · 14.6¢ · 37.7¢',line:'Overnight is 3.7¢. The 4 to 9 PM window is 37.7¢. Built for EVs and delay-start habits.'},{name:'Tiered',plan:'TIERED',prices:'11.2¢ · 13.2¢ above the monthly tier',line:'Timing doesn’t change your price.'}];
+const proof=['RATES FROM THE OEB','GRID DATA FROM IESO PUBLIC REPORTS','UPDATED EVERY ~5 MIN','NO ACCOUNT NEEDED'].map((t,i)=>({t,bd:desk?(i<3?'border-right:1px solid var(--hl);':''):(i%2===0?'border-right:1px solid var(--hl);':'')+(i<2?'border-bottom:1px solid var(--hl);':'')}));
+return {vars,theme:th,s,L,desk,pad:mob?24:40,heroTop:mob?48:96,h1:mob?48:88,h1m:mob?32:56,lead:mob?18:20,panelTop:mob?40:72,panelPad:mob?16:40,panelGap:mob?16:24,ribPad:mob?12:24,sec:mob?96:160,
+cols2:mob?'1fr':'repeat(2,minmax(0,1fr))',cols3:mob?'1fr':'repeat(3,minmax(0,1fr))',cols4:mob?'repeat(2,minmax(0,1fr))':'repeat(4,minmax(0,1fr))',footCols:mob?'1fr':'1fr 1fr 2fr',proofPad:mob?16:24,
+plan,planName,setPlan:(e)=>this.setState({plan:e.target.value}),cards,heroWin,heroWinLabel,proof,
+momDir:mob?'column':'row',momGap:mob?32:64,momLinesOrder:mob?2:1,momCardOrder:mob?1:2,momCardFlex:mob?'0 0 auto':'1 1 0',stickyTop:mob?8:120,momPad:mob?20:32,momBig:mob?72:112,lineH:mob?220:440,lines,
+momCost:fm(mCostC),momStart:fmt(mStart),momWin:mStart,momLabel:'Start '+fmt(mStart),momHasSave:mSaveC>=1,momSave:fm(mSaveC),
+steps:[{i:'/01',t:'Pick your plan.',p:'TOU, ULO or Tiered. Not sure? We start you on TOU, the default for most Ontario homes.',d:'M4 8h10M18 8h2M4 16h2M10 16h10M14 6v4M6 14v4'},{i:'/02',t:'Add your chores.',p:'Laundry, dishwasher, EV charging, or your own. Edit the kWh and run time to match yours.',d:'M5 6h14M5 12h14M5 18h8M18 16v4M16 18h4'},{i:'/03',t:'Get the cheapest start.',p:'One verdict per chore: run now, or wait until a time. The saving is an estimate.',d:'M12 7v5l3 2M12 3a9 9 0 100 18 9 9 0 000-18z'}],
+planCols,gpts,glx:GX(9).toFixed(0),gly:GY(4.6).toFixed(0),methPad:mob?24:56,quote:mob?26:40,ctaPad:mob?96:160};
+}
+}
+</script>
+</body>
+</html>

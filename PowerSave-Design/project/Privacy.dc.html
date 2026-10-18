@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Privacy</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+</style>
+</helmet>
+<div style="{{vars}};background:var(--bg);color:var(--ink);font-family:Geist,system-ui,sans-serif;min-width:0;overflow-x:hidden">
+
+<div style="border-bottom:1px solid var(--hl)">
+<div style="max-width:1200px;margin:0 auto;padding:0 {{pad}}px;height:72px;display:flex;align-items:center;justify-content:space-between;gap:16px;box-sizing:border-box">
+<a href="{{L.Landing}}" style="font-size:22px;font-weight:500;letter-spacing:-0.03em;color:var(--ink);text-decoration:none">PowerSave</a>
+<sc-if value="{{desk}}" hint-placeholder-val="{{true}}"><nav style="display:flex;gap:32px;font-size:15px"><a href="{{L.HowItWorks}}" style="{{s.link}}">How it works</a><a href="{{L.Plan}}" style="{{s.link}}">Plans</a><a href="{{L.Grid}}" style="{{s.link}}">The Grid</a></nav></sc-if>
+<a href="{{L.Today}}" style="{{s.btn1}}">Open app</a>
+</div></div>
+
+<div style="max-width:1200px;margin:0 auto;padding:{{heroTop}}px {{pad}}px 0;box-sizing:border-box">
+<div style="{{s.mono}}color:var(--mu);display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between"><span>/PRIVACY</span><span>[ DRAFT · CONFIRM BEFORE LAUNCH ]</span></div>
+<h1 style="margin:{{h1m}}px 0 20px;font-weight:300;font-size:{{h1}}px;letter-spacing:-0.03em;line-height:1;text-wrap:balance"><span style="color:var(--mu)">Short and </span>plain.</h1>
+<p style="margin:0;max-width:640px;font-size:20px;line-height:1.4;color:var(--mu)">PowerSave works without an account. Here is what is kept, and where.</p>
+</div>
+
+<div style="max-width:1200px;margin:0 auto;padding:{{sec}}px {{pad}}px 0;box-sizing:border-box">
+<div style="display:grid;grid-template-columns:{{cols2}};gap:16px">
+<div style="{{s.card}}"><div style="{{s.mono}}color:var(--m2)">/01 GUESTS</div><div style="font-size:28px;font-weight:300;letter-spacing:-0.03em;line-height:1.1">Only on this device.</div>
+<p style="margin:0;font-size:16px;line-height:1.6;color:var(--m2)">Your plan, chores and preferences are saved in your browser. They never leave your device. Clear your browser data and they're gone.</p></div>
+<div style="{{s.card}}"><div style="{{s.mono}}color:var(--m2)">/02 SIGNED-IN USERS</div><div style="font-size:28px;font-weight:300;letter-spacing:-0.03em;line-height:1.1">Email, plan and chores.</div>
+<p style="margin:0;font-size:16px;line-height:1.6;color:var(--m2)">If you choose to sign in, we store your email address, your plan and your chores so they follow you across devices. That's all.</p></div>
+<div style="{{s.card}}"><div style="{{s.mono}}color:var(--m2)">/03 SELLING</div><div style="font-size:28px;font-weight:300;letter-spacing:-0.03em;line-height:1.1">We don't sell your data.</div>
+<p style="margin:0;font-size:16px;line-height:1.6;color:var(--m2)">Not your email, not your plan, not your chores. There are no ads in PowerSave.</p></div>
+<div style="{{s.card}}"><div style="{{s.mono}}color:var(--m2)">/04 DELETING</div><div style="font-size:28px;font-weight:300;letter-spacing:-0.03em;line-height:1.1">One button.</div>
+<p style="margin:0;font-size:16px;line-height:1.6;color:var(--m2)">Settings has a "Delete my data" button. It clears what's on this device and, if you signed in, your account.</p>
+<div><a href="{{L.Settings}}" style="{{s.btn2}}">Open Settings</a></div></div>
+</div>
+<div style="margin-top:16px;background:var(--pn);border-radius:16px;padding:24px;font-size:15px;line-height:1.6;color:var(--ink)"><b style="font-weight:500">Independent.</b> PowerSave is not affiliated with or endorsed by the Ontario Energy Board, the IESO or any utility. Questions about this page: use "Report a wrong rate or bug" in Settings.</div>
+</div>
+
+<div style="border-top:1px solid var(--hl);margin-top:{{sec}}px"><div style="max-width:1200px;margin:0 auto;padding:40px {{pad}}px;box-sizing:border-box;display:flex;flex-wrap:wrap;gap:16px 32px;justify-content:space-between;align-items:center"><span style="{{s.mono}}color:var(--m2)">[ V1 · RATES NOV 1 2026 ]</span><div style="display:flex;gap:24px;font-size:15px"><a href="{{L.HowItWorks}}" style="{{s.link}}">How it works</a><a href="{{L.Plan}}" style="{{s.link}}">Plans</a><a href="{{L.Landing}}" style="{{s.link}}">Home</a></div></div></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"device":{"editor":"enum","options":["desktop","mobile"],"default":"desktop"},"$preview":{"width":1440,"height":1900}}'>
+class Component extends DCLogic {
+renderVals() {
+const TH={light:{'--bg':'#F4F3F1','--sf':'#FFFFFF','--pn':'#ECEBE7','--ink':'#1C1D24','--mu':'#6B6E76','--m2':'#5A5D65','--hl':'#D6D5D1','--bl':'#2548F6'},dark:{'--bg':'#0E0F13','--sf':'#16171D','--pn':'#1C1D24','--ink':'#F4F3F1','--mu':'#9A9DA6','--m2':'#B4B7BF','--hl':'#2A2B33','--bl':'#5C78FF'}};
+const th=this.props.theme==='dark'?'dark':'light', mob=this.props.device==='mobile', dk=th==='dark';
+const vars=Object.entries(TH[th]).map(([k,v])=>k+':'+v).join(';');
+const sx=(dk?'-dk':'')+(mob?'-m':''); const L={}; ['Landing','HowItWorks','Plan','Privacy','Start','Today','Chore','Tomorrow','Grid','Settings','SignIn'].forEach(n=>L[n]=n+sx+'.dc.html');
+const mono="font-family:'Geist Mono',ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-variant-numeric:tabular-nums;";
+const s={mono,link:"color:var(--ink);text-decoration:none;",
+card:"background:var(--sf);border:1px solid var(--hl);border-radius:16px;padding:28px 24px;display:flex;flex-direction:column;gap:16px;min-width:0;",
+btn1:"display:inline-flex;align-items:center;background:var(--ink);color:var(--bg);border-radius:6px;min-height:44px;padding:0 20px;font-size:16px;font-weight:500;text-decoration:none;box-sizing:border-box;",
+btn2:"display:inline-flex;align-items:center;border:1px solid var(--ink);color:var(--ink);border-radius:6px;min-height:44px;padding:0 20px;font-size:16px;font-weight:500;text-decoration:none;box-sizing:border-box;"};
+return {vars,s,L,desk:!mob,pad:mob?24:40,heroTop:mob?48:96,h1:mob?48:88,h1m:mob?32:56,sec:mob?96:160,cols2:mob?'1fr':'repeat(2,minmax(0,1fr))'};
+}
+}
+</script>
+</body>
+</html>

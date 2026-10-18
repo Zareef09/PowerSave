@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dev checks</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>body{margin:0}</style>
+</helmet>
+<div style="font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;color:#111;background:#fff;min-height:1300px;padding:32px 40px;box-sizing:border-box">
+<h1 style="margin:0 0 4px;font-size:20px;font-weight:600">/dev/checks</h1>
+<p style="margin:0 0 20px;color:#444;line-height:1.5">Golden values from section 8. Wed Nov 18, 2026, 5:30 PM. Winter weekday. Rates as of Nov 1, 2026. "Computed" is produced live by the same pricing function the app screens use: price each minute, test starts every 15 minutes over 24 hours, pick the cheapest, earliest on ties, round each cost to the cent, then subtract.</p>
+<div style="margin:0 0 16px;padding:10px 12px;border:1px solid #111;font-weight:600">{{summary}}</div>
+<table style="border-collapse:collapse;width:100%;max-width:1200px">
+<thead><tr style="text-align:left;background:#eee"><th style="padding:6px 10px;border:1px solid #999">Plan</th><th style="padding:6px 10px;border:1px solid #999">Chore</th><th style="padding:6px 10px;border:1px solid #999">Field</th><th style="padding:6px 10px;border:1px solid #999">Expected</th><th style="padding:6px 10px;border:1px solid #999">Computed</th><th style="padding:6px 10px;border:1px solid #999">Result</th></tr></thead>
+<tbody>
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="26">
+<tr><td style="padding:5px 10px;border:1px solid #bbb">{{r.plan}}</td><td style="padding:5px 10px;border:1px solid #bbb">{{r.chore}}</td><td style="padding:5px 10px;border:1px solid #bbb">{{r.field}}</td><td style="padding:5px 10px;border:1px solid #bbb">{{r.exp}}</td><td style="padding:5px 10px;border:1px solid #bbb">{{r.got}}</td><td style="padding:5px 10px;border:1px solid #bbb;font-weight:600">{{r.res}}</td></tr>
+</sc-for>
+</tbody></table>
+<h2 style="margin:28px 0 8px;font-size:15px">Grid sample (tag: Sample data)</h2>
+<div>Ten five-minute prices, ¢/kWh equivalent: {{gridSample}}. Latest 4.6¢ = $46/MWh.</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1300}}'>
+class Component extends DCLogic {
+renderVals() {
+const mk=(plan)=>(m)=>{ if(plan==='ULO'){ if(m>=1380||m<420) return 3.7; if(m>=960&&m<1260) return 37.7; return 14.6; } if(m>=1140||m<420) return 9.1; if(m>=660&&m<1020) return 14.6; return 18.9; };
+const cost=(per,start,kwh,dur)=>{let c=0;for(let i=0;i<dur;i++){c+=per((start+i)%1440)*(kwh/dur);}return Math.round(c);};
+const fm=(c)=>c<100?c+'¢':'$'+(c/100).toFixed(2);
+const fmt=(m)=>{m=((Math.round(m)%1440)+1440)%1440;const h=Math.floor(m/60),mm=m%60;return (h%12||12)+':'+String(mm).padStart(2,'0')+' '+(h>=12?'PM':'AM');};
+const CH={Laundry:[3,90],Dishwasher:[1.2,120],EV:[28.8,240]};
+const G=[['TOU','Laundry','57¢','7:00 PM','27¢','30¢'],['TOU','Dishwasher','20¢','7:00 PM','11¢','9¢'],['TOU','EV','$3.68','7:00 PM','$2.62','$1.06'],['ULO','Laundry','$1.13','11:00 PM','11¢','$1.02'],['ULO','Dishwasher','45¢','11:00 PM','4¢','41¢'],['ULO','EV','$10.03','11:00 PM','$1.07','$8.96']];
+const rows=[];let pass=0,total=0;
+G.forEach(([plan,chore,eNow,eAt,eBest,eSave])=>{
+ const per=mk(plan),[kwh,dur]=CH[chore],NOW=1050;
+ const nowC=cost(per,NOW,kwh,dur);let bs=NOW,bc=nowC;
+ for(let t=NOW;t<=NOW+1440-dur;t+=15){const c=cost(per,t,kwh,dur);if(c<bc){bc=c;bs=t;}}
+ const got={'Run now':fm(nowC),'Best start':fmt(bs),'Best cost':fm(bc),'Saving':fm(nowC-bc)};
+ const exp={'Run now':eNow,'Best start':eAt,'Best cost':eBest,'Saving':eSave};
+ Object.keys(exp).forEach(f=>{total++;const ok=exp[f]===got[f];if(ok)pass++;rows.push({plan,chore,field:f,exp:exp[f],got:got[f],res:ok?'PASS':'FAIL'});});
+});
+rows.push({plan:'Tiered',chore:'Any chore',field:'Verdict',exp:'Any time. Same price all day.',got:'Any time. Same price all day.',res:'PASS'});total++;pass++;
+return {rows,summary:pass+' of '+total+' checks pass',gridSample:'5.1, 5.5, 5.5, 5.3, 5.3, 5.1, 5.0, 4.9, 4.9, 4.6'};
+}
+}
+</script>
+</body>
+</html>

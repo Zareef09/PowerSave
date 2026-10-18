@@ -1,0 +1,86 @@
+{"v":3,"createdOnFiles":{"v":1,"at":"2026-10-17T23:45:00Z"},"title":"PowerSave","launch":{"view":"canvas"},"pages":[],"boards":{
+"Main.dc.html":{"x":0,"y":300,"w":1440,"h":7800,"title":"Design system · desktop · light","expand":"fill"},
+"Main-dk.dc.html":{"x":1520,"y":300,"w":1440,"h":7800,"title":"Design system · desktop · dark","expand":"fill"},
+
+"Landing.dc.html":{"x":0,"y":8400,"w":1440,"h":7000,"title":"/ Landing · desktop · light","expand":"fill","is_interactive":true},
+"Landing-dk.dc.html":{"x":1520,"y":8400,"w":1440,"h":7000,"title":"/ Landing · desktop · dark","expand":"fill","is_interactive":true},
+"Landing-m.dc.html":{"x":3040,"y":8400,"w":390,"h":8500,"title":"/ Landing · mobile · light","expand":"fill","is_interactive":true},
+"Landing-dk-m.dc.html":{"x":3510,"y":8400,"w":390,"h":8500,"title":"/ Landing · mobile · dark","expand":"fill","is_interactive":true},
+
+"HowItWorks.dc.html":{"x":0,"y":17200,"w":1440,"h":4300,"title":"/how-it-works · desktop · light","expand":"fill"},
+"HowItWorks-dk.dc.html":{"x":1520,"y":17200,"w":1440,"h":4300,"title":"/how-it-works · desktop · dark","expand":"fill"},
+"HowItWorks-m.dc.html":{"x":3040,"y":17200,"w":390,"h":5900,"title":"/how-it-works · mobile · light","expand":"fill"},
+"HowItWorks-dk-m.dc.html":{"x":3510,"y":17200,"w":390,"h":5900,"title":"/how-it-works · mobile · dark","expand":"fill"},
+
+"Plan.dc.html":{"x":0,"y":23400,"w":1440,"h":2650,"title":"/plan · desktop · light","expand":"fill","is_interactive":true},
+"Plan-dk.dc.html":{"x":1520,"y":23400,"w":1440,"h":2650,"title":"/plan · desktop · dark","expand":"fill","is_interactive":true},
+"Plan-m.dc.html":{"x":3040,"y":23400,"w":390,"h":3500,"title":"/plan · mobile · light","expand":"fill","is_interactive":true},
+"Plan-dk-m.dc.html":{"x":3510,"y":23400,"w":390,"h":3500,"title":"/plan · mobile · dark","expand":"fill","is_interactive":true},
+
+"Privacy.dc.html":{"x":0,"y":27200,"w":1440,"h":1650,"title":"/privacy · desktop · light","expand":"fill"},
+"Privacy-dk.dc.html":{"x":1520,"y":27200,"w":1440,"h":1650,"title":"/privacy · desktop · dark","expand":"fill"},
+"Privacy-m.dc.html":{"x":3040,"y":27200,"w":390,"h":2100,"title":"/privacy · mobile · light","expand":"fill"},
+"Privacy-dk-m.dc.html":{"x":3510,"y":27200,"w":390,"h":2100,"title":"/privacy · mobile · dark","expand":"fill"},
+
+"Start.dc.html":{"x":0,"y":29600,"w":1440,"h":1250,"title":"/start · desktop · light","expand":"fill","is_interactive":true},
+"Start-dk.dc.html":{"x":1520,"y":29600,"w":1440,"h":1250,"title":"/start · desktop · dark","expand":"fill","is_interactive":true},
+"Start-m.dc.html":{"x":3040,"y":29600,"w":390,"h":1550,"title":"/start · mobile · light","expand":"fill","is_interactive":true},
+"Start-dk-m.dc.html":{"x":3510,"y":29600,"w":390,"h":1550,"title":"/start · mobile · dark","expand":"fill","is_interactive":true},
+
+"Today.dc.html":{"x":0,"y":31450,"w":1440,"h":1000,"title":"/app Today · desktop · light","expand":"fill","is_interactive":true},
+"Today-dk.dc.html":{"x":1520,"y":31450,"w":1440,"h":1000,"title":"/app Today · desktop · dark","expand":"fill","is_interactive":true},
+"Today-m.dc.html":{"x":3040,"y":31450,"w":390,"h":2000,"title":"/app Today · mobile · light","expand":"fill","is_interactive":true},
+"Today-dk-m.dc.html":{"x":3510,"y":31450,"w":390,"h":2000,"title":"/app Today · mobile · dark","expand":"fill","is_interactive":true},
+
+"Chore.dc.html":{"x":0,"y":33750,"w":1440,"h":1800,"title":"/app/chore · desktop · light","expand":"fill","is_interactive":true},
+"Chore-dk.dc.html":{"x":1520,"y":33750,"w":1440,"h":1800,"title":"/app/chore · desktop · dark","expand":"fill","is_interactive":true},
+"Chore-m.dc.html":{"x":3040,"y":33750,"w":390,"h":2300,"title":"/app/chore · mobile · light","expand":"fill","is_interactive":true},
+"Chore-dk-m.dc.html":{"x":3510,"y":33750,"w":390,"h":2300,"title":"/app/chore · mobile · dark","expand":"fill","is_interactive":true},
+
+"Tomorrow.dc.html":{"x":0,"y":36350,"w":1440,"h":1050,"title":"/app/tomorrow · desktop · light","expand":"fill","is_interactive":true},
+"Tomorrow-dk.dc.html":{"x":1520,"y":36350,"w":1440,"h":1050,"title":"/app/tomorrow · desktop · dark","expand":"fill","is_interactive":true},
+"Tomorrow-m.dc.html":{"x":3040,"y":36350,"w":390,"h":1600,"title":"/app/tomorrow · mobile · light","expand":"fill","is_interactive":true},
+"Tomorrow-dk-m.dc.html":{"x":3510,"y":36350,"w":390,"h":1600,"title":"/app/tomorrow · mobile · dark","expand":"fill","is_interactive":true},
+
+"Grid.dc.html":{"x":0,"y":38250,"w":1440,"h":1550,"title":"/app/grid · desktop · light","expand":"fill","is_interactive":true},
+"Grid-dk.dc.html":{"x":1520,"y":38250,"w":1440,"h":1550,"title":"/app/grid · desktop · dark","expand":"fill","is_interactive":true},
+"Grid-m.dc.html":{"x":3040,"y":38250,"w":390,"h":2100,"title":"/app/grid · mobile · light","expand":"fill","is_interactive":true},
+"Grid-dk-m.dc.html":{"x":3510,"y":38250,"w":390,"h":2100,"title":"/app/grid · mobile · dark","expand":"fill","is_interactive":true},
+
+"Settings.dc.html":{"x":0,"y":40650,"w":1440,"h":1650,"title":"/app/settings · desktop · light","expand":"fill","is_interactive":true},
+"Settings-dk.dc.html":{"x":1520,"y":40650,"w":1440,"h":1650,"title":"/app/settings · desktop · dark","expand":"fill","is_interactive":true},
+"Settings-m.dc.html":{"x":3040,"y":40650,"w":390,"h":2600,"title":"/app/settings · mobile · light","expand":"fill","is_interactive":true},
+"Settings-dk-m.dc.html":{"x":3510,"y":40650,"w":390,"h":2600,"title":"/app/settings · mobile · dark","expand":"fill","is_interactive":true},
+
+"SignIn.dc.html":{"x":0,"y":43550,"w":1440,"h":900,"title":"/app/signin · desktop · light","expand":"fill","is_interactive":true},
+"SignIn-dk.dc.html":{"x":1520,"y":43550,"w":1440,"h":900,"title":"/app/signin · desktop · dark","expand":"fill","is_interactive":true},
+"SignIn-m.dc.html":{"x":3040,"y":43550,"w":390,"h":900,"title":"/app/signin · mobile · light","expand":"fill","is_interactive":true},
+"SignIn-dk-m.dc.html":{"x":3510,"y":43550,"w":390,"h":900,"title":"/app/signin · mobile · dark","expand":"fill","is_interactive":true},
+
+"States.dc.html":{"x":0,"y":44750,"w":1440,"h":2500,"title":"States · desktop · light","expand":"fill"},
+"States-dk.dc.html":{"x":1520,"y":44750,"w":1440,"h":2500,"title":"States · desktop · dark","expand":"fill"},
+
+"Checks.dc.html":{"x":0,"y":47550,"w":1440,"h":1150,"title":"/dev/checks","expand":"fill"},
+"Handoff.dc.html":{"x":1520,"y":47550,"w":1440,"h":2400,"title":"/dev/handoff","expand":"fill"},
+
+"Ribbon.dc.html":{"x":0,"y":50250,"w":1200,"h":220,"title":"Component · 24-hour price ribbon"}
+},
+"order":["Main.dc.html","Main-dk.dc.html","Landing.dc.html","Landing-dk.dc.html","Landing-m.dc.html","Landing-dk-m.dc.html","HowItWorks.dc.html","HowItWorks-dk.dc.html","HowItWorks-m.dc.html","HowItWorks-dk-m.dc.html","Plan.dc.html","Plan-dk.dc.html","Plan-m.dc.html","Plan-dk-m.dc.html","Privacy.dc.html","Privacy-dk.dc.html","Privacy-m.dc.html","Privacy-dk-m.dc.html","Start.dc.html","Start-dk.dc.html","Start-m.dc.html","Start-dk-m.dc.html","Today.dc.html","Today-dk.dc.html","Today-m.dc.html","Today-dk-m.dc.html","Chore.dc.html","Chore-dk.dc.html","Chore-m.dc.html","Chore-dk-m.dc.html","Tomorrow.dc.html","Tomorrow-dk.dc.html","Tomorrow-m.dc.html","Tomorrow-dk-m.dc.html","Grid.dc.html","Grid-dk.dc.html","Grid-m.dc.html","Grid-dk-m.dc.html","Settings.dc.html","Settings-dk.dc.html","Settings-m.dc.html","Settings-dk-m.dc.html","SignIn.dc.html","SignIn-dk.dc.html","SignIn-m.dc.html","SignIn-dk-m.dc.html","States.dc.html","States-dk.dc.html","Checks.dc.html","Handoff.dc.html","Ribbon.dc.html"],
+"notes":{
+"t0":{"x":0,"y":40,"text":"Design system","kind":"title1","maxW":2960},
+"t1":{"x":0,"y":8140,"text":"/  Landing","kind":"title1","maxW":3900},
+"t2":{"x":0,"y":16940,"text":"/how-it-works","kind":"title1","maxW":3900},
+"t3":{"x":0,"y":23140,"text":"/plan","kind":"title1","maxW":3900},
+"t4":{"x":0,"y":26940,"text":"/privacy","kind":"title1","maxW":3900},
+"t5":{"x":0,"y":29340,"text":"/start  Setup","kind":"title1","maxW":3900},
+"t6":{"x":0,"y":31190,"text":"/app  Today","kind":"title1","maxW":3900},
+"t7":{"x":0,"y":33490,"text":"/app/chore/[id]","kind":"title1","maxW":3900},
+"t8":{"x":0,"y":36090,"text":"/app/tomorrow","kind":"title1","maxW":3900},
+"t9":{"x":0,"y":37990,"text":"/app/grid","kind":"title1","maxW":3900},
+"t10":{"x":0,"y":40390,"text":"/app/settings","kind":"title1","maxW":3900},
+"t11":{"x":0,"y":43290,"text":"/app/signin","kind":"title1","maxW":3900},
+"t12":{"x":0,"y":44490,"text":"States","kind":"title1","maxW":2960},
+"t13":{"x":0,"y":47290,"text":"/dev  checks and handoff","kind":"title1","maxW":2960},
+"t14":{"x":0,"y":49990,"text":"Component","kind":"title1","maxW":1200}
+},
+"designSystems":[]}

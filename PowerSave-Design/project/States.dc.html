@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>States</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+@keyframes psshim{0%{opacity:.45}50%{opacity:1}100%{opacity:.45}}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+</style>
+</helmet>
+<div style="{{vars}};background:var(--bg);color:var(--ink);font-family:Geist,system-ui,sans-serif;min-width:0;overflow-x:hidden">
+<div style="max-width:1200px;margin:0 auto;padding:64px {{pad}}px 96px;box-sizing:border-box">
+<div style="{{s.mono}}color:var(--mu);display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between"><span>/STATES · EVERY EDGE CASE ONCE</span><span>[ WED NOV 18 · 17:30 · RATES NOV 1 2026 ]</span></div>
+<h1 style="margin:32px 0 12px;font-weight:300;font-size:{{h1}}px;letter-spacing:-0.03em;line-height:1">States<span style="color:var(--mu)"> and edge cases.</span></h1>
+<p style="margin:0 0 40px;max-width:680px;font-size:18px;line-height:1.5;color:var(--mu)">Each state below is also reachable in the live screens through their Tweaks (scenario).</p>
+
+<div style="display:grid;grid-template-columns:{{cols2}};gap:16px;align-items:start">
+
+<div style="{{s.card}}"><div style="{{s.mono}}color:var(--m2)">01 LOADING · SKELETON</div>
+<div style="display:flex;flex-direction:column;gap:10px" role="status" aria-label="Loading your advice"><div style="height:22px;width:40%;background:var(--pn);border-radius:6px;animation:psshim 1.4s infinite"></div><div style="height:36px;width:85%;background:var(--pn);border-radius:6px;animation:psshim 1.4s infinite"></div><div style="height:28px;width:45%;background:var(--pn);border-radius:999px;animation:psshim 1.4s infinite"></div><div style="height:14px;width:100%;background:var(--pn);border-radius:4px;animation:psshim 1.4s infinite"></div></div>
+<div style="font-size:14px;color:var(--m2)">Shown for a moment while rates load. The shape matches the real card.</div></div>
+
+<div style="{{s.card}}"><div style="{{s.mono}}color:var(--m2)">02 EMPTY · NO CHORES</div>
+<div style="border:1px dashed var(--hl);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:8px;align-items:flex-start"><div style="font-size:24px;font-weight:300;letter-spacing:-0.02em">No chores yet.</div><div style="font-size:14px;color:var(--m2);line-height:1.5">Add laundry, the dishwasher or EV charging and we'll tell you when to start each one.</div><a href="{{L.Settings}}" style="{{s.btn1}}">Add a chore</a></div></div>
+
+<div style="{{s.card}}"><div style="{{s.mono}}color:var(--m2)">03 ERROR · DATA FAILED</div>
+<div role="alert" style="border:2px solid var(--ink);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px"><div style="font-size:16px"><b style="font-weight:500">Couldn't load your rates.</b> Check your connection and try again.</div><div><a href="{{L.Today}}" style="{{s.btn2}}">Retry</a></div></div></div>
+
+<div style="{{s.card}}"><div style="{{s.mono}}color:var(--m2)">04 OFFLINE</div>
+<div role="status" style="border:1px solid var(--ink);border-radius:12px;padding:12px 16px;font-size:14px;line-height:1.5"><b style="font-weight:500">You're offline.</b> Showing the advice from your last visit. Rates are saved on this device.</div>
+<div style="font-size:14px;color:var(--m2)">Rates are small and stored locally, so Today keeps working offline. The Grid page needs a connection.</div></div>
+
+<div style="{{s.card}}"><div style="{{s.mono}}color:var(--m2)">05 STALE GRID DATA · OVER 20 MIN</div>
+<div role="status" style="border:1px solid var(--ink);border-radius:12px;padding:12px 16px;font-size:14px;line-height:1.5"><b style="font-weight:500">Update delayed.</b> Showing data from 6:05 PM. Wholesale market price. Not what you pay.</div>
+<div style="display:flex;flex-wrap:wrap;gap:8px 16px;align-items:baseline"><span style="font-size:40px;font-weight:300;letter-spacing:-0.03em;font-variant-numeric:tabular-nums;opacity:.7">4.6¢</span><span style="{{s.mono}}color:var(--m2)">LAST UPDATED 6:05 PM</span><span style="{{s.sample}}">Sample data</span></div>
+<div style="font-size:14px;color:var(--m2);line-height:1.5">The countdown is replaced by the delay note. Today's advice is unaffected because it doesn't use the grid.</div></div>
+
+<div style="{{s.card}}"><div style="{{s.mono}}color:var(--m2)">06 WEEKEND OR HOLIDAY · TOU</div>
+<div style="background:var(--pn);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:6px"><div style="font-size:28px;font-weight:300;letter-spacing:-0.03em;line-height:1.1">Any time today.<br>Same price all day.</div><div style="font-size:14px;color:var(--m2)">Off-peak 9.1¢ all day. No saving is shown.</div></div>
+<dc-import name="Ribbon" theme="{{theme}}" plan="TOU" day="weekend" variant="compact" startMin="1050" nowMin="1050" winStart="-1" hint-size="100%,26px"></dc-import>
+<div style="font-size:13px;color:var(--m2)">ULO is different: weekends still have a cheap overnight period, so ULO advice stays on.</div></div>
+
+<div style="{{s.card}}"><div style="{{s.mono}}color:var(--m2)">07 TIERED PLAN</div>
+<div style="background:var(--pn);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:6px"><div style="font-size:28px;font-weight:300;letter-spacing:-0.03em;line-height:1.1">Any time.<br>Same price all day.</div><div style="font-size:14px;color:var(--m2)">Timing doesn't change your price. Tier 1 11.2¢, Tier 2 13.2¢.</div></div>
+<dc-import name="Ribbon" theme="{{theme}}" plan="TIERED" variant="compact" startMin="1050" nowMin="1050" winStart="-1" hint-size="100%,26px"></dc-import></div>
+
+<div style="{{s.card}}"><div style="{{s.mono}}color:var(--m2)">08 DONE-BY THAT CAN'T BE MET</div>
+<div style="display:flex;justify-content:space-between;gap:8px"><div><div style="font-size:20px;font-weight:500">Dishwasher</div><div style="{{s.mono}}color:var(--m2);margin-top:4px">1.2 kWh · 2 h · done by 7:30 PM</div></div><span style="{{s.sample}}">Sample data</span></div>
+<div style="font-size:28px;font-weight:300;letter-spacing:-0.03em;line-height:1.1">Run now.</div>
+<div style="font-size:14px;line-height:1.5;color:var(--m2)">Can't finish by 7:30 PM at a cheaper time, so run now.</div>
+<dc-import name="Ribbon" theme="{{theme}}" plan="TOU" variant="compact" startMin="1050" nowMin="1050" winStart="1050" winLen="120" hint-size="100%,26px"></dc-import>
+<div style="font-size:13px;color:var(--m2);line-height:1.5">If even starting now can't finish in time, the card says so plainly and offers no saving. Try 6:00 PM on the live Today screen.</div></div>
+
+<div style="{{s.card}}"><div style="{{s.mono}}color:var(--m2)">09 WINDOW CROSSING MIDNIGHT</div>
+<div style="display:flex;justify-content:space-between;gap:8px"><div><div style="font-size:20px;font-weight:500">EV charging · ULO</div><div style="{{s.mono}}color:var(--m2);margin-top:4px">28.8 kWh · 4 h</div></div><span style="{{s.sample}}">Sample data</span></div>
+<div style="font-size:28px;font-weight:300;letter-spacing:-0.03em;line-height:1.1">Wait until 11:00 PM.</div>
+<div style="font-size:14px;color:var(--m2)">11:00 PM → 3:00 AM tomorrow, all ultra-low. $1.07.</div>
+<dc-import name="Ribbon" theme="{{theme}}" plan="ULO" variant="full" startMin="1050" nowMin="1050" winStart="1380" winLen="240" winLabel="11 PM → 3 AM" hint-size="100%,110px"></dc-import></div>
+
+<div style="{{s.card}}"><div style="{{s.mono}}color:var(--m2)">10 FIRST VISIT · RETURNING GUEST · SIGNED IN</div>
+<div style="border:1px solid var(--hl);border-radius:12px;padding:14px 16px;display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between"><span style="font-size:15px">New here? Pick your plan in about 30 seconds.</span><span style="display:flex;gap:8px"><a href="{{L.Start}}" style="{{s.btn1}}">Set up</a><a href="{{L.Today}}" style="{{s.btn2}}">Not now</a></span></div>
+<div style="{{s.mono}}color:var(--m2)">First visit: an inline strip, never a modal. Today works with TOU defaults.</div>
+<div style="border:1px solid var(--hl);border-radius:12px;padding:14px 16px;display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between"><span style="{{s.mono}}color:var(--m2)">[ GUEST · THIS DEVICE ]</span><a href="{{L.SignIn}}" style="color:var(--bl);font-size:14px">Save across devices →</a></div>
+<div style="{{s.mono}}color:var(--m2)">Returning guest: a quiet tag and one text link.</div>
+<div style="border:1px solid var(--hl);border-radius:12px;padding:14px 16px;display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between"><span style="{{s.mono}}color:var(--m2)">[ SIGNED IN · you@example.com ]</span><a href="{{L.Settings}}" style="color:var(--bl);font-size:14px">Manage →</a></div>
+<div style="{{s.mono}}color:var(--m2)">Signed in: settings follow you across devices.</div></div>
+
+<div style="{{s.card}};grid-column:{{wide}}"><div style="{{s.mono}}color:var(--m2)">11 DAYLIGHT-SAVING CHANGE · SUN NOV 1 2026</div>
+<dc-import name="Ribbon" theme="{{theme}}" plan="TOU" day="weekend" variant="full" startMin="0" nowMin="-1" winStart="-1" hint-size="100%,110px"></dc-import>
+<div style="display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;border:1px solid var(--hl);border-radius:8px;padding:10px 12px;font-size:14px"><span style="{{s.mono}}color:var(--m2)">[ 02:00 → 01:00 ]</span><span>Clocks go back tonight. This day has 25 hours, and prices follow the clock. Nov 1 is also a Sunday, so TOU is off-peak all day.</span></div></div>
+
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"device":{"editor":"enum","options":["desktop","mobile"],"default":"desktop"},"$preview":{"width":1440,"height":2600}}'>
+class Component extends DCLogic {
+renderVals() {
+const TH={light:{'--bg':'#F4F3F1','--sf':'#FFFFFF','--pn':'#ECEBE7','--ink':'#1C1D24','--mu':'#6B6E76','--m2':'#5A5D65','--hl':'#D6D5D1','--bl':'#2548F6','--ul':'#DCE3FF','--of':'#B7C4FF','--md':'#6F89FF','--on':'#2548F6','--tm':'#1C1D24','--to':'#FFFFFF','--tbl':'#FFFFFF'},dark:{'--bg':'#0E0F13','--sf':'#16171D','--pn':'#1C1D24','--ink':'#F4F3F1','--mu':'#9A9DA6','--m2':'#B4B7BF','--hl':'#2A2B33','--bl':'#5C78FF','--ul':'#1E2760','--of':'#2F409A','--md':'#5C78FF','--on':'#A9B8FF','--tm':'#0E0F13','--to':'#0E0F13','--tbl':'#0E0F13'}};
+const th=this.props.theme==='dark'?'dark':'light', mob=this.props.device==='mobile', dk=th==='dark';
+const vars=Object.entries(TH[th]).map(([k,v])=>k+':'+v).join(';');
+const sx=(dk?'-dk':'')+(mob?'-m':''); const L={}; ['Landing','HowItWorks','Plan','Privacy','Start','Today','Chore','Tomorrow','Grid','Settings','SignIn'].forEach(n=>L[n]=n+sx+'.dc.html');
+const mono="font-family:'Geist Mono',ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-variant-numeric:tabular-nums;";
+const s={mono,
+card:"background:var(--sf);border:1px solid var(--hl);border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:14px;min-width:0;",
+sample:mono+"display:inline-block;border:1px solid var(--mu);color:var(--m2);border-radius:999px;padding:3px 10px;font-size:10px;white-space:nowrap;",
+btn1:"display:inline-flex;align-items:center;background:var(--ink);color:var(--bg);border-radius:6px;min-height:44px;padding:0 18px;font-size:16px;font-weight:500;text-decoration:none;box-sizing:border-box;",
+btn2:"display:inline-flex;align-items:center;border:1px solid var(--ink);color:var(--ink);border-radius:6px;min-height:44px;padding:0 18px;font-size:16px;font-weight:500;text-decoration:none;box-sizing:border-box;"};
+return {vars,theme:th,s,L,pad:mob?24:40,h1:mob?40:56,cols2:mob?'1fr':'repeat(2,minmax(0,1fr))',wide:mob?'auto':'1 / -1'};
+}
+}
+</script>
+</body>
+</html>

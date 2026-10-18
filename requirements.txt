@@ -1,0 +1,2 @@
+# Runtime dependencies for Vercel Python functions.
+# Keep empty / stdlib-only unless a package is explicitly approved.
