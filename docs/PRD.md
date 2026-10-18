@@ -1,8 +1,8 @@
 # PowerSave v1 — Product Requirements Document
 
-**Status:** Session 4 complete  
+**Status:** Session 5 complete (Today / Chore / Tomorrow); see `docs/ROADMAP.md`  
 **Design source of truth:** [`PowerSave-Design/project/`](../PowerSave-Design/project/) (READ-ONLY)  
-**Effective rates:** OEB RPP, Nov 1 2026
+**Rates:** OEB RPP keyed by effective date (Nov 1 2025 current until Oct 31 2026; Nov 1 2026 thereafter)
 
 ---
 

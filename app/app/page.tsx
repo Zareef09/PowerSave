@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
-import { ComingSoon } from "@/components/ComingSoon";
+import { TodayPage } from "@/components/app/TodayPage";
 
 export const metadata: Metadata = {
   title: "Today",
-  description: "Coming soon — guest chore advice still works on the landing page.",
+  description:
+    "Cheapest times to run laundry, the dishwasher or an EV today on your Ontario rate plan.",
 };
 
-export default function TodayPage() {
-  return <ComingSoon title="Today" />;
+export default function TodayRoutePage() {
+  return <TodayPage />;
 }

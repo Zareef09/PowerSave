@@ -1,11 +1,16 @@
 import type { Metadata } from "next";
-import { ComingSoon } from "@/components/ComingSoon";
+import { ChoreDetailPage } from "@/components/app/ChoreDetailPage";
 
 export const metadata: Metadata = {
-  title: "Chore detail",
-  description: "Coming soon — guest chore advice still works on the landing page.",
+  title: "Chore",
+  description: "Detailed cheapest-start advice for one chore on your Ontario rate plan.",
 };
 
-export default function ChorePage() {
-  return <ComingSoon title="Chore detail" />;
+export default async function ChoreRoutePage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  return <ChoreDetailPage choreId={id} />;
 }
