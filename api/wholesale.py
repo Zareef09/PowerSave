@@ -2,22 +2,15 @@
 Vercel Python serverless entrypoint for GET /api/wholesale.
 
 Uses the classic BaseHTTPRequestHandler pattern supported by Vercel’s Python runtime.
-Core logic lives in wholesale_core.py (stdlib only).
+Shared logic lives in the project-root package `wholesale_core` (not under api/, so it
+is not deployed as its own public endpoint). Import-time code here is side-effect free.
 """
 
 from __future__ import annotations
 
 from http.server import BaseHTTPRequestHandler
 
-from wholesale_core import build_error_payload, build_payload, response_json
-
-
-def handle_get() -> tuple[int, dict[str, str], bytes]:
-    try:
-        payload = build_payload()
-        return response_json(payload, cache_live=True)
-    except Exception as exc:  # noqa: BLE001 — surface as JSON error for the UI
-        return response_json(build_error_payload(str(exc)), cache_live=False)
+from wholesale_core import handle_get
 
 
 class handler(BaseHTTPRequestHandler):

@@ -1,8 +1,39 @@
 # PowerSave — Progress
 
-**Current session completed:** Session 4 (Polish)  
-**Previous:** Deploy-prep → Session 3 → Session 2 → Session 1  
+**Current session completed:** Bug fix — Vercel `/api/wholesale` import  
+**Previous:** Session 4 (Polish) → Deploy-prep → Session 3 → Session 2 → Session 1  
 **Next:** You commit + push to `main` so Vercel Hobby redeploys (agent does **not** push)
+
+---
+
+## Bug fix — Vercel `ModuleNotFoundError: wholesale_core` — Done
+
+### Cause
+
+`api/wholesale.py` did `from wholesale_core import …` while `wholesale_core.py` lived **beside** it under `api/`. Locally, `scripts/dev_wholesale.py` inserted `api/` onto `sys.path`, so the sibling imported. On Vercel the working directory / import path is the **project root**, not `api/`, so the sibling was invisible and the function crashed at **import time** (before any IESO call). Putting a shared `.py` directly in `api/` is also wrong: Vercel would expose it as its own public endpoint.
+
+### Fix
+
+- Moved shared logic to project-root package **`wholesale_core/`** (outside `api/`).
+- `api/wholesale.py` is a thin Vercel `handler` that imports `handle_get` from that package.
+- Local: `python -m wholesale_core` (wired in `scripts/dev.sh`) — same import path as production; no `api/` on `PYTHONPATH`.
+- `vercel.json` still targets `api/wholesale.py` (`maxDuration: 300`).
+- Structured errors: `errorCode` + `stage` via `build_error_payload` / `handle_get` (fetch/parse/build); history failure still returns live price + today series from `build_payload`.
+- pytest: clean-copy import regression + structured error tests (`pytest.ini` `pythonpath = .`).
+
+### Tests
+
+| Command | Result |
+|---------|--------|
+| `npm test` | **27 passed** |
+| `npm run test:py` | **17 passed** |
+| `npm run build` | **Success** |
+
+### After you push — check live
+
+1. `GET /api/wholesale` → JSON `"ok": true` with a real `latest` price (not import 500).
+2. `/app/grid` → live/delayed data, not “Grid data unavailable”.
+3. Vercel runtime logs → no `No module named 'wholesale_core'`.
 
 ---
 

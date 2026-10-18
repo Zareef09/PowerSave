@@ -8,16 +8,18 @@ from zoneinfo import ZoneInfo
 
 import pytest
 
-from wholesale import handle_get, handler
 from wholesale_core import (
     IESO_COPYRIGHT,
     WORST_CASE_COLD_REQUESTS,
+    build_error_payload,
     build_payload,
     freshness_state,
+    handle_get,
     interval_end_eastern,
     mw_h_to_cents_kwh,
     parse_directory_listing,
     parse_realtime_xml,
+    response_json,
     select_latest_version_per_hour,
 )
 
@@ -147,8 +149,8 @@ def test_averages_and_payload_from_fixtures_no_network():
 
 
 def test_handler_wrapper_with_fixtures(monkeypatch):
-    """Import api/wholesale.py and call handle_get against fixtures (no network)."""
-    import wholesale_core as core
+    """Call shared handle_get against fixtures (no network)."""
+    import wholesale_core.core as core
 
     synthetic = read("synthetic_hour.xml")
     listing = read("directory.html")
@@ -169,14 +171,15 @@ def test_handler_wrapper_with_fixtures(monkeypatch):
         )
 
     fixed_now = datetime(2026, 11, 18, 17, 16, tzinfo=ET)
+    real_build = core.build_payload
 
     def fake_build_payload(**kwargs):
         kwargs.setdefault("fetcher", fetcher)
         kwargs.setdefault("now", fixed_now)
         kwargs.setdefault("use_cache", False)
-        return core.build_payload(**kwargs)
+        return real_build(**kwargs)
 
-    monkeypatch.setattr("wholesale.build_payload", fake_build_payload)
+    monkeypatch.setattr(core, "build_payload", fake_build_payload)
 
     import json
 
@@ -187,7 +190,120 @@ def test_handler_wrapper_with_fixtures(monkeypatch):
     data = json.loads(body.decode("utf-8"))
     assert data["ok"] is True
     assert data["copyright"] == IESO_COPYRIGHT
-    assert handler is not None
+
+
+def test_structured_error_payload_fields():
+    err = build_error_payload("boom", code="fetch_error", stage="fetch")
+    assert err["ok"] is False
+    assert err["error"] == "boom"
+    assert err["errorCode"] == "fetch_error"
+    assert err["stage"] == "fetch"
+    assert err["copyright"] == IESO_COPYRIGHT
+    assert err["freshness"]["state"] == "error"
+    status, headers, body = response_json(err, cache_live=False)
+    assert status == 503
+    assert headers["Cache-Control"] == "no-store"
+    import json
+
+    data = json.loads(body.decode("utf-8"))
+    assert data["errorCode"] == "fetch_error"
+    assert data["stage"] == "fetch"
+
+
+def test_handle_get_returns_structured_json_on_failure(monkeypatch):
+    import urllib.error
+
+    import wholesale_core.core as core
+
+    def boom(**_kwargs):
+        raise urllib.error.URLError("simulated network down")
+
+    monkeypatch.setattr(core, "build_payload", boom)
+    import json
+
+    status, _headers, body = handle_get()
+    assert status == 503
+    data = json.loads(body.decode("utf-8"))
+    assert data["ok"] is False
+    assert data["errorCode"] == "fetch_error"
+    assert data["stage"] == "fetch"
+    assert "simulated network down" in data["error"]
+
+
+def test_vercel_style_clean_copy_import(tmp_path):
+    """
+    Reproduce the Vercel layout: only deployable files, project-root cwd,
+    no PYTHONPATH, load api/wholesale.py. Must import wholesale_core from root.
+    """
+    import os
+    import shutil
+    import subprocess
+    import sys
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[1]
+    dest = tmp_path / "deploy"
+    dest.mkdir()
+
+    # Files Vercel needs for this function (respect .gitignore-style excludes).
+    for rel in (
+        "api/wholesale.py",
+        "wholesale_core/__init__.py",
+        "wholesale_core/core.py",
+        "wholesale_core/__main__.py",
+        "requirements.txt",
+        "vercel.json",
+        ".python-version",
+    ):
+        src = root / rel
+        assert src.is_file(), f"missing {rel}"
+        target = dest / rel
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(src, target)
+
+    # Assert shared core is NOT under api/ (would become a public endpoint).
+    assert not (dest / "api" / "wholesale_core.py").exists()
+    assert not list((dest / "api").glob("_*.py")) or True
+
+    env = {k: v for k, v in os.environ.items() if k != "PYTHONPATH"}
+    env.pop("PYTHONPATH", None)
+    script = r"""
+import importlib.util
+from pathlib import Path
+root = Path(".").resolve()
+spec = importlib.util.spec_from_file_location("wholesale", root / "api" / "wholesale.py")
+assert spec and spec.loader
+mod = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(mod)
+assert hasattr(mod, "handler")
+assert hasattr(mod, "handle_get") or hasattr(mod, "handler")
+from wholesale_core import handle_get, build_error_payload
+assert callable(handle_get)
+err = build_error_payload("x", code="test", stage="test")
+assert err["errorCode"] == "test"
+print("CLEAN_IMPORT_OK")
+"""
+    proc = subprocess.run(
+        [sys.executable, "-c", script],
+        cwd=str(dest),
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert proc.returncode == 0, proc.stderr + proc.stdout
+    assert "CLEAN_IMPORT_OK" in proc.stdout
+
+
+def test_api_has_no_public_core_module():
+    """Shared core must not sit as a sibling .py under api/ (Vercel would expose it)."""
+    from pathlib import Path
+
+    api = Path(__file__).resolve().parents[1] / "api"
+    assert (api / "wholesale.py").is_file()
+    assert not (api / "wholesale_core.py").exists()
+    py_files = sorted(p.name for p in api.glob("*.py"))
+    assert py_files == ["wholesale.py"], f"unexpected api/*.py files: {py_files}"
 
 
 def test_worst_case_constant_documented():

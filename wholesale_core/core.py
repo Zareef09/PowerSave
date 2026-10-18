@@ -626,7 +626,14 @@ def build_payload(
     return payload
 
 
-def build_error_payload(message: str, now: Optional[datetime] = None) -> Dict[str, Any]:
+def build_error_payload(
+    message: str,
+    *,
+    code: str = "error",
+    stage: str = "unknown",
+    now: Optional[datetime] = None,
+) -> Dict[str, Any]:
+    """Structured JSON error — never raise out of the HTTP handler."""
     if now is None:
         now = datetime.now(timezone.utc)
     elif now.tzinfo is None:
@@ -634,6 +641,8 @@ def build_error_payload(message: str, now: Optional[datetime] = None) -> Dict[st
     return {
         "ok": False,
         "error": message,
+        "errorCode": code,
+        "stage": stage,
         "copyright": IESO_COPYRIGHT,
         "fetchedAt": now.astimezone(timezone.utc).isoformat().replace("+00:00", "Z"),
         "freshness": {"state": "error", "ageSeconds": None},
@@ -652,6 +661,28 @@ def response_json(payload: Dict[str, Any], cache_live: bool = True) -> Tuple[int
     else:
         headers["Cache-Control"] = "no-store"
     return status, headers, body
+
+
+def handle_get() -> Tuple[int, Dict[str, str], bytes]:
+    """
+    Shared GET handler for Vercel (`api/wholesale.py`) and local `python -m wholesale_core`.
+    Fetch/parse failures become structured JSON — never an uncaught import or handler crash.
+    Live price + today's series still return when only history/averages fail (see build_payload).
+    """
+    try:
+        payload = build_payload()
+        return response_json(payload, cache_live=True)
+    except Exception as exc:  # noqa: BLE001 — surface as JSON for the UI
+        if isinstance(exc, (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, OSError)):
+            stage, code = "fetch", "fetch_error"
+        elif isinstance(exc, (ValueError, ET.ParseError)):
+            stage, code = "parse", "parse_error"
+        else:
+            stage, code = "build", "handler_error"
+        return response_json(
+            build_error_payload(str(exc), code=code, stage=stage),
+            cache_live=False,
+        )
 
 
 # Documented worst-case IESO HTTP requests on a fully cold process cache:

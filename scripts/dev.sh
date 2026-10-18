@@ -22,7 +22,8 @@ cleanup() {
 }
 trap cleanup EXIT INT TERM
 
-python scripts/dev_wholesale.py &
+# Project-root package import (same as Vercel). Do not add api/ to PYTHONPATH.
+python -m wholesale_core &
 PY_PID=$!
 
 # Wait briefly for the API to bind

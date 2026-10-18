@@ -70,11 +70,14 @@ git push -u origin main
 7. Click **Deploy**.
 
 Python: Vercel picks up `api/wholesale.py` as a serverless function automatically.  
+Shared logic lives in the project-root package **`wholesale_core/`** (imported as `from wholesale_core import …`). Do **not** put helper `.py` files directly under `api/` — each becomes its own public endpoint, and siblings are **not** on Vercel’s import path (cwd is the project root).
+
 Config already in the repo:
 
 - `.python-version` → `3.12`
 - `requirements.txt` → empty (stdlib only; pytest is **not** installed on Vercel)
 - `vercel.json` → `maxDuration: 300` for `api/wholesale.py` (Hobby maximum)
+- Local API: from the repo root, `python -m wholesale_core` (or `bash scripts/dev.sh`)
 
 ---
 
@@ -119,14 +122,20 @@ Hobby keeps a short window of runtime logs (about **1 hour** on Hobby). Check so
 | | Local | Vercel |
 |--|-------|--------|
 | Frontend | `npm run dev` or `bash scripts/dev.sh` | Automatic |
-| Python API | `scripts/dev_wholesale.py` on `:8001` (dev rewrite) | `api/wholesale.py` serverless |
+| Python API | `python -m wholesale_core` on `:8001` (dev rewrite) | `api/wholesale.py` → imports `wholesale_core` |
 | Dev rewrite | Only when `POWERSAVE_DEV_REWRITE=1` **and** `NODE_ENV=development` | **Off** |
+
+### Past production bug (fixed)
+
+`ModuleNotFoundError: No module named 'wholesale_core'` at import of `api/wholesale.py` meant the shared module lived under `api/` and was only found locally via a `sys.path` insert. Fix: keep `wholesale_core/` at the **project root**; only `api/wholesale.py` is the public function.
 
 ---
 
 ## 6. If something fails
 
 - **404 on `/api/wholesale`**: confirm `api/wholesale.py` is in the repo root’s `api/` folder and the deployment finished.
+- **500 / `No module named 'wholesale_core'`**: confirm the `wholesale_core/` package is in the repo (next to `api/`, not inside it) and was committed. Runtime logs show the import traceback.
+- **503 JSON with `ok: false`**: IESO fetch/parse failed; body should include `errorCode` and `stage`. UI should show error/stale, not invented prices.
 - **Build fails**: run `npm run build` locally; fix TypeScript/ESLint before pushing again.
 - **Empty / wrong averages**: check `averages.status` — partial/missing is intentional under the time budget; a later request may deepen history via cache.
 - **Never** paste API keys into the project for this app — v1 does not need them.
