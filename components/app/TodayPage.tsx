@@ -20,6 +20,7 @@ import {
 } from "@/lib/guest-storage";
 import {
   adviceForChoreAt,
+  effectiveQuietHours,
   type ChoreConfig,
 } from "@/lib/pricing";
 import {
@@ -278,7 +279,7 @@ export function TodayPage() {
                 plan,
                 { label: chore.label, kwh: chore.kwh, durationMin: chore.durationMin },
                 now,
-                { deadline, quietHours: quiet },
+                { deadline, quietHours: effectiveQuietHours(chore, quiet) },
               );
               const spec = `${chore.kwh} kWh · ${
                 chore.durationMin >= 60 && chore.durationMin % 60 === 0

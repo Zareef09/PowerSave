@@ -6,7 +6,11 @@ import { Ribbon } from "@/components/Ribbon";
 import { formatCost, formatTime } from "@/lib/format";
 import { ratesMonoTag } from "@/lib/format-rates";
 import { readStoredChores, readStoredPlan } from "@/lib/guest-storage";
-import { type ChoreConfig } from "@/lib/pricing";
+import {
+  choreAllowsOvernight,
+  isQuietMinuteOfDay,
+  type ChoreConfig,
+} from "@/lib/pricing";
 import {
   addMinutes,
   choreCostCentsAt,
@@ -43,7 +47,9 @@ function planWindows(
   let best = Number.POSITIVE_INFINITY;
   let bestStart = dayStart;
   let worst = 0;
+  const awakeOnly = !choreAllowsOvernight(chore);
   for (let m = 0; m <= 1440 - chore.durationMin; m += 15) {
+    if (awakeOnly && isQuietMinuteOfDay(m)) continue;
     const start = addMinutes(dayStart, m);
     const c = choreCostCentsAt(plan, start, chore.kwh, chore.durationMin);
     if (c < best) {
@@ -51,6 +57,12 @@ function planWindows(
       bestStart = start;
     }
     if (c > worst) worst = c;
+  }
+  if (!Number.isFinite(best)) {
+    // Fallback if every slot was filtered (shouldn't happen for normal durations).
+    best = choreCostCentsAt(plan, dayStart, chore.kwh, chore.durationMin);
+    bestStart = dayStart;
+    worst = best;
   }
   const bp = torontoParts(bestStart);
   const when =

@@ -22,11 +22,32 @@ export type ChoreConfig = {
   /** Absolute deadline as minutes from Toronto midnight of the advice “day” (may be >1440). null = none. */
   deadlineMin: number | null;
   enabled: boolean;
+  /**
+   * When false, advice never suggests a start in quiet hours (10 PM–7 AM),
+   * even if the global quiet-hours toggle is off. EV overnight is the exception.
+   */
+  allowOvernight?: boolean;
 };
 
 export const DEFAULT_CHORES: ChoreConfig[] = [
-  { id: "laundry", label: "Laundry", kwh: 3, durationMin: 90, deadlineMin: null, enabled: true },
-  { id: "dishwasher", label: "Dishwasher", kwh: 1.2, durationMin: 120, deadlineMin: null, enabled: true },
+  {
+    id: "laundry",
+    label: "Laundry",
+    kwh: 3,
+    durationMin: 90,
+    deadlineMin: null,
+    enabled: true,
+    allowOvernight: false,
+  },
+  {
+    id: "dishwasher",
+    label: "Dishwasher",
+    kwh: 1.2,
+    durationMin: 120,
+    deadlineMin: null,
+    enabled: true,
+    allowOvernight: false,
+  },
   {
     id: "ev",
     label: "EV charging",
@@ -34,8 +55,20 @@ export const DEFAULT_CHORES: ChoreConfig[] = [
     durationMin: 240,
     deadlineMin: null,
     enabled: true,
+    allowOvernight: true,
   },
 ];
+
+/** EV (and explicit opt-in) may start overnight; laundry/dishwasher stay in awake hours. */
+export function choreAllowsOvernight(chore: ChoreConfig): boolean {
+  if (typeof chore.allowOvernight === "boolean") return chore.allowOvernight;
+  return chore.id === "ev";
+}
+
+/** Global quiet toggle, or chore that should not run overnight. */
+export function effectiveQuietHours(chore: ChoreConfig, globalQuiet: boolean): boolean {
+  return globalQuiet || !choreAllowsOvernight(chore);
+}
 
 /** Legacy map for golden Checks / Landing sample. */
 export const CHORES: Record<ChoreId, { kwh: number; durationMin: number; label: string }> = {

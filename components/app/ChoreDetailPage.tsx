@@ -14,7 +14,12 @@ import {
   writeStoredChores,
   writeStoredQuietHours,
 } from "@/lib/guest-storage";
-import { adviceForChoreAt, findBestWindowAt, type ChoreConfig } from "@/lib/pricing";
+import {
+  adviceForChoreAt,
+  effectiveQuietHours,
+  findBestWindowAt,
+  type ChoreConfig,
+} from "@/lib/pricing";
 import {
   addMinutes,
   choreCostCentsAt,
@@ -57,7 +62,7 @@ export function ChoreDetailPage({ choreId }: { choreId: string }) {
       now,
       {
         deadline: deadlineDateFromMin(now, chore.deadlineMin),
-        quietHours: quiet,
+        quietHours: effectiveQuietHours(chore, quiet),
       },
     );
   }, [now, chore, plan, quiet]);
@@ -66,7 +71,7 @@ export function ChoreDetailPage({ choreId }: { choreId: string }) {
     if (!now || !chore) return null;
     return findBestWindowAt(plan, now, chore.kwh, chore.durationMin, {
       deadline: deadlineDateFromMin(now, chore.deadlineMin),
-      quietHours: quiet,
+      quietHours: effectiveQuietHours(chore, quiet),
     });
   }, [now, chore, plan, quiet]);
 

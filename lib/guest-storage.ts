@@ -116,8 +116,14 @@ function isChoreConfig(v: unknown): v is ChoreConfig {
     typeof o.kwh === "number" &&
     typeof o.durationMin === "number" &&
     (o.deadlineMin === null || typeof o.deadlineMin === "number") &&
-    typeof o.enabled === "boolean"
+    typeof o.enabled === "boolean" &&
+    (o.allowOvernight === undefined || typeof o.allowOvernight === "boolean")
   );
+}
+
+function withOvernightDefault(c: ChoreConfig): ChoreConfig {
+  if (typeof c.allowOvernight === "boolean") return c;
+  return { ...c, allowOvernight: c.id === "ev" };
 }
 
 export function readStoredChores(): ChoreConfig[] {
@@ -129,7 +135,7 @@ export function readStoredChores(): ChoreConfig[] {
     if (!Array.isArray(parsed) || !parsed.every(isChoreConfig)) {
       return DEFAULT_CHORES.map((c) => ({ ...c }));
     }
-    return parsed.map((c) => ({ ...c }));
+    return parsed.map((c) => withOvernightDefault({ ...c }));
   } catch {
     return DEFAULT_CHORES.map((c) => ({ ...c }));
   }
@@ -161,10 +167,18 @@ export function clearGuestData(): void {
   }
 }
 
-/** Start-flow defaults: Laundry + Dishwasher on, EV off. */
+/** Start-flow defaults: Laundry + Dishwasher on (awake hours), EV off (overnight OK when enabled). */
 export function startFlowDefaultChores(): ChoreConfig[] {
   return [
-    { id: "laundry", label: "Laundry", kwh: 3, durationMin: 90, deadlineMin: null, enabled: true },
+    {
+      id: "laundry",
+      label: "Laundry",
+      kwh: 3,
+      durationMin: 90,
+      deadlineMin: null,
+      enabled: true,
+      allowOvernight: false,
+    },
     {
       id: "dishwasher",
       label: "Dishwasher",
@@ -172,6 +186,7 @@ export function startFlowDefaultChores(): ChoreConfig[] {
       durationMin: 120,
       deadlineMin: null,
       enabled: true,
+      allowOvernight: false,
     },
     {
       id: "ev",
@@ -180,6 +195,7 @@ export function startFlowDefaultChores(): ChoreConfig[] {
       durationMin: 240,
       deadlineMin: null,
       enabled: false,
+      allowOvernight: true,
     },
   ];
 }

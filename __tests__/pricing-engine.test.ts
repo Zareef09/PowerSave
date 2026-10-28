@@ -1,8 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { formatCost, formatTime } from "@/lib/format";
 import {
+  DEFAULT_CHORES,
   DEMO_NOW_MIN,
   adviceForChore,
+  choreAllowsOvernight,
+  effectiveQuietHours,
   findBestWindow,
   isQuietMinuteOfDay,
 } from "@/lib/pricing";
@@ -45,6 +48,29 @@ describe("quiet hours", () => {
     // Unconstrained ULO laundry best is 11 PM (quiet). With quiet hours, best must be awake.
     expect(formatTime(open.bestStartMin)).toBe("11:00 PM");
     expect(isQuietMinuteOfDay(quiet.bestStartMin)).toBe(false);
+  });
+});
+
+describe("overnight chore defaults", () => {
+  it("laundry and dishwasher avoid overnight; EV may use ultra-low", () => {
+    const laundry = DEFAULT_CHORES.find((c) => c.id === "laundry")!;
+    const dish = DEFAULT_CHORES.find((c) => c.id === "dishwasher")!;
+    const ev = DEFAULT_CHORES.find((c) => c.id === "ev")!;
+    expect(choreAllowsOvernight(laundry)).toBe(false);
+    expect(choreAllowsOvernight(dish)).toBe(false);
+    expect(choreAllowsOvernight(ev)).toBe(true);
+    expect(effectiveQuietHours(laundry, false)).toBe(true);
+    expect(effectiveQuietHours(ev, false)).toBe(false);
+    expect(effectiveQuietHours(ev, true)).toBe(true);
+  });
+
+  it("ULO laundry waits for an awake start, not 11 PM", () => {
+    const laundry = DEFAULT_CHORES.find((c) => c.id === "laundry")!;
+    const w = findBestWindow("ULO", DEMO_NOW_MIN, laundry.kwh, laundry.durationMin, "weekday", {
+      quietHours: effectiveQuietHours(laundry, false),
+    });
+    expect(formatTime(w.bestStartMin)).not.toBe("11:00 PM");
+    expect(isQuietMinuteOfDay(w.bestStartMin)).toBe(false);
   });
 });
 

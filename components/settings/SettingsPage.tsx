@@ -301,6 +301,7 @@ export function SettingsPage() {
                   durationMin: 60,
                   deadlineMin: null,
                   enabled: true,
+                  allowOvernight: false,
                 },
               ]);
               setEditingId(id);
@@ -323,15 +324,14 @@ export function SettingsPage() {
             <span>
               <span className="block font-medium">Only suggest times when I&apos;m awake</span>
               <span className="mt-1 block text-sm text-muted-strong">
-                Quiet hours 10 PM–7 AM · {quiet ? "on" : "Off by default."}
+                Quiet hours 10 PM–7 AM · also applies to EV when on.
               </span>
             </span>
           </label>
-          {quiet ? (
-            <p className="m-0 text-sm text-muted-strong">
-              Delay-start appliances can still run overnight.
-            </p>
-          ) : null}
+          <p className="m-0 text-sm text-muted-strong">
+            Laundry and dishwasher already avoid overnight starts. Turn this on to keep EV
+            suggestions in awake hours too. Delay-start appliances can still run overnight.
+          </p>
 
           <div>
             <div className="text-sm font-medium">Show prices in</div>

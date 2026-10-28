@@ -249,6 +249,7 @@ export function StartPage() {
                     durationMin: 60,
                     deadlineMin: null,
                     enabled: true,
+                    allowOvernight: false,
                   },
                 ])
               }
@@ -276,15 +277,14 @@ export function StartPage() {
                 <span>
                   <span className="block text-base font-medium">Only suggest times when I&apos;m awake</span>
                   <span className="mt-1 block text-sm text-muted-strong">
-                    Quiet hours 10 PM–7 AM · optional
+                    Quiet hours 10 PM–7 AM · also applies to EV when on
                   </span>
                 </span>
               </label>
-              {quiet ? (
-                <p className="mt-3 text-sm text-muted-strong">
-                  Delay-start appliances can still run overnight.
-                </p>
-              ) : null}
+              <p className="mt-3 text-sm text-muted-strong">
+                Laundry and dishwasher already skip overnight. EV can still use ultra-low unless you
+                turn this on.
+              </p>
             </div>
             <div className="rounded-card border border-hairline bg-surface p-5">
               <div className="text-lg font-medium">Save across devices?</div>
