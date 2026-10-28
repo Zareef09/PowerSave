@@ -206,9 +206,125 @@ def parse_directory_listing(html: str) -> List[str]:
 
 
 def http_get(url: str, timeout: float = 20.0) -> str:
-    req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT, "Accept": "*/*"})
+    # Ask intermediaries not to serve a stale IESO snapshot of the rolling "latest" file.
+    req = urllib.request.Request(
+        url,
+        headers={
+            "User-Agent": USER_AGENT,
+            "Accept": "application/xml,text/xml,*/*",
+            "Cache-Control": "no-cache",
+            "Pragma": "no-cache",
+        },
+    )
     with urllib.request.urlopen(req, timeout=timeout) as resp:
         return resp.read().decode("utf-8", errors="replace")
+
+
+def report_observation_end(report: HourReport) -> Optional[datetime]:
+    last = report.last_interval
+    if last is None:
+        return None
+    return interval_end_eastern(report.delivery_date, report.delivery_hour, last.interval)
+
+
+def toronto_delivery_hour(now: datetime) -> int:
+    """IESO hour-ending 1..24 for the current America/Toronto wall clock."""
+    local = now.astimezone(ET_TZ) if now.tzinfo else now.replace(tzinfo=ET_TZ)
+    return (local.hour * 60 + local.minute) // 60 + 1
+
+
+def pick_freshest_report(*reports: Optional[HourReport]) -> Optional[HourReport]:
+    """Choose the report whose last filled interval ends latest."""
+    best: Optional[HourReport] = None
+    best_end: Optional[datetime] = None
+    for rep in reports:
+        if rep is None or not rep.intervals:
+            continue
+        end = report_observation_end(rep)
+        if end is None:
+            continue
+        if best is None or best_end is None or end > best_end:
+            best = rep
+            best_end = end
+    return best
+
+
+def resolve_live_report(
+    fetcher: Callable[[str], str],
+    index: Dict[str, str],
+    now: datetime,
+) -> HourReport:
+    """
+    Live price = freshest among:
+      - PUB_RealtimeOntarioZonalPrice.xml (rolling latest alias)
+      - archived file for that alias's delivery hour (may have more intervals)
+      - archived file for the wall-clock delivery hour (alias can lag behind)
+    """
+    latest_xml = fetcher(IESO_LATEST)
+    alias = parse_realtime_xml(latest_xml)
+    if not alias.intervals:
+        raise ValueError("Latest RealtimeOntarioZonalPrice has no filled intervals")
+
+    local = now.astimezone(ET_TZ) if now.tzinfo else now.replace(tzinfo=ET_TZ)
+    wall_he = toronto_delivery_hour(local)
+    wall_date = local.date()
+    # Near midnight HE 24 is still "today"; HE 1 after midnight is new date.
+    candidates: List[Optional[HourReport]] = [alias]
+
+    alias_key = _yyyymmddhh(alias.delivery_date, alias.delivery_hour)
+    candidates.append(fetch_hour_xml(alias_key, index, fetcher))
+
+    wall_key = _yyyymmddhh(wall_date, wall_he)
+    if wall_key != alias_key:
+        candidates.append(fetch_hour_xml(wall_key, index, fetcher))
+
+    # Previous HE helps when the new hour file exists but is empty / not yet listed.
+    if wall_he > 1:
+        prev_key = _yyyymmddhh(wall_date, wall_he - 1)
+        if prev_key != alias_key:
+            candidates.append(fetch_hour_xml(prev_key, index, fetcher))
+    else:
+        prev_day = wall_date - timedelta(days=1)
+        prev_key = _yyyymmddhh(prev_day, 24)
+        if prev_key != alias_key:
+            candidates.append(fetch_hour_xml(prev_key, index, fetcher))
+
+    chosen = pick_freshest_report(*candidates)
+    if chosen is None:
+        raise ValueError("Latest RealtimeOntarioZonalPrice has no filled intervals")
+    return chosen
+
+
+def refresh_payload_freshness(payload: Dict[str, Any], now: Optional[datetime] = None) -> Dict[str, Any]:
+    """Recompute freshness/countdown on cached payloads so age does not freeze."""
+    if not payload.get("ok"):
+        return payload
+    if now is None:
+        now = datetime.now(ET_TZ)
+    elif now.tzinfo is None:
+        now = now.replace(tzinfo=ET_TZ)
+    else:
+        now = now.astimezone(ET_TZ)
+
+    try:
+        d = date.fromisoformat(str(payload["deliveryDate"]))
+        he = int(payload["deliveryHour"])
+        iv = int(payload["lastInterval"])
+    except (KeyError, TypeError, ValueError):
+        return payload
+
+    state, age_sec, obs_end = freshness_state(d, he, iv, now=now)
+    next_expected = obs_end + timedelta(minutes=5)
+    out = dict(payload)
+    out["observationEnd"] = obs_end.isoformat()
+    out["freshness"] = {
+        "state": state,
+        "ageSeconds": int(age_sec),
+        "delayedAfterSeconds": DELAYED_AFTER_SECONDS,
+        "staleAfterSeconds": STALE_AFTER_SECONDS,
+    }
+    out["countdownSeconds"] = max(0, int((next_expected - now).total_seconds()))
+    return out
 
 
 def clear_caches() -> None:
@@ -251,7 +367,14 @@ def fetch_hour_xml(
     try:
         text = fetcher(url)
         return parse_realtime_xml(text)
-    except (urllib.error.HTTPError, urllib.error.URLError, ValueError, ET.ParseError):
+    except (
+        urllib.error.HTTPError,
+        urllib.error.URLError,
+        ValueError,
+        ET.ParseError,
+        FileNotFoundError,
+        OSError,
+    ):
         return None
 
 
@@ -490,28 +613,31 @@ def build_payload(
     if use_cache:
         with _cache_lock:
             if _live_cache["payload"] is not None and tnow - _live_cache["at"] < LIVE_CACHE_SECONDS:
-                cached = dict(_live_cache["payload"])
-                cached["cache"] = {"hit": True, "liveAgeSec": int(tnow - _live_cache["at"])}
-                return cached
+                cached = refresh_payload_freshness(dict(_live_cache["payload"]), now=now)
+                # If the cached observation went delayed/stale, bypass cache and re-hit IESO.
+                if cached.get("freshness", {}).get("state") == "live":
+                    cached["cache"] = {"hit": True, "liveAgeSec": int(tnow - _live_cache["at"])}
+                    return cached
     else:
         clear_caches()
 
     deadline = Deadline(budget_seconds, clock=clock)
 
+    # Directory first so hour archives can beat a lagging "latest" alias.
+    index = get_directory_index(fetcher, use_cache=use_cache)
+
     # 1) Live price first (always — outside “optional history” budget pressure).
-    latest_xml = fetcher(IESO_LATEST)
-    latest = parse_realtime_xml(latest_xml)
-    if not latest.last_interval:
+    latest = resolve_live_report(fetcher, index, now)
+    last_live = latest.last_interval
+    if last_live is None:
         raise ValueError("Latest RealtimeOntarioZonalPrice has no filled intervals")
 
     state, age_sec, obs_end = freshness_state(
         latest.delivery_date,
         latest.delivery_hour,
-        latest.last_interval.interval,
+        last_live.interval,
         now=now,
     )
-
-    index = get_directory_index(fetcher, use_cache=use_cache)
 
     today = now.date()
     current_he = latest.delivery_hour
@@ -586,7 +712,13 @@ def build_payload(
         "source": "IESO RealtimeOntarioZonalPrice",
         "sourceUrl": IESO_DIR,
         "copyright": IESO_COPYRIGHT,
+        "priceField": "LmpCap",
+        "priceNote": (
+            "Ontario zonal energy price is LmpCap ($/MWh), matching the IESO report stylesheet. "
+            "LossPriceCap and CongPriceCap are components, not added again."
+        ),
         "fetchedAt": now.astimezone(timezone.utc).isoformat().replace("+00:00", "Z"),
+        "iesoCreatedAt": latest.created_at.isoformat() if latest.created_at else None,
         "deliveryDate": latest.delivery_date.isoformat(),
         "deliveryHour": latest.delivery_hour,
         "lastInterval": last.interval,
@@ -612,9 +744,9 @@ def build_payload(
             "maxDurationHobbySeconds": 300,
         },
         "requestsNote": (
-            "Cold cache worst case ≈ 1 directory listing + 1 latest XML + "
-            "up to 168 hourly archive XMLs (7×24) for averages; concurrency capped at 4. "
-            f"Work budget {budget_seconds:g}s (Hobby maxDuration 300s)."
+            "Cold cache worst case ≈ 1 directory listing + latest alias + "
+            "current/previous hour archives + up to 168 hourly XMLs for averages; "
+            f"concurrency capped at 4. Work budget {budget_seconds:g}s (Hobby maxDuration 300s)."
         ),
         "cache": {"hit": False, "averagesHit": avg_hit},
     }
@@ -657,7 +789,12 @@ def response_json(payload: Dict[str, Any], cache_live: bool = True) -> Tuple[int
         "Access-Control-Allow-Origin": "*",
     }
     if cache_live and payload.get("ok"):
-        headers["Cache-Control"] = "public, s-maxage=90, stale-while-revalidate=60"
+        state = (payload.get("freshness") or {}).get("state")
+        if state == "live":
+            headers["Cache-Control"] = "public, s-maxage=60, stale-while-revalidate=30"
+        else:
+            # Delayed/stale: don't pin CDN on a frozen observation — recheck IESO soon.
+            headers["Cache-Control"] = "public, max-age=15, s-maxage=15, stale-while-revalidate=15"
     else:
         headers["Cache-Control"] = "no-store"
     return status, headers, body

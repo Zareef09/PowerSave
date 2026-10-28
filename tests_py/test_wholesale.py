@@ -54,6 +54,66 @@ def test_parse_saved_ieso_fixture():
     assert report.last_interval.interval >= 1
 
 
+def test_parse_live_stuck_he19_fixture():
+    """Regression: real IESO XML from 2026-10-28 (HE 19, 8 filled intervals)."""
+    report = parse_realtime_xml(read("live_stuck_he19.xml"))
+    assert report.delivery_date == date(2026, 10, 28)
+    assert report.delivery_hour == 19
+    assert [i.interval for i in report.intervals] == list(range(1, 9))
+    assert report.last_interval is not None
+    assert report.last_interval.mw_h == 63.43
+    assert mw_h_to_cents_kwh(report.last_interval.mw_h) == pytest.approx(6.343)
+
+
+def test_pick_freshest_prefers_more_recent_interval():
+    from wholesale_core.core import HourReport, IntervalPrice, pick_freshest_report
+
+    older = HourReport(
+        delivery_date=date(2026, 10, 28),
+        delivery_hour=19,
+        intervals=[IntervalPrice(7, 63.39)],
+    )
+    newer = HourReport(
+        delivery_date=date(2026, 10, 28),
+        delivery_hour=19,
+        intervals=[IntervalPrice(7, 63.39), IntervalPrice(8, 63.43)],
+    )
+    assert pick_freshest_report(older, newer) is newer
+    assert pick_freshest_report(newer, older) is newer
+
+
+def test_resolve_live_prefers_hour_archive_over_stale_alias():
+    """When the rolling latest alias lags an hour archive, use the archive."""
+    from wholesale_core.core import resolve_live_report
+
+    archive = read("live_stuck_he19.xml")
+    # Alias stops at interval 7 (empty LmpCap for 8+).
+    alias = archive.replace(
+        "<Interval>8</Interval>\n<Flag>DSO-RD</Flag>\n<LmpCap>63.43</LmpCap>\n"
+        "<LossPriceCap>0.16</LossPriceCap>\n<CongPriceCap>0.04</CongPriceCap>",
+        "<Interval>8</Interval>\n<Flag/>\n<LmpCap/>\n"
+        "<LossPriceCap/>\n<CongPriceCap/>",
+    )
+    assert "63.43" not in alias  # interval 8 cleared
+    assert "63.43" in archive
+
+    def fetcher(url: str) -> str:
+        if url.endswith("PUB_RealtimeOntarioZonalPrice.xml"):
+            return alias
+        if "2026102819" in url:
+            return archive
+        if url.rstrip("/").endswith("RealtimeOntarioZonalPrice"):
+            return read("directory.html")
+        raise FileNotFoundError(url)
+
+    now = datetime(2026, 10, 28, 18, 42, tzinfo=ET)
+    index = {"2026102819": "PUB_RealtimeOntarioZonalPrice_2026102819.xml"}
+    report = resolve_live_report(fetcher, index, now)
+    assert report.last_interval is not None
+    assert report.last_interval.interval == 8
+    assert report.last_interval.mw_h == 63.43
+
+
 def test_version_selection_prefers_unversioned_then_max_v():
     names = parse_directory_listing(read("directory.html"))
     chosen = select_latest_version_per_hour(names)
@@ -186,7 +246,7 @@ def test_handler_wrapper_with_fixtures(monkeypatch):
     status, headers, body = handle_get()
     assert status == 200
     assert "application/json" in headers["Content-Type"]
-    assert "s-maxage=90" in headers["Cache-Control"]
+    assert "s-maxage=60" in headers["Cache-Control"]
     data = json.loads(body.decode("utf-8"))
     assert data["ok"] is True
     assert data["copyright"] == IESO_COPYRIGHT

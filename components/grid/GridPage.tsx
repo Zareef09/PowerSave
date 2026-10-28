@@ -89,7 +89,7 @@ export function GridPage() {
         : "Update delayed.";
   const delayBody =
     state === "stale"
-      ? `Showing data from ${lastUpdated}. Your advice on Today still works; it doesn’t depend on the grid.`
+      ? `Showing the latest IESO publication (from ${lastUpdated}). The public report hasn’t updated a new 5-minute interval yet. Advice on Today still works — it doesn’t depend on the grid.`
       : state === "error"
         ? "We could not load IESO public reports. Try again in a few minutes. Advice from your rate plan still works."
         : `Showing data from ${lastUpdated}. Your advice on Today still works.`;
