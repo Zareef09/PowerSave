@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useAuth } from "@/components/auth/AuthProvider";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 const NAV = [
@@ -25,6 +26,38 @@ const NAV = [
     d: "M4 8h10M18 8h2M4 16h2M10 16h10M14 6v4M6 14v4",
   },
 ] as const;
+
+function GuestOrSignedIn({ compact = false }: { compact?: boolean }) {
+  const { email, loading } = useAuth();
+  if (loading) {
+    return <span className="font-mono-label text-muted-strong">[ … ]</span>;
+  }
+  if (email) {
+    const short = email.length > 28 ? `${email.slice(0, 24)}…` : email;
+    return (
+      <>
+        <span className="font-mono-label break-all text-muted-strong">
+          [ SIGNED IN · {compact ? short : email} ]
+        </span>
+        <Link href="/app/settings" className="text-sm text-accent">
+          Manage →
+        </Link>
+      </>
+    );
+  }
+  return (
+    <>
+      <span className="font-mono-label text-muted-strong">
+        {compact ? "[ GUEST ]" : "[ GUEST · THIS DEVICE ]"}
+      </span>
+      {!compact ? (
+        <Link href="/app/signin" className="text-sm text-accent">
+          Save across devices →
+        </Link>
+      ) : null}
+    </>
+  );
+}
 
 export function AppChrome({ children, current = "Grid" }: { children: React.ReactNode; current?: string }) {
   return (
@@ -68,10 +101,7 @@ export function AppChrome({ children, current = "Grid" }: { children: React.Reac
         </nav>
         <div className="mt-auto flex flex-col gap-2 px-3">
           <ThemeToggle />
-          <span className="font-mono-label text-muted-strong">[ GUEST · THIS DEVICE ]</span>
-          <Link href="/app/signin" className="text-sm text-accent">
-            Save across devices →
-          </Link>
+          <GuestOrSignedIn />
         </div>
       </aside>
 
@@ -82,7 +112,7 @@ export function AppChrome({ children, current = "Grid" }: { children: React.Reac
           </Link>
           <div className="flex min-w-0 items-center gap-2 sm:gap-3">
             <ThemeToggle />
-            <span className="font-mono-label text-muted-strong">[ GUEST ]</span>
+            <GuestOrSignedIn compact />
           </div>
         </div>
 

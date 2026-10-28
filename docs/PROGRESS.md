@@ -1,94 +1,76 @@
 # PowerSave — Progress
 
-**Current session completed:** Session 6 — Setup, settings, info pages  
-**Previous:** Session 5 → Bug fix (wholesale) → Session 4 → Deploy-prep → Session 3–1  
-**Next:** You commit + push; then **Session 7** when you say so (`docs/ROADMAP.md`)
+**Current session completed:** Session 7 — Accounts + final polish (shipped guest-first)  
+**Previous:** Session 6 → 5 → wholesale fix → 4 → …  
+**Accounts:** Skipped live Supabase for now (code + migration ready). Guest path is fully functional on every page.  
+**Next:** Optional later — create PowerSave Supabase project, add env, apply migration.
 
 ---
 
-## Session 6 — Done (Setup, settings, info)
+## Session 7 — Done (code) · Accounts + polish
+
+### Accounts (optional; guest still first-class)
+
+| Piece | Status |
+|-------|--------|
+| `/app/signin` | Magic-link UI (form → check email); signed-in state; guest continue |
+| `/auth/callback` + `/auth/confirm` | Session exchange after email link |
+| Middleware | Cookie session refresh when Supabase env is set |
+| `user_settings` + `delete_own_account` | SQL in `supabase/migrations/20261028200000_user_settings.sql` |
+| Settings sync | Pull on sign-in; push on plan/chores/quiet/units/theme change |
+| Delete my data | Guest: localStorage. Signed-in: cloud row + account RPC + sign out |
+| Privacy | Matches guests + signed-in + Supabase + Vercel |
+| `.env.example` | `NEXT_PUBLIC_SUPABASE_URL` + publishable/anon key |
+
+**Without env vars:** app builds and runs fully as guest; Sign-in explains accounts aren’t connected.
+
+**With env vars (after you create the project):** magic link + sync work.
 
 ### Contact
 
-`lib/contact.ts` → `CONTACT_EMAIL = northamericanInventory@gmail.com`. Settings report form uses `mailto:` only (no server, no third-party form).
+`northamericanInventory@gmail.com` (unchanged).
 
-### Delivered
-
-| Route | Status |
-|-------|--------|
-| `/start` | Three steps (plan + bill helper, chores, preferences), skip, continue as guest → `/app` |
-| `/app/settings` | Plan, editable chores, quiet hours, units, theme, account (sign-in link only), delete data, report mailto |
-| `/how-it-works` | Method, worked example (Sample data), sources |
-| `/plan` | Rates in force + coming Nov 1 2026 section, bill helper, season-aware ribbons |
-| `/privacy` | Honest guest copy (localStorage, no accounts, no analytics, IESO, Vercel logs, mailto) |
-| `/app/signin` | Still Coming soon (Session 7) |
-
-Landing CTAs “Find my cheapest time” → `/start`. Today: first-visit strip (States §10) + guest tag. Site footer rates line uses the active OEB set.
-
-### Guest persistence (extended)
-
-`localStorage` (try/catch): plan, chores, quiet hours, units, setup-done, first-visit-dismissed. `clearGuestData()` also clears theme key.
-
-### Privacy note
-
-Privacy page was **written by AI** to match what the app does today. **Human review before launch.**
-
-### Tests
+### Tests / build
 
 | Command | Result |
 |---------|--------|
-| `npm test` | **50 passed** (incl. contact mailto) |
+| `npm test` | **53 passed** |
 | `npm run test:py` | **17 passed** |
-| `npm run build` | **Success** |
+| `npm run build` | **Success** (incl. middleware) |
 
-### Deviations from design
+### Polish / deploy
 
-| Item | Why |
-|------|-----|
-| Sign-in remains Coming soon | Session 7 (Supabase) |
-| Account section visible but not wired | Spec for Session 6 |
-| Privacy is shorter / plainer than design marketing copy | Must match real guest behaviour |
+- Coming soon: **none** left (signin is real).
+- Deploy checklist updated for optional Supabase env + Auth redirect URLs (`docs/DEPLOY.md`).
+- Responsive/a11y patterns from Session 4 retained (skip link, min-h-11 controls, mono tags).
 
-### Open questions
+### Your steps to go live with accounts
 
-None blocking Session 7. Confirm privacy copy on human review.
+1. Reply **yes** to create Supabase project **PowerSave** ($0/mo, Drift, Canada Central).
+2. Agent applies migration + you copy keys into `.env.local` and Vercel.
+3. Auth → URL config: Site URL + `/auth/callback`, `/auth/confirm`.
+4. Commit + push; redeploy; send yourself a magic link.
 
-### Exact next step (for you)
+### Exact next step
 
-Commit + push (agent does **not** push). Then start **Session 7** with: `Run Session 7 per docs/ROADMAP.md`.
-
----
-
-## Session 5 — Done (Core app)
-
-Today / Chore / Tomorrow; season-aware rates; holidays 2026 + 2027 derived; guest plan/chores/quiet; 47 Vitest at end of Session 5 (now 50 with Session 6 contact tests). See git history for full Session 5 notes.
-
-### Rates (keyed by effective date)
-
-| Set | Effective | Verified |
-|-----|-----------|----------|
-| `lib/rates/2025-11-01.ts` | 2025-11-01 | Yes — OEB current + RPP 2025-10-17 |
-| `lib/rates/2026-11-01.ts` | 2026-11-01 | Yes — OEB newsroom 2026-10-16 + RPP PDF |
+None for v1 guest ship. Optional later: create Supabase **PowerSave** project + env to turn on magic-link sync.
 
 ---
 
-## Bug fix — Vercel `wholesale_core` import — Done
+## Session 6 — Done
 
-Shared package at project-root `wholesale_core/`; `api/wholesale.py` thin handler.
+`/start`, `/app/settings`, `/how-it-works`, `/plan`, `/privacy`; contact email; first-visit strip.
 
 ---
 
-## Session 4 — Done (Polish)
+## Session 5 — Done
 
-Responsive/a11y/hygiene/rules audit.
+Today / Chore / Tomorrow; season-aware OEB rates; holidays.
 
 ---
 
 ## Decisions (approved)
 
-1. IESO feed + averages (never “forecast”); verbatim copyright.
-2. Stubs until each session replaces them; `/plan` not `/plans`.
-3. Geist via `geist` only.
-4. Option B local Python + dev rewrite only in development.
-5. **Session 5:** Pre–Nov 1 2026 rates = OEB Nov 1 2025 set; Nov 1 2026 rates verified; 2027 holidays derived (option B).
-6. **Session 6:** Contact email `northamericanInventory@gmail.com`.
+1–5 as before (IESO, stubs, Geist, Python rewrite, rates/holidays).  
+6. Contact: `northamericanInventory@gmail.com`.  
+7. **Session 7:** Optional accounts on a **new** Supabase project only; guest remains first-class.

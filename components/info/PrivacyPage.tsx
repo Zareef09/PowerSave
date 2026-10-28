@@ -4,103 +4,103 @@ import { SiteNav } from "@/components/SiteNav";
 import { CONTACT_EMAIL } from "@/lib/contact";
 
 /**
- * Privacy copy must match what the app actually does today.
- * Guest data in localStorage; no accounts; no analytics; no cookies; IESO public data; Vercel logs.
- * Written by AI — needs human review before launch (see docs/PROGRESS.md).
+ * Privacy copy must match what the app actually does.
+ * Guests: localStorage only. Signed-in: email + settings in Supabase.
+ * Written for Session 7 — human review before launch (see docs/PROGRESS.md).
  */
 export function PrivacyPage() {
   return (
     <div className="min-h-screen bg-page text-ink">
       <SiteNav />
       <main id="main-content" className="mx-auto box-border max-w-content px-4 py-12 sm:px-6 md:px-10 md:py-16">
-        <div className="font-mono-label text-muted">/PRIVACY</div>
+        <div className="font-mono-label flex flex-wrap justify-between gap-2 text-muted">
+          <span>/PRIVACY</span>
+          <span>[ CONFIRM BEFORE LAUNCH ]</span>
+        </div>
         <h1 className="mt-6 text-balance text-[40px] font-light leading-none tracking-[-0.03em] sm:text-[48px] md:text-[72px]">
           Short and <span className="text-muted">plain.</span>
         </h1>
         <p className="mt-4 max-w-[560px] text-lg text-muted">
-          PowerSave works without an account. This page describes what the app does today — nothing
-          more.
+          PowerSave works without an account. Here is what is kept, and where.
         </p>
 
-        <div className="mt-14 flex flex-col gap-10">
-          <section>
+        <div className="mt-14 grid grid-cols-1 gap-4 md:grid-cols-2">
+          <section className="flex flex-col gap-4 rounded-card border border-hairline bg-surface p-6">
             <div className="font-mono-label text-muted-strong">/01 [ GUESTS ]</div>
-            <h2 className="mt-2 text-[28px] font-light tracking-[-0.02em]">Only on this device.</h2>
-            <p className="mt-3 max-w-[640px] text-base leading-normal text-muted-strong">
-              Your plan, chores, quiet hours, units and theme preference stay in this browser&apos;s{" "}
-              <b className="font-medium text-ink">localStorage</b>. They do not leave your device to
-              a PowerSave database. Clearing site data in your browser removes them. There is no
-              account yet.
+            <h2 className="m-0 text-[28px] font-light tracking-[-0.02em]">Only on this device.</h2>
+            <p className="m-0 text-base leading-normal text-muted-strong">
+              Your plan, chores and preferences stay in this browser&apos;s localStorage. They do
+              not leave your device to a PowerSave database. Clear site data and they&apos;re gone.
             </p>
           </section>
 
-          <section>
-            <div className="font-mono-label text-muted-strong">/02 [ ACCOUNTS ]</div>
-            <h2 className="mt-2 text-[28px] font-light tracking-[-0.02em]">Not available yet.</h2>
-            <p className="mt-3 max-w-[640px] text-base leading-normal text-muted-strong">
-              Sign-in is listed in the app but is not wired. We do not store email addresses or sync
-              settings across devices. When accounts ship, this page will be updated.
+          <section className="flex flex-col gap-4 rounded-card border border-hairline bg-surface p-6">
+            <div className="font-mono-label text-muted-strong">/02 [ SIGNED-IN ]</div>
+            <h2 className="m-0 text-[28px] font-light tracking-[-0.02em]">Email, plan and chores.</h2>
+            <p className="m-0 text-base leading-normal text-muted-strong">
+              If you choose to sign in with a magic link, we store your email address, plan, chores,
+              quiet hours, units and theme so they follow you across devices. That&apos;s all. Auth
+              is handled by Supabase.
             </p>
           </section>
 
-          <section>
-            <div className="font-mono-label text-muted-strong">/03 [ TRACKING ]</div>
-            <h2 className="mt-2 text-[28px] font-light tracking-[-0.02em]">No analytics. No cookies.</h2>
-            <p className="mt-3 max-w-[640px] text-base leading-normal text-muted-strong">
-              PowerSave does not run analytics, ads or tracking pixels. We do not set cookies for
-              marketing. Theme and guest settings use localStorage only.
+          <section className="flex flex-col gap-4 rounded-card border border-hairline bg-surface p-6">
+            <div className="font-mono-label text-muted-strong">/03 [ SELLING ]</div>
+            <h2 className="m-0 text-[28px] font-light tracking-[-0.02em]">We don&apos;t sell your data.</h2>
+            <p className="m-0 text-base leading-normal text-muted-strong">
+              Not your email, not your plan, not your chores. There are no ads in PowerSave. No
+              analytics pixels, no marketing cookies.
             </p>
           </section>
 
-          <section>
-            <div className="font-mono-label text-muted-strong">/04 [ GRID DATA ]</div>
-            <h2 className="mt-2 text-[28px] font-light tracking-[-0.02em]">IESO public reports.</h2>
-            <p className="mt-3 max-w-[640px] text-base leading-normal text-muted-strong">
-              The Grid loads wholesale prices from IESO public reports. That data is public. Advice
-              on Today still comes from your rate plan, not the wholesale price. Wherever a
-              wholesale number appears, we label it: “Wholesale market price. Not what you pay.”
+          <section className="flex flex-col gap-4 rounded-card border border-hairline bg-surface p-6">
+            <div className="font-mono-label text-muted-strong">/04 [ DELETING ]</div>
+            <h2 className="m-0 text-[28px] font-light tracking-[-0.02em]">One button.</h2>
+            <p className="m-0 text-base leading-normal text-muted-strong">
+              Settings → Delete my data clears what&apos;s on this device and, if you signed in,
+              your synced settings and account.
+            </p>
+            <Link
+              href="/app/settings"
+              className="inline-flex min-h-11 w-fit items-center rounded-btn border border-ink px-5 text-sm font-medium text-ink no-underline"
+            >
+              Open Settings
+            </Link>
+          </section>
+        </div>
+
+        <div className="mt-4 flex flex-col gap-6">
+          <section className="rounded-card border border-hairline bg-surface p-6">
+            <div className="font-mono-label text-muted-strong">/05 [ GRID DATA ]</div>
+            <h2 className="mt-2 text-[22px] font-light tracking-[-0.02em]">IESO public reports.</h2>
+            <p className="mt-2 max-w-[720px] text-base leading-normal text-muted-strong">
+              The Grid loads wholesale prices from IESO public reports. Advice on Today still comes
+              from your rate plan, not the wholesale price. Wherever a wholesale number appears, we
+              label it: “Wholesale market price. Not what you pay.”
             </p>
           </section>
 
-          <section>
-            <div className="font-mono-label text-muted-strong">/05 [ HOSTING ]</div>
-            <h2 className="mt-2 text-[28px] font-light tracking-[-0.02em]">Vercel logs.</h2>
-            <p className="mt-3 max-w-[640px] text-base leading-normal text-muted-strong">
-              The site is hosted on Vercel. Like most hosts, Vercel may keep short-lived request
-              logs (for example IP address and URL) for operations and abuse prevention. We do not
-              use those logs for advertising.
-            </p>
-          </section>
-
-          <section>
-            <div className="font-mono-label text-muted-strong">/06 [ REPORTS ]</div>
-            <h2 className="mt-2 text-[28px] font-light tracking-[-0.02em]">Report a problem.</h2>
-            <p className="mt-3 max-w-[640px] text-base leading-normal text-muted-strong">
-              The Settings report form opens your email app and sends to{" "}
+          <section className="rounded-card border border-hairline bg-surface p-6">
+            <div className="font-mono-label text-muted-strong">/06 [ HOSTING ]</div>
+            <h2 className="mt-2 text-[22px] font-light tracking-[-0.02em]">Vercel + Supabase.</h2>
+            <p className="mt-2 max-w-[720px] text-base leading-normal text-muted-strong">
+              The site is hosted on Vercel (short-lived request logs for operations). Optional
+              accounts and synced settings use a dedicated Supabase project. Report a problem opens
+              your email app to{" "}
               <a className="text-accent" href={`mailto:${CONTACT_EMAIL}`}>
                 {CONTACT_EMAIL}
               </a>
-              . Nothing from that form is stored on our servers.
+              — nothing from that form is stored on our servers.
             </p>
           </section>
+        </div>
 
-          <section>
-            <div className="font-mono-label text-muted-strong">/07 [ DELETING ]</div>
-            <h2 className="mt-2 text-[28px] font-light tracking-[-0.02em]">One button on this device.</h2>
-            <p className="mt-3 max-w-[640px] text-base leading-normal text-muted-strong">
-              Settings → Delete my data clears guest settings from this browser.{" "}
-              <Link href="/app/settings" className="text-accent">
-                Open Settings →
-              </Link>
-            </p>
-          </section>
-
-          <div className="rounded-panel border border-hairline bg-panel p-6">
-            <p className="m-0 text-base leading-normal">
-              PowerSave is independent. It is not affiliated with or endorsed by the Ontario Energy
-              Board, the IESO or any utility.
-            </p>
-          </div>
+        <div className="mt-6 rounded-panel border border-hairline bg-panel p-6">
+          <p className="m-0 text-base leading-normal">
+            <b className="font-medium">Independent.</b> PowerSave is not affiliated with or endorsed
+            by the Ontario Energy Board, the IESO or any utility. Questions about this page: use
+            “Report a wrong rate or bug” in Settings.
+          </p>
         </div>
       </main>
       <SiteFooter />

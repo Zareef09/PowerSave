@@ -1,11 +1,22 @@
 import type { Metadata } from "next";
-import { ComingSoon } from "@/components/ComingSoon";
+import { Suspense } from "react";
+import { SignInPage } from "@/components/auth/SignInPage";
 
 export const metadata: Metadata = {
   title: "Sign in",
-  description: "Coming soon — PowerSave v1 works as a guest with no login wall.",
+  description: "Optional magic-link sign-in so your plan and chores follow you across devices.",
 };
 
-export default function SignInPage() {
-  return <ComingSoon title="Sign in" />;
+export default function SignInRoutePage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-page text-muted">
+          Loading…
+        </div>
+      }
+    >
+      <SignInPage />
+    </Suspense>
+  );
 }

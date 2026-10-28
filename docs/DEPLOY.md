@@ -66,7 +66,15 @@ git push -u origin main
    - Build Command: `next build` (default)
    - Output: Next defaults
 5. **Root Directory**: leave as the repo root (this project already is the app).
-6. Environment variables: **none required** for v1 (no API keys, no database).
+6. Environment variables — **optional for guest-only**:
+   - Without them, the whole app works as a guest (localStorage). Sign-in shows a clear “not connected” message.
+   - For magic-link accounts + sync, add from your **PowerSave** Supabase project (new project only — do not reuse other apps):
+     - `NEXT_PUBLIC_SUPABASE_URL`
+     - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (or legacy `NEXT_PUBLIC_SUPABASE_ANON_KEY`)
+   - In Supabase Auth → URL configuration, set Site URL to your Vercel URL and allow redirects:
+     - `https://YOUR_DOMAIN/auth/callback`
+     - `https://YOUR_DOMAIN/auth/confirm`
+   - Apply SQL in `supabase/migrations/20261028200000_user_settings.sql` (SQL editor or CLI).
 7. Click **Deploy**.
 
 Python: Vercel picks up `api/wholesale.py` as a serverless function automatically.  
@@ -88,6 +96,9 @@ Open the **Preview** URL Vercel gives you (or the Production URL if you promoted
 | Check | URL | Expect |
 |-------|-----|--------|
 | Landing | `/` | Page loads; plan selector works; Grid teaser shows a price |
+| Today | `/app` | Advice cards; first-visit strip or guest/signed-in tag |
+| Sign-in | `/app/signin` | Magic link form (needs Supabase env) or honest not-connected message |
+| Settings | `/app/settings` | Plan/chores; delete data; report mailto |
 | Grid | `/app/grid` | Wholesale banner; live/delayed/stale; chart |
 | API | `/api/wholesale` | JSON with `"ok": true` (or honest `"ok": false` + error — never fake live numbers) |
 

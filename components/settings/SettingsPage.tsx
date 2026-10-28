@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useAuth } from "@/components/auth/AuthProvider";
 import { AppChrome } from "@/components/grid/AppChrome";
 import { useTheme } from "@/components/ThemeProvider";
 import { reportMailto } from "@/lib/contact";
@@ -20,6 +21,8 @@ import {
 } from "@/lib/guest-storage";
 import type { ChoreConfig } from "@/lib/pricing";
 import { rateSetForInstant, type PlanId } from "@/lib/rates";
+import { createClient } from "@/lib/supabase/client";
+import { deleteAccountAndData, pushSettings, readLocalAsCloud } from "@/lib/settings-sync";
 
 const PLAN_OPTS: { id: PlanId; title: string; tag: string }[] = [
   { id: "TOU", title: "Time-of-Use", tag: "Default for most homes" },
@@ -29,6 +32,7 @@ const PLAN_OPTS: { id: PlanId; title: string; tag: string }[] = [
 
 export function SettingsPage() {
   const { theme, setTheme } = useTheme();
+  const { email, user, signOut, syncNow } = useAuth();
   const [plan, setPlan] = useState<PlanId>("TOU");
   const [chores, setChores] = useState<ChoreConfig[]>([]);
   const [quiet, setQuiet] = useState(false);
@@ -37,11 +41,17 @@ export function SettingsPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleted, setDeleted] = useState(false);
+  const [deleteMsg, setDeleteMsg] = useState("");
   const [reportCat, setReportCat] = useState("A rate looks wrong");
   const [reportDetails, setReportDetails] = useState("");
   const [reportEmail, setReportEmail] = useState("");
   const [reported, setReported] = useState(false);
   const [ratesTag, setRatesTag] = useState("");
+
+  const syncCloud = () => {
+    if (!user) return;
+    void syncNow();
+  };
 
   useEffect(() => {
     const p = readStoredPlan();
@@ -62,11 +72,25 @@ export function SettingsPage() {
   const persistPlan = (next: PlanId) => {
     setPlan(next);
     writeStoredPlan(next);
+    syncCloud();
   };
 
   const persistChores = (next: ChoreConfig[]) => {
     setChores(next);
     writeStoredChores(next);
+    syncCloud();
+  };
+
+  const persistQuiet = (on: boolean) => {
+    setQuiet(on);
+    writeStoredQuietHours(on);
+    syncCloud();
+  };
+
+  const persistUnits = (u: PriceUnits) => {
+    setUnits(u);
+    writeStoredUnits(u);
+    syncCloud();
   };
 
   const applyThemeMode = (mode: "system" | "light" | "dark") => {
@@ -82,6 +106,15 @@ export function SettingsPage() {
     } else {
       setTheme(mode);
     }
+    if (user) {
+      const supabase = createClient();
+      if (supabase) {
+        void pushSettings(supabase, user.id, {
+          ...readLocalAsCloud(),
+          theme: mode === "system" ? null : mode,
+        });
+      }
+    }
   };
 
   const sampleNow = units === "cents" ? "57¢" : "$0.57";
@@ -94,7 +127,7 @@ export function SettingsPage() {
         className="mx-auto box-border flex w-full max-w-[1040px] flex-1 flex-col gap-6 px-4 py-6 sm:px-6 md:px-12 md:py-12"
       >
         <div className="font-mono-label flex flex-wrap justify-between gap-2 text-muted">
-          <span>[ SAVED ON THIS DEVICE ]</span>
+          <span>{email ? "[ SYNCED · ACCOUNT ]" : "[ SAVED ON THIS DEVICE ]"}</span>
           <span>{ratesTag || "[ RATES OEB ]"}</span>
         </div>
         <h1 className="m-0 text-[32px] font-light tracking-[-0.03em] sm:text-[40px] md:text-[56px]">
@@ -285,10 +318,7 @@ export function SettingsPage() {
               type="checkbox"
               checked={quiet}
               className="mt-1 h-5 w-5"
-              onChange={(e) => {
-                setQuiet(e.target.checked);
-                writeStoredQuietHours(e.target.checked);
-              }}
+              onChange={(e) => persistQuiet(e.target.checked)}
             />
             <span>
               <span className="block font-medium">Only suggest times when I&apos;m awake</span>
@@ -319,10 +349,7 @@ export function SettingsPage() {
                   className={`min-h-11 rounded-btn border px-4 text-sm ${
                     units === id ? "border-ink bg-ink text-page" : "border-ink text-ink"
                   }`}
-                  onClick={() => {
-                    setUnits(id);
-                    writeStoredUnits(id);
-                  }}
+                  onClick={() => persistUnits(id)}
                 >
                   {label}
                 </button>
@@ -367,21 +394,42 @@ export function SettingsPage() {
         {/* Account */}
         <section className="flex flex-col gap-4 rounded-card border border-hairline bg-surface p-5 md:p-6">
           <div className="font-mono-label text-muted-strong">ACCOUNT</div>
-          <p className="m-0 text-base leading-normal">
-            You&apos;re a guest. Everything works on this device without an account. Sign in only
-            syncs settings across devices (coming soon).
-          </p>
+          {email ? (
+            <p className="m-0 text-base leading-normal">
+              Signed in as <b className="font-medium">{email}</b>. Plan and chores sync across
+              devices when you change them here.
+            </p>
+          ) : (
+            <p className="m-0 text-base leading-normal">
+              You&apos;re using PowerSave as a guest. Everything works without an account. Signing
+              in only saves your settings across devices.
+            </p>
+          )}
           <div className="flex flex-wrap gap-3">
-            <Link
-              href="/app/signin"
-              className="inline-flex min-h-12 items-center rounded-btn border border-ink px-5 font-medium text-ink no-underline"
-            >
-              Sign in
-            </Link>
+            {email ? (
+              <button
+                type="button"
+                className="inline-flex min-h-12 items-center rounded-btn border border-ink px-5 font-medium"
+                onClick={() => void signOut()}
+              >
+                Sign out
+              </button>
+            ) : (
+              <Link
+                href="/app/signin"
+                className="inline-flex min-h-12 items-center rounded-btn border border-ink px-5 font-medium text-ink no-underline"
+              >
+                Sign in
+              </Link>
+            )}
             <button
               type="button"
               className="inline-flex min-h-12 items-center rounded-btn border border-ink px-5 font-medium"
-              onClick={() => setConfirmDelete(true)}
+              onClick={() => {
+                setConfirmDelete(true);
+                setDeleted(false);
+                setDeleteMsg("");
+              }}
             >
               Delete my data
             </button>
@@ -393,23 +441,34 @@ export function SettingsPage() {
               className="rounded-card border-2 border-ink p-4"
             >
               <div id="delete-title" className="font-medium">
-                Delete all saved settings?
+                {email ? "Delete account and all saved settings?" : "Delete all saved settings?"}
               </div>
               <p className="mt-2 text-sm text-muted-strong">
-                Clears plan, chores and preferences from this browser. Cannot be undone.
+                {email
+                  ? "Clears this browser, deletes your synced settings and account. Cannot be undone."
+                  : "Clears plan, chores and preferences from this browser. Cannot be undone."}
               </p>
               <div className="mt-4 flex flex-wrap gap-2">
                 <button
                   type="button"
                   className="min-h-11 rounded-btn bg-ink px-4 text-sm font-medium text-page"
                   onClick={() => {
-                    clearGuestData();
-                    setPlan("TOU");
-                    setChores([]);
-                    setQuiet(false);
-                    setUnits("cents");
-                    setConfirmDelete(false);
-                    setDeleted(true);
+                    void (async () => {
+                      if (user) {
+                        const supabase = createClient();
+                        if (supabase) {
+                          const result = await deleteAccountAndData(supabase);
+                          setDeleteMsg(result.message);
+                        }
+                      }
+                      clearGuestData();
+                      setPlan("TOU");
+                      setChores([]);
+                      setQuiet(false);
+                      setUnits("cents");
+                      setConfirmDelete(false);
+                      setDeleted(true);
+                    })();
                   }}
                 >
                   Delete
@@ -426,7 +485,7 @@ export function SettingsPage() {
           ) : null}
           {deleted ? (
             <p role="status" className="m-0 text-sm text-muted-strong">
-              Your data was deleted from this device.
+              {deleteMsg || "Your data was deleted from this device."}
             </p>
           ) : null}
         </section>

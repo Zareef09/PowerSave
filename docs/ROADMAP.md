@@ -31,6 +31,6 @@ Non-negotiable PRD rules apply to every session. Do not edit `PowerSave-Design`.
 
 ## Session 7 — Accounts + final polish
 
-**Status:** not started  
+**Status:** done (code) — create dedicated Supabase project + env + migration to activate magic-link sync  
 
 **Includes:** `/app/signin` and optional accounts with Supabase (**new project only**), settings sync and account deletion, privacy page matching what the app actually does, then final polish: responsive, accessibility, non-negotiable rules audit, full design checklist, deploy checks.

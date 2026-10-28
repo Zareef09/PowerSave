@@ -7,6 +7,7 @@ import { Ribbon } from "@/components/Ribbon";
 import { DONE_BY_OPTIONS, deadlineDateFromMin } from "@/lib/deadlines";
 import { formatCost, formatTime } from "@/lib/format";
 import { planDisplayName, ratesAsOfLabel, ratesMonoTag } from "@/lib/format-rates";
+import { useAuth } from "@/components/auth/AuthProvider";
 import {
   readFirstVisitDismissed,
   readSetupDone,
@@ -40,6 +41,7 @@ function dateHeading(iso: string, weekday: number): string {
 }
 
 export function TodayPage() {
+  const { email } = useAuth();
   const [plan, setPlan] = useState<PlanId>("TOU");
   const [chores, setChores] = useState<ChoreConfig[]>([]);
   const [quiet, setQuiet] = useState(false);
@@ -133,7 +135,7 @@ export function TodayPage() {
           </h1>
         </div>
 
-        {showFirstVisit ? (
+        {showFirstVisit && !email ? (
           <div
             role="status"
             className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2.5 rounded-xl border border-hairline bg-surface px-4 py-3.5"
@@ -157,6 +159,18 @@ export function TodayPage() {
                 Not now
               </button>
             </span>
+          </div>
+        ) : email ? (
+          <div
+            role="status"
+            className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 rounded-xl border border-hairline bg-surface px-4 py-3.5"
+          >
+            <span className="font-mono-label break-all text-muted-strong">
+              [ SIGNED IN · {email} ]
+            </span>
+            <Link href="/app/settings" className="text-sm text-accent no-underline">
+              Manage →
+            </Link>
           </div>
         ) : (
           <div
