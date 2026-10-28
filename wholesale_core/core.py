@@ -28,7 +28,9 @@ USER_AGENT = "PowerSave/1.0 (+https://powersave.app; educational household tool;
 IESO_DIR = "https://reports-public.ieso.ca/public/RealtimeOntarioZonalPrice/"
 IESO_LATEST = IESO_DIR + "PUB_RealtimeOntarioZonalPrice.xml"
 
-LIVE_CACHE_SECONDS = 90
+# Keep process cache short so a new IESO upload is visible within one poll.
+LIVE_CACHE_SECONDS = 25
+DIR_CACHE_SECONDS = 20
 AVERAGES_CACHE_SECONDS = 3600
 MAX_FETCH_WORKERS = 4
 
@@ -323,6 +325,7 @@ def refresh_payload_freshness(payload: Dict[str, Any], now: Optional[datetime] =
         "delayedAfterSeconds": DELAYED_AFTER_SECONDS,
         "staleAfterSeconds": STALE_AFTER_SECONDS,
     }
+    out["iesoPublication"] = ieso_publication_block(state, age_sec, obs_end)
     out["countdownSeconds"] = max(0, int((next_expected - now).total_seconds()))
     return out
 
@@ -338,12 +341,16 @@ def clear_caches() -> None:
 def get_directory_index(
     fetcher: Callable[[str], str] = http_get,
     use_cache: bool = True,
+    max_age_seconds: float = DIR_CACHE_SECONDS,
 ) -> Dict[str, str]:
     global _dir_cache
     now = time.time()
     if use_cache:
         with _cache_lock:
-            if _dir_cache["index"] is not None and now - _dir_cache["at"] < AVERAGES_CACHE_SECONDS:
+            if (
+                _dir_cache["index"] is not None
+                and now - _dir_cache["at"] < max_age_seconds
+            ):
                 return _dir_cache["index"]
     html = fetcher(IESO_DIR)
     names = parse_directory_listing(html)
@@ -352,6 +359,47 @@ def get_directory_index(
         with _cache_lock:
             _dir_cache = {"at": now, "index": index}
     return index
+
+
+def _eastern_clock(dt: datetime) -> str:
+    local = dt.astimezone(ET_TZ) if dt.tzinfo else dt.replace(tzinfo=ET_TZ)
+    return local.strftime("%I:%M %p").lstrip("0")
+
+
+def ieso_publication_block(
+    state: str,
+    age_sec: float,
+    obs_end: datetime,
+) -> Dict[str, Any]:
+    """Honest copy for the UI when we are waiting on IESO’s public upload."""
+    waiting = state in ("delayed", "stale")
+    clock = _eastern_clock(obs_end)
+    if state == "live":
+        message = "Showing the latest 5-minute price from IESO’s public report."
+    elif state == "delayed":
+        message = (
+            "IESO has not uploaded a newer 5-minute price yet. "
+            f"Last publication ended at {clock} Eastern. "
+            "PowerSave checks again every few seconds."
+        )
+    elif state == "stale":
+        message = (
+            "IESO has not uploaded the latest prices yet "
+            f"(last publication ended at {clock} Eastern, "
+            f"about {max(1, int(age_sec // 60))} minutes ago). "
+            "We keep checking their public feed. Your Today advice still works — "
+            "it does not depend on the wholesale grid."
+        )
+    else:
+        message = "Could not read IESO’s public price report."
+    return {
+        "waitingOnIeso": waiting,
+        "state": state,
+        "lastPublishedAt": obs_end.isoformat(),
+        "ageSeconds": int(age_sec),
+        "message": message,
+        "pollHintSeconds": 15 if waiting else 30,
+    }
 
 
 def fetch_hour_xml(
@@ -614,17 +662,28 @@ def build_payload(
         with _cache_lock:
             if _live_cache["payload"] is not None and tnow - _live_cache["at"] < LIVE_CACHE_SECONDS:
                 cached = refresh_payload_freshness(dict(_live_cache["payload"]), now=now)
-                # If the cached observation went delayed/stale, bypass cache and re-hit IESO.
+                # Only serve process cache while still live. If IESO lags, always re-hit their feed.
                 if cached.get("freshness", {}).get("state") == "live":
-                    cached["cache"] = {"hit": True, "liveAgeSec": int(tnow - _live_cache["at"])}
-                    return cached
+                    pub = cached.get("iesoPublication")
+                    if not isinstance(pub, dict) or not pub.get("waitingOnIeso"):
+                        # Ensure publication block stays present on cache hits.
+                        try:
+                            d = date.fromisoformat(str(cached["deliveryDate"]))
+                            he = int(cached["deliveryHour"])
+                            iv = int(cached["lastInterval"])
+                            st, age, end = freshness_state(d, he, iv, now=now)
+                            cached["iesoPublication"] = ieso_publication_block(st, age, end)
+                        except (KeyError, TypeError, ValueError):
+                            pass
+                        cached["cache"] = {"hit": True, "liveAgeSec": int(tnow - _live_cache["at"])}
+                        return cached
     else:
         clear_caches()
 
     deadline = Deadline(budget_seconds, clock=clock)
 
-    # Directory first so hour archives can beat a lagging "latest" alias.
-    index = get_directory_index(fetcher, use_cache=use_cache)
+    # Fresh directory listing when polling for a new IESO upload (short TTL).
+    index = get_directory_index(fetcher, use_cache=use_cache, max_age_seconds=DIR_CACHE_SECONDS)
 
     # 1) Live price first (always — outside “optional history” budget pressure).
     latest = resolve_live_report(fetcher, index, now)
@@ -729,6 +788,7 @@ def build_payload(
             "delayedAfterSeconds": DELAYED_AFTER_SECONDS,
             "staleAfterSeconds": STALE_AFTER_SECONDS,
         },
+        "iesoPublication": ieso_publication_block(state, age_sec, obs_end),
         "latest": {
             "mwH": round(last.mw_h, 4),
             "centsKwh": round(cents, 4),
@@ -789,12 +849,14 @@ def response_json(payload: Dict[str, Any], cache_live: bool = True) -> Tuple[int
         "Access-Control-Allow-Origin": "*",
     }
     if cache_live and payload.get("ok"):
+        waiting = bool((payload.get("iesoPublication") or {}).get("waitingOnIeso"))
         state = (payload.get("freshness") or {}).get("state")
-        if state == "live":
-            headers["Cache-Control"] = "public, s-maxage=60, stale-while-revalidate=30"
+        if state == "live" and not waiting:
+            # Short CDN TTL — next 5-minute IESO upload should land quickly.
+            headers["Cache-Control"] = "public, s-maxage=20, stale-while-revalidate=10"
         else:
-            # Delayed/stale: don't pin CDN on a frozen observation — recheck IESO soon.
-            headers["Cache-Control"] = "public, max-age=15, s-maxage=15, stale-while-revalidate=15"
+            # Waiting on IESO: every client poll must reach the function.
+            headers["Cache-Control"] = "no-store"
     else:
         headers["Cache-Control"] = "no-store"
     return status, headers, body

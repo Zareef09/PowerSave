@@ -44,6 +44,13 @@ export function GridPage() {
 
   useEffect(() => {
     let cancelled = false;
+    let timer: ReturnType<typeof setTimeout> | null = null;
+
+    const schedule = (ms: number) => {
+      if (cancelled) return;
+      timer = setTimeout(() => void load(), ms);
+    };
+
     const load = async () => {
       const payload = await fetchWholesale();
       if (cancelled) return;
@@ -56,12 +63,21 @@ export function GridPage() {
       if (payload?.ok && typeof payload.countdownSeconds === "number") {
         setSec(payload.countdownSeconds);
       }
+      const waiting = Boolean(payload?.ok && payload.iesoPublication?.waitingOnIeso);
+      const hint =
+        payload?.ok && payload.iesoPublication?.pollHintSeconds
+          ? payload.iesoPublication.pollHintSeconds * 1000
+          : waiting
+            ? 15_000
+            : 30_000;
+      // When waiting on IESO, poll fast so a new upload appears immediately.
+      schedule(waiting || payload?.freshness?.state === "error" ? Math.min(hint, 15_000) : hint);
     };
+
     void load();
-    const t = setInterval(() => void load(), 60_000);
     return () => {
       cancelled = true;
-      clearInterval(t);
+      if (timer) clearTimeout(timer);
     };
   }, []);
 
@@ -73,7 +89,8 @@ export function GridPage() {
 
   const state = data?.ok ? data.freshness.state : data ? data.freshness.state : "error";
   const live = state === "live";
-  const delayed = state === "delayed" || state === "stale" || state === "error";
+  const waitingOnIeso = Boolean(data?.ok && data.iesoPublication?.waitingOnIeso);
+  const delayed = waitingOnIeso || state === "delayed" || state === "stale" || state === "error";
   const lastUpdated = formatClock(data?.observationEnd);
   const cents = data?.ok && data.latest ? data.latest.displayCents : null;
   const mw = data?.ok && data.latest ? data.latest.displayMwH : null;
@@ -82,23 +99,26 @@ export function GridPage() {
   const averages = data?.ok && data.averages ? data.averages : null;
 
   const delayHead =
-    state === "stale"
-      ? "Data is over 20 minutes old."
-      : state === "error"
-        ? "Grid data unavailable."
+    state === "error"
+      ? "Grid data unavailable."
+      : waitingOnIeso || state === "delayed" || state === "stale"
+        ? "IESO has not uploaded the latest prices yet."
         : "Update delayed.";
   const delayBody =
-    state === "stale"
-      ? `Showing the latest IESO publication (from ${lastUpdated}). The public report hasn’t updated a new 5-minute interval yet. Advice on Today still works — it doesn’t depend on the grid.`
-      : state === "error"
-        ? "We could not load IESO public reports. Try again in a few minutes. Advice from your rate plan still works."
-        : `Showing data from ${lastUpdated}. Your advice on Today still works.`;
+    state === "error"
+      ? "We could not load IESO public reports. Try again in a few minutes. Advice from your rate plan still works."
+      : data?.ok && data.iesoPublication?.message
+        ? data.iesoPublication.message
+        : `Last IESO publication ended at ${lastUpdated}. PowerSave keeps checking their public feed every few seconds. Your Today advice still works.`;
 
   const pullLabel = useMemo(() => {
     if (!data?.ok) return "[ SOURCE IESO PUBLIC REPORTS ]";
+    if (waitingOnIeso) {
+      return `[ WAITING ON IESO · LAST ${lastUpdated.toUpperCase()} ]`;
+    }
     const next = data.countdownSeconds != null ? fmtCountdown(data.countdownSeconds) : "—";
     return `[ LAST OBS ${lastUpdated.toUpperCase()} · NEXT ~${next} ]`;
-  }, [data, lastUpdated]);
+  }, [data, lastUpdated, waitingOnIeso]);
 
   return (
     <AppChrome current="Grid">
@@ -159,13 +179,13 @@ export function GridPage() {
                 <span
                   className="inline-block h-2 w-2 rounded-full bg-accent"
                   style={
-                    live
+                    live && !waitingOnIeso
                       ? { animation: "pspulse 1.6s infinite" }
                       : { opacity: 0.4 }
                   }
                   aria-hidden
                 />
-                Latest five-minute price
+                {waitingOnIeso ? "Waiting on IESO upload" : "Latest five-minute price"}
               </span>
               {!data?.ok ? <SampleDataTag /> : null}
             </div>

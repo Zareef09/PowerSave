@@ -246,10 +246,29 @@ def test_handler_wrapper_with_fixtures(monkeypatch):
     status, headers, body = handle_get()
     assert status == 200
     assert "application/json" in headers["Content-Type"]
-    assert "s-maxage=60" in headers["Cache-Control"]
+    assert "s-maxage=20" in headers["Cache-Control"]
     data = json.loads(body.decode("utf-8"))
     assert data["ok"] is True
     assert data["copyright"] == IESO_COPYRIGHT
+    assert data["iesoPublication"]["waitingOnIeso"] is False
+    assert "IESO" in data["iesoPublication"]["message"]
+
+
+def test_waiting_on_ieso_disables_cdn_cache():
+    """When IESO has not uploaded yet, responses must not be CDN-cached."""
+    payload = {
+        "ok": True,
+        "freshness": {"state": "stale", "ageSeconds": 4000},
+        "iesoPublication": {
+            "waitingOnIeso": True,
+            "state": "stale",
+            "message": "IESO has not uploaded the latest prices yet",
+            "pollHintSeconds": 15,
+        },
+    }
+    status, headers, _body = response_json(payload, cache_live=True)
+    assert status == 200
+    assert headers["Cache-Control"] == "no-store"
 
 
 def test_structured_error_payload_fields():

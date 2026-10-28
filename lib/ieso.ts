@@ -37,6 +37,15 @@ export type AveragesBlock = {
   fromCache?: boolean;
 };
 
+export type IesoPublication = {
+  waitingOnIeso: boolean;
+  state: FreshnessState;
+  lastPublishedAt: string;
+  ageSeconds: number;
+  message: string;
+  pollHintSeconds: number;
+};
+
 export type WholesalePayload = {
   ok: boolean;
   error?: string;
@@ -52,6 +61,7 @@ export type WholesalePayload = {
     delayedAfterSeconds?: number;
     staleAfterSeconds?: number;
   };
+  iesoPublication?: IesoPublication;
   latest?: {
     mwH: number;
     centsKwh: number;
