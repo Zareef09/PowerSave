@@ -3,11 +3,12 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { IesoCopyright } from "@/components/IesoCopyright";
-import { Ribbon } from "@/components/Ribbon";
+import { Ribbon, SAMPLE_RIBBON_RATES, SAMPLE_RIBBON_SEASON } from "@/components/Ribbon";
 import { SampleDataTag } from "@/components/SampleDataTag";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteNav } from "@/components/SiteNav";
 import { formatCost, formatTime } from "@/lib/format";
+import { ratesMonoTag } from "@/lib/format-rates";
 import { SAMPLE_TEASER } from "@/lib/ieso";
 import { readStoredPlan, writeStoredPlan } from "@/lib/plan-storage";
 import {
@@ -17,7 +18,7 @@ import {
   choreCostCents,
   type ChoreId,
 } from "@/lib/pricing";
-import type { PlanId } from "@/lib/rates/2026-11-01";
+import { rateSetForInstant, seasonForInstant, type PlanId } from "@/lib/rates";
 import { fetchWholesale } from "@/lib/wholesale-client";
 
 const GRID_SAMPLE = SAMPLE_TEASER.series;
@@ -43,26 +44,29 @@ const STEPS = [
   },
 ] as const;
 
-const PLAN_COLS: { name: string; plan: PlanId; prices: string; line: string }[] = [
-  {
-    name: "TOU",
-    plan: "TOU",
-    prices: "9.1¢ · 14.6¢ · 18.9¢",
-    line: "Cheap after 7 PM and all weekend. Mornings and early evenings cost the most.",
-  },
-  {
-    name: "ULO",
-    plan: "ULO",
-    prices: "3.7¢ · 9.1¢ · 14.6¢ · 37.7¢",
-    line: "Overnight is 3.7¢. The 4 to 9 PM window is 37.7¢. Built for EVs and delay-start habits.",
-  },
-  {
-    name: "Tiered",
-    plan: "TIERED",
-    prices: "11.2¢ · 13.2¢ above the monthly tier",
-    line: "Timing doesn’t change your price.",
-  },
-];
+function planColsForRates(rates: ReturnType<typeof rateSetForInstant>) {
+  const { tou, ulo, tiered } = rates.cents;
+  return [
+    {
+      name: "TOU",
+      plan: "TOU" as PlanId,
+      prices: `${tou.off}¢ · ${tou.mid}¢ · ${tou.on}¢`,
+      line: "Cheap after 7 PM and all weekend. Mornings and early evenings cost the most.",
+    },
+    {
+      name: "ULO",
+      plan: "ULO" as PlanId,
+      prices: `${ulo.ultra}¢ · ${ulo.off}¢ · ${ulo.mid}¢ · ${ulo.on}¢`,
+      line: `Overnight is ${ulo.ultra}¢. The 4 to 9 PM window is ${ulo.on}¢. Built for EVs and delay-start habits.`,
+    },
+    {
+      name: "Tiered",
+      plan: "TIERED" as PlanId,
+      prices: `${tiered.tier1}¢ · ${tiered.tier2}¢ above the monthly tier`,
+      line: "Timing doesn’t change your price.",
+    },
+  ];
+}
 
 const PROOF = [
   "RATES FROM THE OEB",
@@ -90,6 +94,10 @@ export function LandingPage() {
   const [teaserMw, setTeaserMw] = useState(SAMPLE_TEASER.mwH);
   const [teaserSeries, setTeaserSeries] = useState<number[]>(GRID_SAMPLE);
   const [teaserUpdated, setTeaserUpdated] = useState("6:05 PM");
+
+  const liveRates = rateSetForInstant(new Date());
+  const liveSeason = seasonForInstant(new Date());
+  const planCols = planColsForRates(liveRates);
 
   useEffect(() => {
     const stored = readStoredPlan();
@@ -186,13 +194,19 @@ export function LandingPage() {
   };
 
   const cards = useMemo(
-    () => CHORE_ORDER.map((c) => adviceForChore(plan, c, DEMO_NOW_MIN, "weekday", tick)),
+    () =>
+      CHORE_ORDER.map((c) =>
+        adviceForChore(plan, c, DEMO_NOW_MIN, "weekday", tick, {
+          // Match live Today: laundry/dishwasher stay awake; EV may use overnight.
+          quietHours: c !== "EV",
+        }),
+      ),
     [plan, tick],
   );
 
   const heroWin = plan === "TIERED" ? -1 : cards[0]?.winStart ?? -1;
   const heroWinLabel =
-    plan === "TIERED" ? "" : plan === "ULO" ? "Laundry · 11:00 PM" : "Laundry · 7:00 PM";
+    plan === "TIERED" || heroWin < 0 ? "" : `Laundry · ${formatTime(heroWin)}`;
 
   const mStart = Math.round((1050 + 90 * prog) / 15) * 15;
   const mCostC = choreCostCents("TOU", mStart, CHORES.Laundry.kwh, CHORES.Laundry.durationMin);
@@ -217,8 +231,8 @@ export function LandingPage() {
       {/* hero */}
       <div className="mx-auto box-border max-w-content px-4 pt-12 sm:px-6 md:px-10 md:pt-24">
         <div className="font-mono-label flex flex-wrap justify-between gap-x-6 gap-y-2 text-muted">
-          <span>/00 [ TOU · WINTER · 17:30 ]</span>
-          <span>[ RATES OEB · NOV 1 2026 ]</span>
+          <span>/00 [ {planName} · WINTER · 17:30 · SAMPLE ]</span>
+          <span>{ratesMonoTag(SAMPLE_RIBBON_RATES)}</span>
         </div>
         <h1 className="mb-5 mt-8 max-w-[1000px] text-balance break-words text-[40px] font-light leading-none tracking-[-0.03em] sm:text-[48px] md:mt-14 md:text-[88px]">
           <span className="text-muted">Run it when </span>it’s cheap.
@@ -267,6 +281,8 @@ export function LandingPage() {
             <Ribbon
               plan={plan}
               variant="hero"
+              season={SAMPLE_RIBBON_SEASON}
+              rates={SAMPLE_RIBBON_RATES}
               startMin={0}
               nowMin={DEMO_NOW_MIN}
               winStart={heroWin}
@@ -321,6 +337,8 @@ export function LandingPage() {
                 <Ribbon
                   plan={plan}
                   variant="compact"
+                  season={SAMPLE_RIBBON_SEASON}
+                  rates={SAMPLE_RIBBON_RATES}
                   startMin={DEMO_NOW_MIN}
                   nowMin={DEMO_NOW_MIN}
                   winStart={c.winStart}
@@ -393,6 +411,8 @@ export function LandingPage() {
               <Ribbon
                 plan="TOU"
                 variant="full"
+                season={SAMPLE_RIBBON_SEASON}
+                rates={SAMPLE_RIBBON_RATES}
                 startMin={0}
                 nowMin={DEMO_NOW_MIN}
                 winStart={mStart}
@@ -456,7 +476,7 @@ export function LandingPage() {
           <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
             <div>
               <div className="font-mono-label text-muted-strong">
-                /03 [ PLANS · RATES OEB · NOV 1 2026 ]
+                /03 [ PLANS · {ratesMonoTag(liveRates).slice(2, -2)} ]
               </div>
               <h2 className="mt-3 text-[32px] font-light leading-[1.05] tracking-[-0.03em] md:text-[40px]">
                 Your plan <span className="text-muted-strong">sets the answer.</span>
@@ -467,7 +487,7 @@ export function LandingPage() {
             </Link>
           </div>
           <div className="mt-10 grid grid-cols-1 gap-4 md:grid-cols-3">
-            {PLAN_COLS.map((pc) => (
+            {planCols.map((pc) => (
               <div
                 key={pc.plan}
                 className="flex flex-col gap-4 rounded-card border border-hairline bg-surface p-6"
@@ -476,7 +496,15 @@ export function LandingPage() {
                   <span className="text-[28px] font-light tracking-[-0.03em]">{pc.name}</span>
                   <span className="font-mono-label text-muted-strong">WEEKDAY</span>
                 </div>
-                <Ribbon plan={pc.plan} variant="mini" startMin={0} nowMin={-1} winStart={-1} />
+                <Ribbon
+                  plan={pc.plan}
+                  variant="mini"
+                  season={liveSeason}
+                  rates={liveRates}
+                  startMin={0}
+                  nowMin={-1}
+                  winStart={-1}
+                />
                 <div className="font-mono-label text-muted-strong">{pc.prices}</div>
                 <p className="m-0 text-base leading-normal">{pc.line}</p>
               </div>

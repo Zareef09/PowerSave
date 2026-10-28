@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Ribbon } from "@/components/Ribbon";
+import { Ribbon, SAMPLE_RIBBON_RATES, SAMPLE_RIBBON_SEASON } from "@/components/Ribbon";
 import { SampleDataTag } from "@/components/SampleDataTag";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteNav } from "@/components/SiteNav";
@@ -79,6 +79,8 @@ export function HowItWorksPage() {
                 plan="TOU"
                 variant="compact"
                 day="weekday"
+                season={SAMPLE_RIBBON_SEASON}
+                rates={SAMPLE_RIBBON_RATES}
                 startMin={DEMO_NOW_MIN}
                 nowMin={DEMO_NOW_MIN}
                 winStart={DEMO_NOW_MIN}
@@ -92,6 +94,8 @@ export function HowItWorksPage() {
                 plan="TOU"
                 variant="compact"
                 day="weekday"
+                season={SAMPLE_RIBBON_SEASON}
+                rates={SAMPLE_RIBBON_RATES}
                 startMin={DEMO_NOW_MIN}
                 nowMin={DEMO_NOW_MIN}
                 winStart={1140}

@@ -154,6 +154,8 @@ export function TomorrowPage() {
               plan={plan}
               variant="full"
               day={ribbonDay}
+              season={season}
+              rates={rates!}
               startMin={0}
               nowMin={-1}
               winStart={anyTime ? -1 : firstWin}

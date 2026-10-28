@@ -321,6 +321,8 @@ export function TodayPage() {
                     plan={plan}
                     variant="compact"
                     day={ribbonDay}
+                    season={season}
+                    rates={rates!}
                     startMin={parts!.minuteOfDay}
                     nowMin={parts!.minuteOfDay}
                     winStart={advice.winStartMinOfDay}

@@ -70,7 +70,13 @@ function PlanColumn({
         <div className="text-[28px] font-light tracking-[-0.03em]">{title}</div>
         <div className="mt-1 text-sm text-muted-strong">{long}</div>
       </div>
-      <Ribbon plan={plan} variant="mini" day={dayKind === "weekday" ? "weekday" : "weekend"} />
+      <Ribbon
+        plan={plan}
+        variant="mini"
+        day={dayKind === "weekday" ? "weekday" : "weekend"}
+        season={season}
+        rates={rates}
+      />
       <div className="font-mono-label flex justify-between text-muted-strong">
         <span>12 AM</span>
         <span>12 PM</span>

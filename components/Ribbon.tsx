@@ -1,8 +1,18 @@
 "use client";
 
-import { formatHourTick, formatTime, formatTime24 } from "@/lib/format";
-import { type DayKind, type PeriodKey, type PlanId, periodAt } from "@/lib/rates/2026-11-01";
 import { useTheme } from "@/components/ThemeProvider";
+import { formatHourTick, formatTime, formatTime24 } from "@/lib/format";
+import {
+  RATE_SET_2026_11_01,
+  periodAt,
+  rateSetForInstant,
+  seasonForInstant,
+  type DayKind,
+  type PeriodKey,
+  type PlanId,
+  type RateSet,
+  type Season,
+} from "@/lib/rates";
 
 export type RibbonVariant = "hero" | "full" | "compact" | "mini";
 
@@ -10,6 +20,10 @@ export type RibbonProps = {
   plan?: PlanId;
   variant?: RibbonVariant;
   day?: DayKind;
+  /** Defaults to the live Toronto season. Pass explicitly for Sample-data demos. */
+  season?: Season;
+  /** Defaults to the rate set in force now. Pass explicitly for Sample-data demos. */
+  rates?: RateSet;
   startMin?: number;
   nowMin?: number;
   winStart?: number;
@@ -71,6 +85,8 @@ export function Ribbon({
   plan = "TOU",
   variant = "full",
   day = "weekday",
+  season: seasonProp,
+  rates: ratesProp,
   startMin = 0,
   nowMin = -1,
   winStart = -1,
@@ -88,14 +104,18 @@ export function Ribbon({
   const rad = RAD[variant];
   const totalH = topPad + bandH + botPad;
   const start = startMin;
-  const wk = day !== "weekend";
+  const wk = day !== "weekend" && day !== "holiday";
+
+  const now = new Date();
+  const rates = ratesProp ?? rateSetForInstant(now);
+  const season = seasonProp ?? seasonForInstant(now);
 
   const raw: Seg[] = [];
   let cur: Seg | null = null;
   for (let i = 0; i < 96; i++) {
     const t = start + i * 15;
     const m = ((t % 1440) + 1440) % 1440;
-    const { key, cents } = periodAt(plan, m, day);
+    const { key, cents } = periodAt(plan, m, { day, season, rates });
     if (cur && cur.k === key && cur.pr === cents) cur.n++;
     else {
       cur = { k: key, pr: cents, i, n: 1 };
@@ -107,9 +127,13 @@ export function Ribbon({
     const w = (g.n / 96) * 100;
     const left = (g.i / 96) * 100;
     let label = `${NAME[g.k]} · ${g.pr}¢`;
-    if (plan === "TIERED") label = "Tier 1 · 11.2¢ · same all day";
-    else if (plan === "ULO" && g.k === "of") label = "Weekend off-peak · 9.1¢";
-    else if (!wk && plan === "TOU") label = "Off-peak · 9.1¢ · all day";
+    if (plan === "TIERED") {
+      label = `Tier 1 · ${rates.cents.tiered.tier1}¢ · same all day`;
+    } else if (plan === "ULO" && g.k === "of" && !wk) {
+      label = `Weekend off-peak · ${g.pr}¢`;
+    } else if (!wk && plan === "TOU") {
+      label = `Off-peak · ${g.pr}¢ · all day`;
+    }
 
     const need = variant === "hero" ? (plan === "TIERED" ? 9 : 13) : variant === "full" ? 15 : 99;
     const showLabel = big && w >= need * 0.75;
@@ -288,3 +312,7 @@ export function Ribbon({
     </div>
   );
 }
+
+/** Sample-data ribbons (Landing / How it works) — fixed Nov 18 2026 winter demo rates. */
+export const SAMPLE_RIBBON_RATES = RATE_SET_2026_11_01;
+export const SAMPLE_RIBBON_SEASON: Season = "winter";

@@ -153,6 +153,8 @@ export function ChoreDetailPage({ choreId }: { choreId: string }) {
             plan={plan}
             variant="full"
             day={ribbonDay}
+            season={season}
+            rates={rates!}
             startMin={0}
             nowMin={parts.minuteOfDay}
             winStart={advice.winStartMinOfDay}
